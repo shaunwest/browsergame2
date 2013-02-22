@@ -1,8 +1,16 @@
 /* Author:
 
+TODO:
+-clean up dir, check in
+-clean up code (race condition, comments, etc)
+
+FIXME:
+-player disappears when FPS falls too low?
+
 */
 const ONE_SECOND = 1000;
 const FPS = 60;
+const FRAME_LENGTH = ONE_SECOND / FPS;
 
 const KEY_LEFT = 37;
 const KEY_UP = 38;
@@ -28,6 +36,21 @@ var keys = {};
 
 var inheriting = {};
 
+var lastUpdateTime = new Date();
+
+
+if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = (function () {
+        return window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function (callback, fps) {
+                window.setTimeout(callback, 1000 / 60); // frames per second
+            };
+    })();
+}
+
 init();
 
 function init(spriteSheet) {
@@ -36,8 +59,8 @@ function init(spriteSheet) {
     canvasContainer = document.getElementById('displayContainer');
 
     canvas = document.getElementById('display');
-	canvas.width    = 256;
-	canvas.height   = 256;
+	canvas.width    = 768; //256;
+	canvas.height   = 768; //256;
 
     resizeCanvas();
 
@@ -53,9 +76,9 @@ function resizeCanvas() {
     var newHeight = window.innerHeight;
 
     if(newWidth > newHeight) {
-        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = newHeight + "px";
+        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "768px"; //newHeight + "px";
     } else {
-        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = newWidth + "px";
+        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "768px"; //newWidth + "px";
     }
 }
 
@@ -70,7 +93,7 @@ function onKeyUp(e) {
 function getConfig() {
 	$.ajax({
 		type: "get",
-		url: "data/mario3.conf.js",
+		url: "assets/game.conf",
 		dataType: "json",
 		success: configReady
 	});
@@ -79,25 +102,30 @@ function getConfig() {
 function configReady(data) {
     config = data;
 
-    getTileSheet("tilesheet.png");
+    getTileSheet("level1_tilesheet.png", "level1_tilesheet_bi.png");
 
 	window.addEventListener('keydown', onKeyDown, true);
 	window.addEventListener('keyup', onKeyUp, true);
 	
-	setInterval(update, Math.floor(ONE_SECOND / FPS));
+	//setInterval(update, Math.floor(ONE_SECOND / FPS));
 	setInterval(tick, ONE_SECOND);
 }
 
-function getTileSheet(tileSheetPath) {
+function getTileSheet(tileSheetPath, filterTileSheetPath) {
     tileSheet = new Image();
-    tileSheet.src = "data/" + tileSheetPath;
-    tileSheet.onload = function() { tileSheetReady() };
+    tileSheet.src = "assets/" + tileSheetPath;
+    //tileSheet.onload = function() { tileSheetReady() };
+
+    filterTileSheet = new Image();
+    filterTileSheet.src = "assets/" + filterTileSheetPath;
+    filterTileSheet.onload = function() { tileSheetReady() }; // FIXME race condition
 }
 
 function tileSheetReady() {
     var tileSet = new TileSet(config.tileDefinitions, tileSheet, config.tileSize);
+    var filterTileSet = new TileSet(config.tileDefinitions, filterTileSheet, config.tileSize);
 
-    level = new SMBLevel(tileSet, config.tileDefinitions, config.levels.level1.midground, config.tileSize);
+    level = new GameLevel(tileSet, filterTileSet, config.tileDefinitions, config.levels.level1.midground, config.tileSize);
 
     getSpriteSheets(config.levels.level1.sprites, config.spriteDefinitions);
     getTriggers(config.levels.level1.triggers, config.triggerDefinitions);
@@ -111,7 +139,7 @@ function getSpriteSheets(sprites, spriteDefinitions) {
 			spriteSheetsLoading++;
 			
 			var spriteSheet = new Image();
-			spriteSheet.src = "data/" + spriteDef.filePath;
+			spriteSheet.src = "assets/" + spriteDef.filePath;
 			spriteSheet.onload = function() { spriteSheetReady(sprites, spriteDefinitions) };
 			
 			spriteSheets[spriteId] = spriteSheet;
@@ -157,6 +185,8 @@ function getSprites(sprites, spriteDefinitions) {
 		
 		level.addEntity(entity);
 	}
+
+    update();
 }
 
 function getAnimations(spriteSheet, size, defaultDelay) {
@@ -184,23 +214,12 @@ function getTriggers(triggers, triggerDefinitions) {
 }
 
 function checkKeys() {
-	// MOVE
 	if(player && player.input) {
-
-        //var view = level.getView();
-
+        // MOVE
 		if(keys[KEY_LEFT]) {
-            /*if(player.x - view.x < 64) {
-                level.moveView(-2, 0);
-            }*/
-
             player.moveLeft();
 
 		} else if(keys[KEY_RIGHT]) {
-            /*if(player.x - view.x > 192) {
-                level.moveView(2, 0);
-            }*/
-
             player.moveRight();
 
 		} else {
@@ -229,13 +248,20 @@ function checkKeys() {
 }
 
 function update() {
-	checkKeys();
+    var now = new Date();
+    var secondsElapsed = (now - lastUpdateTime) / 1000;
+    lastUpdateTime = now;
+
+    checkKeys();
 
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	
-	level.updateAndDraw(context);
+	level.updateAndDraw(context, secondsElapsed);
 
 	ticks++;
+
+    requestAnimationFrame(update);
+    //setTimeout( function() { update(); }, FRAME_LENGTH );
 }
 
 function tick() {

@@ -21,10 +21,10 @@ audio:not([controls]) { display: none; }
 [hidden] { display: none; }
 
 /* The most cross-platform way to remove interpolation when scaling the canvas.
- * Disabled for the moment because the resulting pixelation is hard on
- * the eyes as the game scrolls.
- * Note: this currently doesn't work with Chrome
+ * Note: using higher res assets, so this isn't needed
+ * Note: this currently doesn't work with Chrome (2/2013)
  */
+
 /*canvas {
     image-rendering: optimizeSpeed;
     image-rendering: -moz-crisp-edges;

@@ -2,14 +2,16 @@
  * @author shaun
  */
 
-function Level(tileSet, tileDefinitions, levelData, tileSize) {
+function Level(tileSet, filterTileSet, tileDefinitions, levelData, tileSize) {
 	if (arguments[0] === inheriting) return;
 
     this.tileSet            = tileSet;
+    this.filterTileSet      = filterTileSet;
 	this.tileDefinitions    = tileDefinitions;
 	this.levelData          = levelData;
 	this.tileSize           = tileSize;
-	
+	this.filterMode         = false;
+
 	this.height             = levelData.length;
 	this.width              = levelData[0].length;
 	
@@ -18,14 +20,14 @@ function Level(tileSet, tileDefinitions, levelData, tileSize) {
 
     this.viewTarget         = null;
 
-    this.viewX              = 512; //0;
-    this.viewY              = 256;
+    this.viewX              = 0;
+    this.viewY              = 0;
 
     this.viewWidth          = 17;
     this.viewHeight         = 17;
 
-    this.viewMarginLeft     = 64;
-    this.viewMarginRight    = 160;
+    this.viewMarginLeft     = 192; //64;
+    this.viewMarginRight    = 480; //160;
 
 	this.entities           = [];
 	this.triggers           = [];
@@ -39,33 +41,40 @@ Level.prototype.addTrigger = function(entity) {
 	this.triggers.push(entity);
 };
 
-Level.prototype.updateEntity = function(entity) {
-	entity.updateStart(); 	// moveY++
-	
+Level.prototype.updateEntity = function(entity, secondsElapsed) {
+	entity.updateStart(secondsElapsed); // moveY++
+
 	if(entity.levelCollisions) {
 		this.checkXCollision(entity);
 		this.checkYCollision(entity); // if coll with moveY, reposition, cancel moveY;
 	}
-	
+	//console.log("move2: " + moveX + ", " + moveY);
 	if(entity.entityCollisions) {
 		this.checkEntityCollisions(entity);
 		this.checkTriggerCollisions(entity);
 	}
 
-    if(entity === this.viewTarget) {
-        var newX = entity.x + entity.moveX;
-        var newY = entity.y + entity.moveY;
+    var moveX = entity.moveX; //Math.floor(entity.moveX * secondsElapsed);
+    var moveY = entity.moveY; //Math.floor(entity.moveY * secondsElapsed);
 
-        if(entity.moveX > 0) {
+    if(entity === this.viewTarget) {
+        var newX = entity.x + moveX; //entity.moveX;
+        var newY = entity.y + moveY; //entity.moveY;
+
+        this.filterMode = false;
+
+        if(moveX > 0) {
             if(newX < this.pixelWidth - this.viewMarginRight && newX - this.viewX > this.viewMarginRight) {
-                this.moveView(entity.moveX, 0);
+                this.moveView(moveX, 0);
+                this.filterMode = true;
             }
 
             entity.x = newX;
 
-        } else if(entity.moveX < 0) {
+        } else if(moveX < 0) {
             if(newX > this.viewMarginLeft && newX - this.viewX < this.viewMarginLeft) {
-                this.moveView(entity.moveX, 0);
+                this.moveView(moveX, 0);
+                this.filterMode = true;
             }
 
             entity.x = newX;
@@ -74,8 +83,8 @@ Level.prototype.updateEntity = function(entity) {
         entity.y = newY;
 
     } else {
-        entity.x += entity.moveX;
-        entity.y += entity.moveY;	// apply move
+        entity.x += moveX;
+        entity.y += moveY;	// apply move
     }
 
 	entity.updateEnd();
@@ -123,66 +132,14 @@ Level.prototype.handleEntityCollision = function(entity1, entity2, intersection)
 Level.prototype.handleTriggerCollision = function(entity, trigger, intersection) {
 };
 
-/*Level.prototype.checkXCollision = function(entity) {
-	var bounds = entity.adjustedBounds();
-	
-	var x1 = bounds.left + entity.moveX;
-	var tx1 = Math.floor(x1 / this.tileSize);
-	
-	var x2 = bounds.right + entity.moveX;
-	var tx2 = Math.floor((x2 - 1) / this.tileSize);
-	
-	var y1 = bounds.top;
-	var ty1 = Math.floor(y1 / this.tileSize);
-	
-	var y2 = bounds.bottom;
-	var ty2 = Math.floor((y2 - 1) / this.tileSize);
-
-    //trace("(" + tx1 + ", " + ty1 + ") (" + tx1 + ", " + ty2 + ")");
-
-	if(y1 >= 0 && y2 < this.pixelHeight) {
-		if(entity.moveX > 0) {
-			if((x2 - 1) >= this.pixelWidth - 64) { // not sure where 64 comes from... player width x 2?
-				this.stopRight(entity, tx2);
-				entity.levelCollisionX(1);
-				
-			} else if(this.isSolid(tx2, ty1)) {
-				this.stopRight(entity, tx2);
-				entity.levelCollisionX(1, this.getTile(tx2, ty1));
-                console.log("stop right");
-			} else if(this.isSolid(tx2, ty2)) {
-				this.stopRight(entity, tx2);
-				entity.levelCollisionX(1, this.getTile(tx2, ty2));
-                console.log("stop right");
-			}
-		} else if(entity.moveX < 0) {
-			if(tx1 < 1) {
-				this.stopLeft(entity, tx1);
-				entity.levelCollisionX(-1);
-				
-			} else if(this.isSolid(tx1, ty1)) {
-				this.stopLeft(entity, tx1);
-				entity.levelCollisionX(-1, this.getTile(tx1, ty1));
-                console.log("stop left");
-				
-			} else if(this.isSolid(tx1, ty2)) {
-				this.stopLeft(entity, tx1);
-				entity.levelCollisionX(-1, this.getTile(tx1, ty2));
-                console.log("stop left");
-			} else {
-                console.log("nothing " + tx1 + ", " + ty2);
-            }
-		}
-	}
-};*/
-
 Level.prototype.checkXCollision = function(entity) {
+    var moveX = entity.moveX;
     var bounds = entity.adjustedBounds();
 
-    var x1 = bounds.left + entity.moveX;
+    var x1 = bounds.left + moveX;
     var tx1 = Math.floor(x1 / this.tileSize);
 
-    var x2 = bounds.right + entity.moveX;
+    var x2 = bounds.right + moveX;
     var tx2 = Math.floor((x2 - 1) / this.tileSize);
 
     var y1 = bounds.top;
@@ -192,8 +149,8 @@ Level.prototype.checkXCollision = function(entity) {
     var ty2 = Math.floor((y2 - 1) / this.tileSize);
 
     if(y1 >= 0 && y2 < this.pixelHeight) {
-        if(entity.moveX > 0) {
-            if((x2 - 1) >= this.pixelWidth - 64) { // not sure where 64 comes from... player width x 2?
+        if(moveX > 0) {
+            if((x2 - 1) >= this.pixelWidth - 192) { //64) { // not sure where 64 comes from... player width x 2?
                 this.stopRight(entity, tx2);
                 entity.levelCollisionX(1);
 
@@ -207,7 +164,7 @@ Level.prototype.checkXCollision = function(entity) {
                 }
             }
 
-        } else if(entity.moveX < 0) {
+        } else if(moveX < 0) {
             if(tx1 < 1) {
                 this.stopLeft(entity, tx1);
                 entity.levelCollisionX(-1);
@@ -226,7 +183,8 @@ Level.prototype.checkXCollision = function(entity) {
 };
 		
 Level.prototype.checkYCollision = function(entity) {
-	var bounds = entity.adjustedBounds();
+	var moveY = entity.moveY;
+    var bounds = entity.adjustedBounds();
 	
 	var x1 = bounds.left;
 	var tx1 = Math.floor(x1 / this.tileSize);
@@ -234,14 +192,14 @@ Level.prototype.checkYCollision = function(entity) {
 	var x2 = bounds.right;
 	var tx2 = Math.floor((x2 - 1) / this.tileSize);
 	
-	var y1 = bounds.top + entity.moveY;
+	var y1 = bounds.top + moveY;
 	var ty1 = Math.floor(y1 / this.tileSize);
 	
-	var y2 = bounds.bottom + entity.moveY;
+	var y2 = bounds.bottom + moveY;
 	var ty2 = Math.floor((y2 - 1) / this.tileSize);
 
 	if(tx1 >= 0 && tx2 <= this.width) {
-		if(entity.moveY > 0) { // seems to be crashing when player hits bottom border of level
+		if(moveY > 0) { // seems to be crashing when player hits bottom border of level
 			if((y2 - 1) > this.pixelHeight) {
 				this.stopDown(entity, ty2);
 				entity.levelCollisionY(1);
@@ -256,7 +214,7 @@ Level.prototype.checkYCollision = function(entity) {
                 }
             }
 
-		} else if(entity.moveY < 0) {
+		} else if(moveY < 0) {
 			if(ty1 < 1) {
 				this.stopUp(entity, ty1);
 				entity.levelCollisionY(-1);
@@ -320,6 +278,14 @@ Level.prototype.getTile = function(x, y) {
 Level.prototype.moveView = function(deltaX, deltaY) {
     this.viewX += deltaX;
     this.viewY += deltaY;
+
+    if(this.viewX < 0) {
+        this.viewX = 0;
+    }
+
+    if(this.viewY < 0) {
+        this.viewY = 0;
+    }
 };
 
 Level.prototype.getView = function() {
@@ -329,18 +295,18 @@ Level.prototype.getView = function() {
     };
 };
 
-Level.prototype.updateAndDraw = function(context) {
+Level.prototype.updateAndDraw = function(context, secondsElapsed) {
     var startX = Math.floor(this.viewX / this.tileSize)
     var startY = Math.floor(this.viewY / this.tileSize)
 
     var endX   = startX + this.viewWidth;
     var endY   = startY + this.viewHeight;
-
+    //console.log(startX);
     // Draw level
     for(var y = startY; y < endY; y++) {
         for(var x = startX; x < endX; x++) {
             var tileId = this.levelData[y][x];
-            var tile = this.tileSet.getTile(tileId);
+            var tile = (this.filterMode) ? this.tileSet.getTile(tileId) : this.tileSet.getTile(tileId); //debug
 
             context.drawImage(tile, (x * this.tileSize) - this.viewX, (y * this.tileSize) - this.viewY);
         }
@@ -350,8 +316,8 @@ Level.prototype.updateAndDraw = function(context) {
     for(var i = 0; i < this.entities.length; i++) {
 		var entity = this.entities[i];
 		if(entity) {
-			this.updateEntity(entity);
-			
+			this.updateEntity(entity, secondsElapsed);
+
 			context.drawImage(entity.getCurrentFrame(), entity.x - this.viewX, entity.y - this.viewY);
 		}
 	}

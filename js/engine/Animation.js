@@ -17,7 +17,6 @@ function Animation(spriteSheet, row, spriteSize, delay) {
 
 Animation.prototype.parseSheet = function(spriteSheet, row) {
 	var frameCount = spriteSheet.width / this.spriteSize;
-	var rowCount = spriteSheet.height / this.spriteSize;
 	
 	this.frames = [];
 	for(var j = 0; j < frameCount; j++) {
