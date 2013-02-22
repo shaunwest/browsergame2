@@ -20,6 +20,11 @@ const KEY_DOWN = 40;
 var config;
 
 var tileSheet;
+var tileSet;
+var filterTileSheet;
+var filterTileSet;
+var tileSheetsLoading = 0;
+
 var spriteSheets = {};
 var spriteSheetsLoading = 0;
 
@@ -46,7 +51,7 @@ if (!window.requestAnimationFrame) {
             window.oRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
             function (callback, fps) {
-                window.setTimeout(callback, 1000 / 60); // frames per second
+                window.setTimeout(callback, FRAME_LENGTH); // frames per second
             };
     })();
 }
@@ -59,8 +64,8 @@ function init(spriteSheet) {
     canvasContainer = document.getElementById('displayContainer');
 
     canvas = document.getElementById('display');
-	canvas.width    = 768; //256;
-	canvas.height   = 768; //256;
+	canvas.width    = 768;
+	canvas.height   = 768;
 
     resizeCanvas();
 
@@ -103,47 +108,52 @@ function configReady(data) {
     config = data;
 
     getTileSheet("level1_tilesheet.png", "level1_tilesheet_bi.png");
-
-	window.addEventListener('keydown', onKeyDown, true);
-	window.addEventListener('keyup', onKeyUp, true);
-	
-	//setInterval(update, Math.floor(ONE_SECOND / FPS));
-	setInterval(tick, ONE_SECOND);
 }
 
 function getTileSheet(tileSheetPath, filterTileSheetPath) {
+    tileSheetsLoading = 2;
+
     tileSheet = new Image();
     tileSheet.src = "assets/" + tileSheetPath;
-    //tileSheet.onload = function() { tileSheetReady() };
+    tileSheet.onload = function() {
+        tileSet = new TileSet(config.tileDefinitions, tileSheet, config.tileSize);
+        tileSheetReady();
+    };
 
     filterTileSheet = new Image();
     filterTileSheet.src = "assets/" + filterTileSheetPath;
-    filterTileSheet.onload = function() { tileSheetReady() }; // FIXME race condition
+    filterTileSheet.onload = function() {
+        filterTileSet = new TileSet(config.tileDefinitions, filterTileSheet, config.tileSize);
+        tileSheetReady();
+    };
 }
 
 function tileSheetReady() {
-    var tileSet = new TileSet(config.tileDefinitions, tileSheet, config.tileSize);
-    var filterTileSet = new TileSet(config.tileDefinitions, filterTileSheet, config.tileSize);
+    tileSheetsLoading--;
 
-    level = new GameLevel(tileSet, filterTileSet, config.tileDefinitions, config.levels.level1.midground, config.tileSize);
+    if(tileSheetsLoading == 0) {
+        level = new GameLevel(tileSet, filterTileSet, config.tileDefinitions, config.levels.level1.midground, config.tileSize);
 
-    getSpriteSheets(config.levels.level1.sprites, config.spriteDefinitions);
-    getTriggers(config.levels.level1.triggers, config.triggerDefinitions);
+        getSpriteSheets(config.levels.level1.sprites, config.spriteDefinitions);
+        getTriggers(config.levels.level1.triggers, config.triggerDefinitions);
+    }
 }
 
 function getSpriteSheets(sprites, spriteDefinitions) {
 	for(var spriteId in spriteDefinitions) {
-		var spriteDef = spriteDefinitions[spriteId];
-		
-		if(!spriteSheets.hasOwnProperty(spriteId)) {
-			spriteSheetsLoading++;
-			
-			var spriteSheet = new Image();
-			spriteSheet.src = "assets/" + spriteDef.filePath;
-			spriteSheet.onload = function() { spriteSheetReady(sprites, spriteDefinitions) };
-			
-			spriteSheets[spriteId] = spriteSheet;
-		}
+		if(spriteDefinitions.hasOwnProperty(spriteId)) {
+            var spriteDef = spriteDefinitions[spriteId];
+
+            if(!spriteSheets.hasOwnProperty(spriteId)) {
+                spriteSheetsLoading++;
+
+                var spriteSheet = new Image();
+                spriteSheet.src = "assets/" + spriteDef.filePath;
+                spriteSheet.onload = function() { spriteSheetReady(sprites, spriteDefinitions) };
+
+                spriteSheets[spriteId] = spriteSheet;
+            }
+        }
 	}
 }
 
@@ -172,10 +182,6 @@ function getSprites(sprites, spriteDefinitions) {
 				entity = new Goomba(getAnimations(spriteSheet, spriteDef.width, spriteDef.defaultDelay), spriteDef);
 				break;
 			
-			case 'sun':
-				entity = new Sun(getAnimations(spriteSheet, spriteDef.width, spriteDef.defaultDelay), spriteDef);
-				break;
-			
 			default:
 				entity = new Entity(getAnimations(spriteSheet, spriteDef.width, spriteDef.defaultDelay), spriteDef);	
 		}
@@ -186,7 +192,15 @@ function getSprites(sprites, spriteDefinitions) {
 		level.addEntity(entity);
 	}
 
-    update();
+    startGame();
+}
+
+function startGame() {
+    window.addEventListener('keydown', onKeyDown, true);
+    window.addEventListener('keyup', onKeyUp, true);
+
+    setInterval(tick, ONE_SECOND);
+    update(); //setInterval(update, Math.floor(ONE_SECOND / FPS));
 }
 
 function getAnimations(spriteSheet, size, defaultDelay) {

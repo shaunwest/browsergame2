@@ -42,24 +42,24 @@ Level.prototype.addTrigger = function(entity) {
 };
 
 Level.prototype.updateEntity = function(entity, secondsElapsed) {
-	entity.updateStart(secondsElapsed); // moveY++
+	entity.updateStart(secondsElapsed);
 
 	if(entity.levelCollisions) {
 		this.checkXCollision(entity);
 		this.checkYCollision(entity); // if coll with moveY, reposition, cancel moveY;
 	}
-	//console.log("move2: " + moveX + ", " + moveY);
+
 	if(entity.entityCollisions) {
 		this.checkEntityCollisions(entity);
 		this.checkTriggerCollisions(entity);
 	}
 
-    var moveX = entity.moveX; //Math.floor(entity.moveX * secondsElapsed);
-    var moveY = entity.moveY; //Math.floor(entity.moveY * secondsElapsed);
+    var moveX = entity.moveX;
+    var moveY = entity.moveY;
 
     if(entity === this.viewTarget) {
-        var newX = entity.x + moveX; //entity.moveX;
-        var newY = entity.y + moveY; //entity.moveY;
+        var newX = entity.x + moveX;
+        var newY = entity.y + moveY;
 
         this.filterMode = false;
 
@@ -84,7 +84,7 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
 
     } else {
         entity.x += moveX;
-        entity.y += moveY;	// apply move
+        entity.y += moveY;
     }
 
 	entity.updateEnd();
@@ -150,7 +150,7 @@ Level.prototype.checkXCollision = function(entity) {
 
     if(y1 >= 0 && y2 < this.pixelHeight) {
         if(moveX > 0) {
-            if((x2 - 1) >= this.pixelWidth - 192) { //64) { // not sure where 64 comes from... player width x 2?
+            if((x2 - 1) >= this.pixelWidth - 192) { // 192 is twice the width of the player TODO: make configurable
                 this.stopRight(entity, tx2);
                 entity.levelCollisionX(1);
 
@@ -301,7 +301,7 @@ Level.prototype.updateAndDraw = function(context, secondsElapsed) {
 
     var endX   = startX + this.viewWidth;
     var endY   = startY + this.viewHeight;
-    //console.log(startX);
+
     // Draw level
     for(var y = startY; y < endY; y++) {
         for(var x = startX; x < endX; x++) {

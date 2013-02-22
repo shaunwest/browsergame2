@@ -5,13 +5,7 @@
 function GameLevel(tileSet, filterTileSet, tileDefinitions, levelData, tileSize) {
 	if (arguments[0] === inheriting) return;
 
-    if(levelData) {
-        this.levelData = levelData;
-    } else {
-        this.levelData = LevelGenerator.createLevel(64, 17, "0001");
-
-        LevelGenerator.setFloor(this.levelData, "0004", "0002");
-    }
+    this.levelData = levelData;
 
 	Level.call(this, tileSet, filterTileSet, tileDefinitions, this.levelData, tileSize);
 }
