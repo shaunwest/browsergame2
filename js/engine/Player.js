@@ -13,7 +13,7 @@ function Player(animations, size) {
 	
 	this.onGround = false;
 	
-	this.bounds = {left: 10, top: 9, right: 10, bottom: 0};
+	this.bounds = {left: 30, top: 15, right: 30, bottom: 0};
 			
 	this.doMoveY = true;
 	this.vMaxVelocity = VMAX_VELOCITY_NORMAL;

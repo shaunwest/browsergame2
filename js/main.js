@@ -1,8 +1,7 @@
 /* Author:
 
 TODO:
--clean up dir, check in
--clean up code (race condition, comments, etc)
+-vertical scrolling
 
 FIXME:
 -player disappears when FPS falls too low?
@@ -19,20 +18,30 @@ const KEY_DOWN = 40;
 
 var config;
 
+var tileSetList;
 var tileSheet;
 var tileSet;
 var filterTileSheet;
 var filterTileSet;
 var tileSheetsLoading = 0;
 
+var spriteSetList;
 var spriteSheets = {};
 var spriteSheetsLoading = 0;
+var spriteMap = {};
+
+var triggerSetList;
+var triggerMap = {};
 
 var canvasContainer;
 var canvas;
 var context;
 var debug;
 
+var currentLevelId;
+var currentTileSetId;
+var currentSpriteSetId;
+var currentTriggerSetId;
 var level;
 var player;
 
@@ -98,7 +107,7 @@ function onKeyUp(e) {
 function getConfig() {
 	$.ajax({
 		type: "get",
-		url: "assets/game.conf",
+		url: "assets/test3.conf",
 		dataType: "json",
 		success: configReady
 	});
@@ -107,23 +116,78 @@ function getConfig() {
 function configReady(data) {
     config = data;
 
-    getTileSheet("level1_tilesheet.png", "level1_tilesheet_bi.png");
+    initTileSetList();
+    initSpriteSetList();
+    initTriggerSetList();
+    loadLevel("level1");
+}
+
+// TODO: combine these three functions into one
+function initTileSetList() {
+    tileSetList = {};
+
+    for(var i in config['tileSets']) {
+        var tileSetConfig = config['tileSets'][i];
+        if(tileSetConfig.hasOwnProperty('setId')) {
+            tileSetList[tileSetConfig['setId']] = tileSetConfig;
+        }
+    }
+}
+
+function initSpriteSetList() {
+    spriteSetList = {};
+
+    for(var i in config['spriteSets']) {
+        var spriteSetConfig = config['spriteSets'][i];
+        if(spriteSetConfig.hasOwnProperty('setId')) {
+            spriteSetList[spriteSetConfig['setId']] = spriteSetConfig;
+        }
+    }
+}
+
+function initTriggerSetList() {
+    triggerSetList = {};
+
+    for(var i in config['triggerSets']) {
+        var triggerSetConfig = config['triggerSets'][i];
+        if(triggerSetConfig.hasOwnProperty('setId')) {
+            triggerSetList[triggerSetConfig['setId']] = triggerSetConfig;
+        }
+    }
+}
+
+function loadLevel(levelId) {
+    if(config['levels'].hasOwnProperty(levelId)) {
+        currentLevelId = levelId;
+
+        var levelConfig = config['levels'][currentLevelId];
+
+        currentTileSetId = levelConfig['tileSetId'];
+        currentSpriteSetId = levelConfig['spriteSetId'];
+        currentTriggerSetId = levelConfig['triggerSetId'];
+
+        var tileSetConfig = tileSetList[currentTileSetId];
+
+        getTileSheet(tileSetConfig['tileSheetPath'], tileSetConfig['tileSheetPath']);
+    }
 }
 
 function getTileSheet(tileSheetPath, filterTileSheetPath) {
     tileSheetsLoading = 2;
 
+    // TODO: make these local vars
+    // TODO: don't assume 'assets/'
     tileSheet = new Image();
     tileSheet.src = "assets/" + tileSheetPath;
     tileSheet.onload = function() {
-        tileSet = new TileSet(config.tileDefinitions, tileSheet, config.tileSize);
+        tileSet = new TileSet(tileSetList[currentTileSetId], tileSheet, config.tileSize);
         tileSheetReady();
     };
 
     filterTileSheet = new Image();
     filterTileSheet.src = "assets/" + filterTileSheetPath;
     filterTileSheet.onload = function() {
-        filterTileSet = new TileSet(config.tileDefinitions, filterTileSheet, config.tileSize);
+        filterTileSet = new TileSet(tileSetList[currentTileSetId], filterTileSheet, config.tileSize);
         tileSheetReady();
     };
 }
@@ -132,23 +196,40 @@ function tileSheetReady() {
     tileSheetsLoading--;
 
     if(tileSheetsLoading == 0) {
-        level = new GameLevel(tileSet, filterTileSet, config.tileDefinitions, config.levels.level1.midground, config.tileSize);
+        //level = new GameLevel(tileSet, filterTileSet, config.tileDefinitions, config.levels.level1.midground, config.tileSize);
+        var levelConfig = config['levels'][currentLevelId];
 
-        getSpriteSheets(config.levels.level1.sprites, config.spriteDefinitions);
-        getTriggers(config.levels.level1.triggers, config.triggerDefinitions);
+        level = new GameLevel(tileSet, filterTileSet, tileSet.getTileDefinitions(), levelConfig['midground'], config.tileSize);
+
+        getSpriteSheets(levelConfig['sprites'], spriteSetList[currentSpriteSetId]['spriteDefinitions']);
+
+        createTriggerMap(triggerSetList[currentTriggerSetId]['triggerDefinitions']);
+        getTriggers(levelConfig['triggers']);
+    }
+}
+
+function createTriggerMap(triggerDefinitions) {
+    triggerMap = {};
+
+    for(var i in triggerDefinitions) {
+        var triggerDef = triggerDefinitions[i];
+        triggerMap[triggerDef.id] = triggerDef;
     }
 }
 
 function getSpriteSheets(sprites, spriteDefinitions) {
-	for(var spriteId in spriteDefinitions) {
-		if(spriteDefinitions.hasOwnProperty(spriteId)) {
-            var spriteDef = spriteDefinitions[spriteId];
+	for(var i in spriteDefinitions) {
+		if(spriteDefinitions.hasOwnProperty(i)) {
+            var spriteDef = spriteDefinitions[i];
+            var spriteId = spriteDef['id'];
+
+            spriteMap[spriteId] = spriteDef;
 
             if(!spriteSheets.hasOwnProperty(spriteId)) {
                 spriteSheetsLoading++;
 
                 var spriteSheet = new Image();
-                spriteSheet.src = "assets/" + spriteDef.filePath;
+                spriteSheet.src = "assets/" + spriteDef['filePath'];
                 spriteSheet.onload = function() { spriteSheetReady(sprites, spriteDefinitions) };
 
                 spriteSheets[spriteId] = spriteSheet;
@@ -168,7 +249,7 @@ function spriteSheetReady(sprites, spriteDefinitions) {
 function getSprites(sprites, spriteDefinitions) {
 	for(var i = 0; i < sprites.length; i++) {
 		var sprite = sprites[i];
-		var spriteDef = spriteDefinitions[sprite.spriteId];
+		var spriteDef = spriteMap[sprite.spriteId];
 		var spriteSheet = spriteSheets[sprite.spriteId];
 		
 		var entity;
@@ -215,10 +296,10 @@ function getAnimations(spriteSheet, size, defaultDelay) {
     return animations;
 }
 
-function getTriggers(triggers, triggerDefinitions) {
+function getTriggers(triggers) {
 	for(var i = 0; i < triggers.length; i++) {
 		var trigger = triggers[i];
-		var triggerDef = triggerDefinitions[trigger.triggerId];
+		var triggerDef = triggerMap[trigger.triggerId];
 		var entity = new Entity(null, triggerDef);
 		entity.x = trigger.x;
 		entity.y = trigger.y;

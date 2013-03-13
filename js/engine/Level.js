@@ -31,6 +31,10 @@ function Level(tileSet, filterTileSet, tileDefinitions, levelData, tileSize) {
 
 	this.entities           = [];
 	this.triggers           = [];
+
+    this.frameNumber        = 0;
+    this.maxFrames          = 100;
+    this.frameSpeedMult     = 3;
 }
 
 Level.prototype.addEntity = function(entity) {
@@ -272,7 +276,8 @@ Level.prototype.isPlatform = function(x, y) {
 
 Level.prototype.getTile = function(x, y) {
 	var tileId = this.levelData[y][x];
-	return this.tileDefinitions[tileId];
+	//return this.tileDefinitions[tileId];
+    return this.tileSet.getTileDefinition(tileId);
 };
 
 Level.prototype.moveView = function(deltaX, deltaY) {
@@ -307,9 +312,30 @@ Level.prototype.updateAndDraw = function(context, secondsElapsed) {
         for(var x = startX; x < endX; x++) {
             var tileId = this.levelData[y][x];
             var tile = (this.filterMode) ? this.tileSet.getTile(tileId) : this.tileSet.getTile(tileId); //debug
+            var tileImage;
 
-            context.drawImage(tile, (x * this.tileSize) - this.viewX, (y * this.tileSize) - this.viewY);
+            var frames = tile['frames'];
+            if(frames.length > 0) {
+                var frameIndex = Math.floor(this.frameNumber) % (frames.length + 1);
+                if(frameIndex == 0) {
+                    tileImage = tile['image'];
+
+                } else {
+                    tileImage = frames[frameIndex - 1];
+                }
+
+            } else {
+                tileImage = tile['image'];
+            }
+
+            context.drawImage(tileImage, (x * this.tileSize) - this.viewX, (y * this.tileSize) - this.viewY);
         }
+    }
+
+    // Track tile animation frames (zero-based)
+    this.frameNumber += (secondsElapsed * this.frameSpeedMult);
+    if(this.frameNumber >= this.maxFrames) {
+        this.frameNumber = 0;
     }
 
     // Draw entities
