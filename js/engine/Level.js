@@ -23,6 +23,9 @@ function Level(tileSet, filterTileSet, tileDefinitions, levelData, tileSize) {
     this.viewX              = 0;
     this.viewY              = 0;
 
+    this.viewMoveX           = 0;
+    this.viewMoveY           = 0;
+
     this.viewWidth          = 17;
     this.viewHeight         = 17;
 
@@ -68,20 +71,34 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
         this.filterMode = false;
 
         if(moveX > 0) {
+            //trace(entity.hVelocity + ", " + moveX);
             if(newX < this.pixelWidth - this.viewMarginRight && newX - this.viewX > this.viewMarginRight) {
-                this.moveView(moveX, 0);
+
+                this.viewMoveX = moveX;
                 this.filterMode = true;
+
+            } else {
+                this.viewMoveX = 0;
             }
 
             entity.x = newX;
 
         } else if(moveX < 0) {
+            //trace(entity.hVelocity + ", " + moveX);
             if(newX > this.viewMarginLeft && newX - this.viewX < this.viewMarginLeft) {
-                this.moveView(moveX, 0);
+
+                this.viewMoveX = moveX;
                 this.filterMode = true;
+
+            } else {
+                this.viewMoveX = 0;
             }
 
             entity.x = newX;
+
+        } else {
+            this.viewMoveX = 0;
+            this.viewMoveY = 0;
         }
 
         entity.y = newY;
@@ -301,8 +318,8 @@ Level.prototype.getView = function() {
 };
 
 Level.prototype.updateAndDraw = function(context, secondsElapsed) {
-    var startX = Math.floor(this.viewX / this.tileSize)
-    var startY = Math.floor(this.viewY / this.tileSize)
+    var startX = Math.floor(this.viewX / this.tileSize);
+    var startY = Math.floor(this.viewY / this.tileSize);
 
     var endX   = startX + this.viewWidth;
     var endY   = startY + this.viewHeight;
@@ -343,10 +360,11 @@ Level.prototype.updateAndDraw = function(context, secondsElapsed) {
 		var entity = this.entities[i];
 		if(entity) {
 			this.updateEntity(entity, secondsElapsed);
-
 			context.drawImage(entity.getCurrentFrame(), entity.x - this.viewX, entity.y - this.viewY);
 		}
 	}
+
+    this.moveView(this.viewMoveX, this.viewMoveY);
 };
 
 

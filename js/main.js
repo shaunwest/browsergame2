@@ -15,6 +15,7 @@ const KEY_LEFT = 37;
 const KEY_UP = 38;
 const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
+const KEY_X = 88;
 
 var config;
 
@@ -107,7 +108,7 @@ function onKeyUp(e) {
 function getConfig() {
 	$.ajax({
 		type: "get",
-		url: "assets/test3.conf",
+		url: "assets/test4.conf",
 		dataType: "json",
 		success: configReady
 	});
@@ -259,8 +260,8 @@ function getSprites(sprites, spriteDefinitions) {
                 level.setViewTarget(player);
 				break;
 				
-			case 'goomba':
-				entity = new Goomba(getAnimations(spriteSheet, spriteDef.width, spriteDef.defaultDelay), spriteDef);
+			case 'goblin1':
+				entity = new Goblin1(getAnimations(spriteSheet, spriteDef.width, spriteDef.defaultDelay), spriteDef);
 				break;
 			
 			default:
@@ -333,12 +334,18 @@ function checkKeys() {
         } else if(player.moveY > 1 || player.moveY < -1){
             player.onGround = false;
         }
-		
+
+        // DUCK
 		if(keys[KEY_DOWN]) {
 			player.ducking = true;
 		} else {
 			player.ducking = false;
 		}
+
+        // ATTACK
+        if(!player.attacking && keys[KEY_X]) {
+            player.attacking = true;
+        }
 	}
 }
 

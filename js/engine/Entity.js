@@ -10,7 +10,13 @@ function Entity(animations, def) {
 	
 	this.moveX = 0;
 	this.moveY = 0;
-	
+
+    this.doMoveX = false;
+    this.doMoveY = false;
+
+    this.hVelocity = 0.0;
+    this.vVelocity = 0.0;
+
 	this.dirX = 1;
 	this.dirY = 1;
 	
@@ -82,11 +88,19 @@ Entity.prototype.getCurrentFrame = function() {
 	return this.currentAnimation.getCurrentFrame();
 };
 
-Entity.prototype.updateStart = function() {
+Entity.prototype.updateStart = function(secondsElapsed) {
 	this.currentAnimation.step();
 	
 	this.haltXDir = 0;
 	this.haltYDir = 0;
+
+    if(this.doMoveY) {
+        this.moveY = this.dirY * Math.round(this.vVelocity);
+    }
+
+    if(this.doMoveX) {
+        this.moveX = this.dirX * Math.round(this.hVelocity);
+    }
 };
 
 Entity.prototype.updateEnd = function() {
