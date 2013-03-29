@@ -108,7 +108,7 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
         entity.y += moveY;
     }
 
-	entity.updateEnd();
+	entity.updateEnd(secondsElapsed);
 };
 
 Level.prototype.removeEntity = function(entity) {
@@ -129,8 +129,15 @@ Level.prototype.checkEntityCollisions = function(entity1) {
 		if(entity2 && entity1 !== entity2) {
 			var intersection = entity1.intersects(entity2);
 			if(intersection) {
-				this.handleEntityCollision(entity1, entity2, intersection);
+                entity1.lastIntersection = intersection;
+                this.handleEntityCollision(entity1, entity2, intersection);
 			}
+
+            var attackIntersection = entity1.attackIntersects(entity2);
+            if(attackIntersection) {
+                entity2.lastAttackIntersection = attackIntersection;
+                this.handleEntityAttackCollision(entity1, entity2, attackIntersection);
+            }
 		}
 	}
 };
@@ -151,6 +158,9 @@ Level.prototype.handleEntityCollision = function(entity1, entity2, intersection)
 };
 
 Level.prototype.handleTriggerCollision = function(entity, trigger, intersection) {
+};
+
+Level.prototype.handleEntityAttackCollision = function(attackingEntity, attackedEntity, intersection) {
 };
 
 Level.prototype.checkXCollision = function(entity) {
@@ -317,6 +327,7 @@ Level.prototype.getView = function() {
     };
 };
 
+// TODO break down into multiple functions
 Level.prototype.updateAndDraw = function(context, secondsElapsed) {
     var startX = Math.floor(this.viewX / this.tileSize);
     var startY = Math.floor(this.viewY / this.tileSize);
@@ -360,10 +371,18 @@ Level.prototype.updateAndDraw = function(context, secondsElapsed) {
 		var entity = this.entities[i];
 		if(entity) {
 			this.updateEntity(entity, secondsElapsed);
-			context.drawImage(entity.getCurrentFrame(), entity.x - this.viewX, entity.y - this.viewY);
+
+            if(entity.isVisible) {
+                var currentFrames = entity.getCurrentFrames();
+                for(var j = 0; j < currentFrames.length; j++) {
+                    var frame = currentFrames[j];
+                    context.drawImage(frame.image, frame.x - this.viewX, frame.y - this.viewY);
+                }
+            }
 		}
 	}
 
+    // Adjust the view position if necessary
     this.moveView(this.viewMoveX, this.viewMoveY);
 };
 

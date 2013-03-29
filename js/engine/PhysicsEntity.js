@@ -7,17 +7,14 @@ function PhysicsEntity(animations, def) {
 	
 	Entity.call(this, animations, def);
 	
-	this.vMaxVelocity = 3;
-	this.hMaxVelocity = 3;
-			
-	//this.hVelocity = 0.0;
-	//this.vVelocity = 0.0;
-			
-	this.vAcceleration = 0.5;
-	this.hAcceleration = 0.5;
-	
-	//this.doMoveX = false;
-	//this.doMoveY = false;
+	this.vMaxVelocity           = 3;
+	this.hMaxVelocity           = 3;
+
+	this.vAcceleration          = 0.5;
+	this.hAcceleration          = 0.5;
+
+    this.doVerticalVelocity     = true;
+    this.doHorizontalVelocity   = true;
 }
 
 PhysicsEntity.prototype = new Entity(inheriting);
@@ -26,11 +23,12 @@ PhysicsEntity.base = Entity.prototype;
 
 PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
 	var vAccel = (this.vAcceleration * secondsElapsed);
+    var vMaxVel = (this.vMaxVelocity * secondsElapsed);
 
     if(this.doMoveY) {
-		if(this.dirY > 0 && this.vVelocity < this.vMaxVelocity) {
+		if(this.dirY > 0 && this.vVelocity < vMaxVel) {
 			this.vVelocity += vAccel;
-		} else if(this.dirY < 0 && this.vVelocity > -this.vMaxVelocity) {
+		} else if(this.dirY < 0 && this.vVelocity > -vMaxVel) {
 			this.vVelocity -= vAccel;
 		}
 		
@@ -46,11 +44,12 @@ PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
 		
 PhysicsEntity.prototype.calculateHorizontalVelocity = function(secondsElapsed) {
 	var hAccel = (this.hAcceleration * secondsElapsed);
+    var hMaxVel = (this.hMaxVelocity * secondsElapsed);
 
     if(this.doMoveX) {
-		if(this.dirX > 0 && this.hVelocity < this.hMaxVelocity) {
+		if(this.dirX > 0 && this.hVelocity < hMaxVel) {
 			this.hVelocity += hAccel;
-		} else if(this.dirX < 0 && this.hVelocity > -this.hMaxVelocity) {
+		} else if(this.dirX < 0 && this.hVelocity > -hMaxVel) {
 			this.hVelocity -= hAccel;
 		}
 	
@@ -65,14 +64,18 @@ PhysicsEntity.prototype.calculateHorizontalVelocity = function(secondsElapsed) {
 };
 
 PhysicsEntity.prototype.updateStart = function(secondsElapsed) {
-	//PhysicsEntity.base.updateStart.call(this, secondsElapsed);
     this.currentAnimation.step();
 
     this.haltXDir = 0;
     this.haltYDir = 0;
 
-	this.calculateVerticalVelocity(secondsElapsed);
-	this.calculateHorizontalVelocity(secondsElapsed);
+    if(this.doVerticalVelocity) {
+	    this.calculateVerticalVelocity(secondsElapsed);
+    }
+
+    if(this.doHorizontalVelocity) {
+	    this.calculateHorizontalVelocity(secondsElapsed);
+    }
 	
 	this.moveY = Math.round(this.vVelocity);
 	this.moveX = Math.round(this.hVelocity);

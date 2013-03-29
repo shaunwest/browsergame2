@@ -309,42 +309,53 @@ function getTriggers(triggers) {
 	}
 }
 
-function checkKeys() {
-	if(player && player.input) {
-        // MOVE
-		if(keys[KEY_LEFT]) {
-            player.moveLeft();
+function checkKeys(secondsElapsed) {
+	if(player) {
+        if(player.allowInput) {
+            // MOVE
+            if(keys[KEY_LEFT]) {
+                player.moveLeft();
 
-		} else if(keys[KEY_RIGHT]) {
-            player.moveRight();
+            } else if(keys[KEY_RIGHT]) {
+                player.moveRight();
 
-		} else {
-			player.stop();
-		}
-		
-		// JUMP
-        if(keys[KEY_UP] && player.allowJump) {
-            player.startJump();
-        } else if(player.vVelocity == 0 && player.dirY == -1) {
+            } else {
+                player.stop();
+            }
+
+            // JUMP
+            if(keys[KEY_UP] && player.allowJump) {
+                player.startJump(secondsElapsed);
+            } else if(player.vVelocity == 0 && player.dirY == -1) {
+                player.startFall();
+            } else if(!keys[KEY_UP] && player.haltYDir == 1) {
+                player.canJump();
+            } else if(player.haltYDir == 1) {
+                player.onGround = true;
+            } else if(player.moveY > 1 || player.moveY < -1){
+                player.onGround = false;
+            }
+
+            // DUCK
+            if(keys[KEY_DOWN]) {
+                player.isDucking = true;
+            } else {
+                player.isDucking = false;
+            }
+
+            // ATTACK
+            if(keys[KEY_X]) {
+                if(player.allowAttack && player.onGround) {
+                    player.isAttacking = true;
+                    player.allowAttack = false;
+                }
+            } else {
+                player.allowAttack = true;
+            }
+
+        } else {
+            player.stop();
             player.startFall();
-        } else if(!keys[KEY_UP] && player.haltYDir == 1) {
-            player.canJump();
-        } else if(player.haltYDir == 1) {
-            player.onGround = true;
-        } else if(player.moveY > 1 || player.moveY < -1){
-            player.onGround = false;
-        }
-
-        // DUCK
-		if(keys[KEY_DOWN]) {
-			player.ducking = true;
-		} else {
-			player.ducking = false;
-		}
-
-        // ATTACK
-        if(!player.attacking && keys[KEY_X]) {
-            player.attacking = true;
         }
 	}
 }
@@ -354,7 +365,7 @@ function update() {
     var secondsElapsed = (now - lastUpdateTime) / 1000;
     lastUpdateTime = now;
 
-    checkKeys();
+    checkKeys(secondsElapsed);
 
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	
