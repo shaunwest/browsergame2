@@ -40,6 +40,7 @@ function Entity(animations, def) {
 	this.resolveCollisions  = def.resolveCollisions;
 
     this.lastIntersection   = null;
+    this.lastHitIntersection= null;
     this.lastAttackIntersection = null;
 
     this.timerCount         = 0;

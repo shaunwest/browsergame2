@@ -22,14 +22,12 @@ var config;
 var tileSetList;
 var tileSheet;
 var tileSet;
-var filterTileSheet;
-var filterTileSet;
-var tileSheetsLoading = 0;
 
 var spriteSetList;
-var spriteSheets = {};
+//var spriteSheets = {};
 var spriteSheetsLoading = 0;
-var spriteMap = {};
+//var spriteMap = {};
+var spriteSet;
 
 var triggerSetList;
 var triggerMap = {};
@@ -169,13 +167,11 @@ function loadLevel(levelId) {
 
         var tileSetConfig = tileSetList[currentTileSetId];
 
-        getTileSheet(tileSetConfig['tileSheetPath'], tileSetConfig['tileSheetPath']);
+        getTileSheet(tileSetConfig['tileSheetPath']);
     }
 }
 
-function getTileSheet(tileSheetPath, filterTileSheetPath) {
-    tileSheetsLoading = 2;
-
+function getTileSheet(tileSheetPath) {
     // TODO: make these local vars
     // TODO: don't assume 'assets/'
     tileSheet = new Image();
@@ -184,29 +180,16 @@ function getTileSheet(tileSheetPath, filterTileSheetPath) {
         tileSet = new TileSet(tileSetList[currentTileSetId], tileSheet, config.tileSize);
         tileSheetReady();
     };
-
-    filterTileSheet = new Image();
-    filterTileSheet.src = "assets/" + filterTileSheetPath;
-    filterTileSheet.onload = function() {
-        filterTileSet = new TileSet(tileSetList[currentTileSetId], filterTileSheet, config.tileSize);
-        tileSheetReady();
-    };
 }
 
 function tileSheetReady() {
-    tileSheetsLoading--;
+    var levelConfig = config['levels'][currentLevelId];
 
-    if(tileSheetsLoading == 0) {
-        //level = new GameLevel(tileSet, filterTileSet, config.tileDefinitions, config.levels.level1.midground, config.tileSize);
-        var levelConfig = config['levels'][currentLevelId];
+    createTriggerMap(triggerSetList[currentTriggerSetId]['triggerDefinitions']);
+    getTriggers(levelConfig['triggers']);
 
-        level = new GameLevel(tileSet, filterTileSet, tileSet.getTileDefinitions(), levelConfig['midground'], config.tileSize);
-
-        getSpriteSheets(levelConfig['sprites'], spriteSetList[currentSpriteSetId]['spriteDefinitions']);
-
-        createTriggerMap(triggerSetList[currentTriggerSetId]['triggerDefinitions']);
-        getTriggers(levelConfig['triggers']);
-    }
+    spriteSet = new SpriteSet(spriteSetList[currentSpriteSetId]);
+    getSpriteSheets(levelConfig['sprites'], spriteSetList[currentSpriteSetId]['spriteDefinitions']);
 }
 
 function createTriggerMap(triggerDefinitions) {
@@ -223,17 +206,20 @@ function getSpriteSheets(sprites, spriteDefinitions) {
 		if(spriteDefinitions.hasOwnProperty(i)) {
             var spriteDef = spriteDefinitions[i];
             var spriteId = spriteDef['id'];
+            //spriteMap[spriteId] = spriteDef;
 
-            spriteMap[spriteId] = spriteDef;
-
-            if(!spriteSheets.hasOwnProperty(spriteId)) {
+            //if(!spriteSheets.hasOwnProperty(spriteId)) {
+            if(!spriteSet.getSpriteSheet(spriteId)) {
                 spriteSheetsLoading++;
 
                 var spriteSheet = new Image();
                 spriteSheet.src = "assets/" + spriteDef['filePath'];
-                spriteSheet.onload = function() { spriteSheetReady(sprites, spriteDefinitions) };
+                spriteSheet.onload = function() {
+                    spriteSheetReady(sprites, spriteDefinitions);
+                };
 
-                spriteSheets[spriteId] = spriteSheet;
+                spriteSet.addSpriteSheet(spriteId, spriteSheet);
+                //spriteSheets[spriteId] = spriteSheet;
             }
         }
 	}
@@ -248,16 +234,21 @@ function spriteSheetReady(sprites, spriteDefinitions) {
 }
 
 function getSprites(sprites, spriteDefinitions) {
-	for(var i = 0; i < sprites.length; i++) {
+    var levelConfig = config['levels'][currentLevelId];
+    level = new GameLevel(tileSet, spriteSet, levelConfig['midground']);
+
+    for(var i = 0; i < sprites.length; i++) {
 		var sprite = sprites[i];
-		var spriteDef = spriteMap[sprite.spriteId];
-		var spriteSheet = spriteSheets[sprite.spriteId];
+        var spriteId = sprite['spriteId'];
+        var spriteDef = spriteSet.getSpriteDefinition(spriteId);
+		var spriteSheet = spriteSet.getSpriteSheet(spriteId); //spriteSheets[sprite['spriteId']];
 		
 		var entity;
 		switch(spriteDef.type) {
-			case 'player':
-				player = entity = new Player(getAnimations(spriteSheet, spriteDef.width, spriteDef.defaultDelay), spriteDef);
-                level.setViewTarget(player);
+            case 'player':
+				player = new Player(getAnimations(spriteSheet, spriteDef.width, spriteDef.defaultDelay), spriteDef);
+                player.x = sprite.x;
+                player.y = sprite.y;
 				break;
 				
 			case 'goblin1':
@@ -267,12 +258,19 @@ function getSprites(sprites, spriteDefinitions) {
 			default:
 				entity = new Entity(getAnimations(spriteSheet, spriteDef.width, spriteDef.defaultDelay), spriteDef);	
 		}
-		
-		entity.x = sprite.x;
-		entity.y = sprite.y;
-		
-		level.addEntity(entity);
+
+        if(entity) {
+            entity.x = sprite.x;
+            entity.y = sprite.y;
+
+            level.addEntity(entity);
+        }
 	}
+
+    if(player) {
+        level.addEntity(player);
+        level.setViewTarget(player);
+    }
 
     startGame();
 }

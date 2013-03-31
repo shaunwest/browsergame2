@@ -11,6 +11,7 @@ Player.IDLE_LEFT    = 0;
 Player.IDLE_RIGHT   = 1;
 Player.SWORD_LEFT   = 0;
 Player.SWORD_RIGHT  = 1;
+Player.POW          = 16;
 
 Player.HIT_FRAME    = 0;
 
@@ -35,6 +36,7 @@ function Player(animations, def) {
     this.isHit              = false;
     this.isDamaged          = false;
     this.isHitting          = false;
+    this.didHit             = false;
 
     this.swordAnimations    = [
         this.getAnimation(14),
@@ -42,6 +44,8 @@ function Player(animations, def) {
     ];
 
     this.currentSwordAnim   = new AnimationPlayer(this.swordAnimations[Player.SWORD_LEFT]);
+
+    this.powAnimation       = this.getAnimation(Player.POW);
 }
 
 Player.prototype = new PhysicsEntity(inheriting);
@@ -106,6 +110,24 @@ Player.prototype.getCurrentFrames = function() {
                     'x': this.x + this.size,
                     'y': this.y,
                     'image': swordAnimation.getCurrentFrame()
+                }
+            );
+        }
+    }
+
+    if(this.didHit) {
+        if(this.dirX == Entity.DIR_LEFT) {
+            currentFrames.push({
+                    'x': this.x - this.size,
+                    'y': this.y,
+                    'image': this.powAnimation.getFrame(0)
+                }
+            );
+        } else {
+            currentFrames.push({
+                    'x': this.x + this.size,
+                    'y': this.y,
+                    'image': this.powAnimation.getFrame(0)
                 }
             );
         }
@@ -223,6 +245,7 @@ Player.prototype.onAttackFrame = function(frameIndex) {
 
 Player.prototype.onAttackComplete = function() {
     this.isAttacking = false;
+    this.didHit = false;
 };
 
 Player.prototype.onFlicker = function() {

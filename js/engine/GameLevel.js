@@ -2,12 +2,12 @@
  * @author shaun
  */
 
-function GameLevel(tileSet, filterTileSet, tileDefinitions, levelData, tileSize) {
+function GameLevel(tileSet, spriteSet, levelData) {
 	if (arguments[0] === inheriting) return;
 
-    this.levelData = levelData;
+    //this.levelData = levelData;
 
-	Level.call(this, tileSet, filterTileSet, tileDefinitions, this.levelData, tileSize);
+	Level.call(this, tileSet, spriteSet, levelData);
 }
 
 GameLevel.prototype = new Level(inheriting);
@@ -20,7 +20,6 @@ GameLevel.prototype.handleEntityCollision = function(entity1, entity2, intersect
 	if(entity1.type == "player" && !entity1.isDamaged && !entity2.isDead) {
 		//this.removeEntity(entity1);
         entity1.isHit = true;
-        //entity1.lastIntersection = intersection; // FIXME: move assignment to Level
     }
 };
 
@@ -28,6 +27,7 @@ GameLevel.prototype.handleEntityAttackCollision = function(attackerEntity, attac
     GameLevel.base.handleEntityAttackCollision.call(this, attackerEntity, attackedEntity, intersection);
 
     if(attackerEntity.type == "player" && attackerEntity.isHitting) {
+        attackerEntity.didHit = true;
         attackedEntity.isHit = true;
         //this.removeEntity(entity2);
     }

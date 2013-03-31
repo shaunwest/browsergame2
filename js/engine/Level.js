@@ -2,21 +2,24 @@
  * @author shaun
  */
 
-function Level(tileSet, filterTileSet, tileDefinitions, levelData, tileSize) {
+// TODO: don't need to pass in tileDefinitions. They're part of tileSet. So is tileSize.
+
+function Level(tileSet, spriteSet, levelData) {
 	if (arguments[0] === inheriting) return;
 
     this.tileSet            = tileSet;
-    this.filterTileSet      = filterTileSet;
-	this.tileDefinitions    = tileDefinitions;
+    this.tileDefinitions    = tileSet.tileDefinitions;
+    this.tileSize           = tileSet.tileSize;
+
+    this.spriteSet          = spriteSet;
 	this.levelData          = levelData;
-	this.tileSize           = tileSize;
-	this.filterMode         = false;
+
 
 	this.height             = levelData.length;
 	this.width              = levelData[0].length;
 	
-	this.pixelHeight        = this.height * tileSize;
-	this.pixelWidth         = this.width * tileSize;
+	this.pixelHeight        = this.height * this.tileSize;
+	this.pixelWidth         = this.width * this.tileSize;
 
     this.viewTarget         = null;
 
@@ -68,14 +71,9 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
         var newX = entity.x + moveX;
         var newY = entity.y + moveY;
 
-        this.filterMode = false;
-
         if(moveX > 0) {
-            //trace(entity.hVelocity + ", " + moveX);
             if(newX < this.pixelWidth - this.viewMarginRight && newX - this.viewX > this.viewMarginRight) {
-
                 this.viewMoveX = moveX;
-                this.filterMode = true;
 
             } else {
                 this.viewMoveX = 0;
@@ -84,11 +82,8 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
             entity.x = newX;
 
         } else if(moveX < 0) {
-            //trace(entity.hVelocity + ", " + moveX);
             if(newX > this.viewMarginLeft && newX - this.viewX < this.viewMarginLeft) {
-
-                this.viewMoveX = moveX;
-                this.filterMode = true;
+               this.viewMoveX = moveX;
 
             } else {
                 this.viewMoveX = 0;
@@ -135,7 +130,9 @@ Level.prototype.checkEntityCollisions = function(entity1) {
 
             var attackIntersection = entity1.attackIntersects(entity2);
             if(attackIntersection) {
-                entity2.lastAttackIntersection = attackIntersection;
+                entity1.lastAttackIntersection = attackIntersection;
+                entity2.lastHitIntersection = attackIntersection;
+
                 this.handleEntityAttackCollision(entity1, entity2, attackIntersection);
             }
 		}
@@ -339,7 +336,7 @@ Level.prototype.updateAndDraw = function(context, secondsElapsed) {
     for(var y = startY; y < endY; y++) {
         for(var x = startX; x < endX; x++) {
             var tileId = this.levelData[y][x];
-            var tile = (this.filterMode) ? this.tileSet.getTile(tileId) : this.tileSet.getTile(tileId); //debug
+            var tile = this.tileSet.getTile(tileId);
             var tileImage;
 
             var frames = tile['frames'];

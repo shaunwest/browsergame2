@@ -85,13 +85,13 @@ Goblin1.prototype.updateEnd = function(secondsElapsed) {
     if(this.doMoveX) {
         if(this.isDamaged) {
             if(this.dirX == -1) {
-                if(this.lastAttackIntersection.x > 0) {
+                if(this.lastHitIntersection.x > 0) {
                     this.hVelocity = 312 * secondsElapsed;
                 } else {
                     this.hVelocity = -312 * secondsElapsed;
                 }
             } else {
-                if(this.lastAttackIntersection.x > 0) {
+                if(this.lastHitIntersection.x > 0) {
                     this.hVelocity = 312 * secondsElapsed;
                 } else {
                     this.hVelocity = -312 * secondsElapsed;

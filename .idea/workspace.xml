@@ -4,17 +4,18 @@
     <list default="true" id="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" name="Default" comment="" />
     <ignored path="BrowserGame2.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/main.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364347202873" ignored="false" />
-    <file path="/Level.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364507851766" ignored="false" />
+    <file path="/main.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364575606312" ignored="false" />
+    <file path="/Level.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364669254926" ignored="false" />
     <file path="/TileSet.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1363138914224" ignored="false" />
-    <file path="/Player.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364499595870" ignored="false" />
+    <file path="/Player.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364526253517" ignored="false" />
     <file path="/PhysicsEntity.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1363998924809" ignored="false" />
     <file path="/Goomba.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1363829459563" ignored="false" />
-    <file path="/Entity.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364499646391" ignored="false" />
+    <file path="/Entity.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364525186274" ignored="false" />
     <file path="/AnimationPlayer.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364498020649" ignored="false" />
-    <file path="/GameLevel.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364507678966" ignored="false" />
-    <file path="/Goblin1.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364508570287" ignored="false" />
-    <file path="/SpriteSet.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364519718449" ignored="false" />
+    <file path="/GameLevel.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364526268763" ignored="false" />
+    <file path="/Goblin1.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364525306150" ignored="false" />
+    <file path="/SpriteSet.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364523452742" ignored="false" />
+    <file path="/index.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364522031881" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,10 +35,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.js" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/main.js">
+      <file leaf-file-name="Level.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/engine/Level.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="28" column="18" selection-start="420" selection-end="420" vertical-scroll-proportion="-2.627824">
+            <state line="16" column="0" selection-start="430" selection-end="430" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -52,20 +53,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SpriteSet.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/SpriteSet.js">
+      <file leaf-file-name="main.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="0" selection-start="334" selection-end="334" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Level.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/Level.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="137" column="54" selection-start="3580" selection-end="3580" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="250" column="36" selection-start="6490" selection-end="6490" vertical-scroll-proportion="0.76813316">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -73,7 +67,7 @@
       <file leaf-file-name="GameLevel.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/engine/GameLevel.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="36" selection-start="1116" selection-end="1116" vertical-scroll-proportion="0.0">
+            <state line="7" column="6" selection-start="127" selection-end="127" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -82,16 +76,16 @@
       <file leaf-file-name="Player.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/engine/Player.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="147" column="63" selection-start="3736" selection-end="3736" vertical-scroll-proportion="0.0">
+            <state line="117" column="18" selection-start="3082" selection-end="3082" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AnimationPlayer.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/AnimationPlayer.js">
+      <file leaf-file-name="Animation.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/engine/Animation.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="45" selection-start="1125" selection-end="1125" vertical-scroll-proportion="0.0">
+            <state line="64" column="81" selection-start="1628" selection-end="1628" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -100,16 +94,7 @@
       <file leaf-file-name="Goblin1.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/engine/Goblin1.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="25" selection-start="1438" selection-end="1438" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test4.conf" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/test4.conf">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="1498" column="53" selection-start="44415" selection-end="44415" vertical-scroll-proportion="0.0">
+            <state line="86" column="13" selection-start="2312" selection-end="2312" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -118,7 +103,7 @@
       <file leaf-file-name="Entity.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/engine/Entity.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="4" selection-start="1066" selection-end="1066" vertical-scroll-proportion="0.0">
+            <state line="33" column="69" selection-start="775" selection-end="775" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -137,18 +122,18 @@
         <option value="$PROJECT_DIR$/assets/game2.conf" />
         <option value="$PROJECT_DIR$/css/style.css" />
         <option value="$PROJECT_DIR$/assets/game.conf" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/engine/TileSet.js" />
         <option value="$PROJECT_DIR$/js/engine/Goomba.js" />
         <option value="$PROJECT_DIR$/js/engine/PhysicsEntity.js" />
-        <option value="$PROJECT_DIR$/assets/test4.conf" />
         <option value="$PROJECT_DIR$/js/engine/AnimationPlayer.js" />
-        <option value="$PROJECT_DIR$/js/engine/Player.js" />
-        <option value="$PROJECT_DIR$/js/engine/GameLevel.js" />
-        <option value="$PROJECT_DIR$/js/engine/Level.js" />
-        <option value="$PROJECT_DIR$/js/engine/Entity.js" />
-        <option value="$PROJECT_DIR$/js/engine/Goblin1.js" />
+        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/engine/SpriteSet.js" />
+        <option value="$PROJECT_DIR$/js/engine/Entity.js" />
+        <option value="$PROJECT_DIR$/assets/test4.conf" />
+        <option value="$PROJECT_DIR$/js/engine/Goblin1.js" />
+        <option value="$PROJECT_DIR$/js/engine/Player.js" />
+        <option value="$PROJECT_DIR$/js/engine/Level.js" />
+        <option value="$PROJECT_DIR$/js/engine/GameLevel.js" />
         <option value="$PROJECT_DIR$/js/main.js" />
       </list>
     </option>
@@ -185,7 +170,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -252,6 +236,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -393,11 +378,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://I:/Dev/HTML/Html5Game/js/Goomba.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://I:/Dev/HTML/Html5Game/js/Level.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-3.8917954" />
@@ -418,6 +398,39 @@
         <state line="35" column="42" selection-start="943" selection-end="943" vertical-scroll-proportion="0.7074911" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="47" selection-start="806" selection-end="806" vertical-scroll-proportion="0.56319016">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/SpriteSet.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="34" selection-start="1004" selection-end="1004" vertical-scroll-proportion="0.76813316">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/test4.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1528" column="17" selection-start="45395" selection-end="45395" vertical-scroll-proportion="1.5255648">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/AnimationPlayer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="45" selection-start="1125" selection-end="1125" vertical-scroll-proportion="0.7170036" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/Entity.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="69" selection-start="775" selection-end="775" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Animation.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="64" column="81" selection-start="1628" selection-end="1628" vertical-scroll-proportion="0.0">
@@ -425,51 +438,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/assets/test4.conf">
+    <entry file="file://$PROJECT_DIR$/js/engine/Goblin1.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1498" column="53" selection-start="44415" selection-end="44415" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/Entity.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="4" selection-start="1066" selection-end="1066" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/Level.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="137" column="54" selection-start="3580" selection-end="3580" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/AnimationPlayer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="45" selection-start="1125" selection-end="1125" vertical-scroll-proportion="0.0">
+        <state line="86" column="13" selection-start="2312" selection-end="2312" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Player.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="147" column="63" selection-start="3736" selection-end="3736" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/Goblin1.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="25" selection-start="1438" selection-end="1438" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/GameLevel.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="36" selection-start="1116" selection-end="1116" vertical-scroll-proportion="0.0">
+        <state line="117" column="18" selection-start="3082" selection-end="3082" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -481,17 +459,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/SpriteSet.js">
+    <entry file="file://$PROJECT_DIR$/js/engine/Level.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="0" selection-start="334" selection-end="334" vertical-scroll-proportion="0.0">
+        <state line="16" column="0" selection-start="430" selection-end="430" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/GameLevel.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="6" selection-start="127" selection-end="127" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="18" selection-start="420" selection-end="420" vertical-scroll-proportion="-2.627824">
-          <folding />
+        <state line="250" column="36" selection-start="6490" selection-end="6490" vertical-scroll-proportion="0.76813316">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
