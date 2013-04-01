@@ -4,6 +4,9 @@ TODO:
 -vertical scrolling
 
 FIXME:
+-a single hit needs to be registered only once, currently happenign multiple times
+-make sure sword animation doesn't play at disallowed times
+-need to properly handle when damaged enemies hit walls
 -player disappears when FPS falls too low?
 
 */
@@ -24,9 +27,7 @@ var tileSheet;
 var tileSet;
 
 var spriteSetList;
-//var spriteSheets = {};
 var spriteSheetsLoading = 0;
-//var spriteMap = {};
 var spriteSet;
 
 var triggerSetList;
@@ -206,9 +207,7 @@ function getSpriteSheets(sprites, spriteDefinitions) {
 		if(spriteDefinitions.hasOwnProperty(i)) {
             var spriteDef = spriteDefinitions[i];
             var spriteId = spriteDef['id'];
-            //spriteMap[spriteId] = spriteDef;
 
-            //if(!spriteSheets.hasOwnProperty(spriteId)) {
             if(!spriteSet.getSpriteSheet(spriteId)) {
                 spriteSheetsLoading++;
 
@@ -219,7 +218,6 @@ function getSpriteSheets(sprites, spriteDefinitions) {
                 };
 
                 spriteSet.addSpriteSheet(spriteId, spriteSheet);
-                //spriteSheets[spriteId] = spriteSheet;
             }
         }
 	}
@@ -241,7 +239,7 @@ function getSprites(sprites, spriteDefinitions) {
 		var sprite = sprites[i];
         var spriteId = sprite['spriteId'];
         var spriteDef = spriteSet.getSpriteDefinition(spriteId);
-		var spriteSheet = spriteSet.getSpriteSheet(spriteId); //spriteSheets[sprite['spriteId']];
+		var spriteSheet = spriteSet.getSpriteSheet(spriteId);
 		
 		var entity;
 		switch(spriteDef.type) {

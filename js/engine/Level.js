@@ -2,8 +2,6 @@
  * @author shaun
  */
 
-// TODO: don't need to pass in tileDefinitions. They're part of tileSet. So is tileSize.
-
 function Level(tileSet, spriteSet, levelData) {
 	if (arguments[0] === inheriting) return;
 
@@ -32,8 +30,8 @@ function Level(tileSet, spriteSet, levelData) {
     this.viewWidth          = 17;
     this.viewHeight         = 17;
 
-    this.viewMarginLeft     = 192; //64;
-    this.viewMarginRight    = 480; //160;
+    this.viewMarginLeft     = 288; //192; //64;
+    this.viewMarginRight    = 384; //480; //160;
 
 	this.entities           = [];
 	this.triggers           = [];
@@ -70,6 +68,8 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
     if(entity === this.viewTarget) {
         var newX = entity.x + moveX;
         var newY = entity.y + moveY;
+
+        trace(moveX);
 
         if(moveX > 0) {
             if(newX < this.pixelWidth - this.viewMarginRight && newX - this.viewX > this.viewMarginRight) {
@@ -337,23 +337,25 @@ Level.prototype.updateAndDraw = function(context, secondsElapsed) {
         for(var x = startX; x < endX; x++) {
             var tileId = this.levelData[y][x];
             var tile = this.tileSet.getTile(tileId);
-            var tileImage;
+            if(tile) {
+                var tileImage;
 
-            var frames = tile['frames'];
-            if(frames.length > 0) {
-                var frameIndex = Math.floor(this.frameNumber) % (frames.length + 1);
-                if(frameIndex == 0) {
-                    tileImage = tile['image'];
+                var frames = tile['frames'];
+                if(frames.length > 0) {
+                    var frameIndex = Math.floor(this.frameNumber) % (frames.length + 1);
+                    if(frameIndex == 0) {
+                        tileImage = tile['image'];
+
+                    } else {
+                        tileImage = frames[frameIndex - 1];
+                    }
 
                 } else {
-                    tileImage = frames[frameIndex - 1];
+                    tileImage = tile['image'];
                 }
 
-            } else {
-                tileImage = tile['image'];
+                context.drawImage(tileImage, (x * this.tileSize) - this.viewX, (y * this.tileSize) - this.viewY);
             }
-
-            context.drawImage(tileImage, (x * this.tileSize) - this.viewX, (y * this.tileSize) - this.viewY);
         }
     }
 

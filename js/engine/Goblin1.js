@@ -52,50 +52,31 @@ Goblin1.prototype.updateEnd = function(secondsElapsed) {
         });
     }
 
+
     if(this.isDead) {
-        if(this.dirX == -1) {
-            this.setCurrentAnimation(5);
-        } else {
-            this.setCurrentAnimation(4);
-        }
+        (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(5) : this.setCurrentAnimation(4);
 
     } else if(this.isDamaged) {
-        if(this.dirX == Entity.DIR_LEFT) {
-            this.setCurrentAnimation(6);
-        } else {
-            this.setCurrentAnimation(7);
-        }
+        (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(6) : this.setCurrentAnimation(7);
 
     } else {
         // WALK
-        if(this.moveX < 0) {
-            this.setCurrentAnimation(2);
-        } else if(this.moveX > 0) {
-            this.setCurrentAnimation(3);
+        if(this.moveX != 0) {
+            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(2) :  this.setCurrentAnimation(3);
 
             // IDLE
-        } else if(this.dirX == -1) {
-            this.setCurrentAnimation(0);
         } else {
-            this.setCurrentAnimation(1);
+            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(0) : this.setCurrentAnimation(1);
         }
     }
 
     // Manually set a constant velocity
     if(this.doMoveX) {
         if(this.isDamaged) {
-            if(this.dirX == -1) {
-                if(this.lastHitIntersection.x > 0) {
-                    this.hVelocity = 312 * secondsElapsed;
-                } else {
-                    this.hVelocity = -312 * secondsElapsed;
-                }
+            if(this.lastHitIntersection.x > 0) {
+                this.hVelocity = 312 * secondsElapsed;
             } else {
-                if(this.lastHitIntersection.x > 0) {
-                    this.hVelocity = 312 * secondsElapsed;
-                } else {
-                    this.hVelocity = -312 * secondsElapsed;
-                }
+                this.hVelocity = -312 * secondsElapsed;
             }
 
         } else {

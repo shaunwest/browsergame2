@@ -22,7 +22,7 @@ PhysicsEntity.prototype.constructor = Entity;
 PhysicsEntity.base = Entity.prototype;
 
 PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
-	var vAccel = (this.vAcceleration * secondsElapsed);
+    var vAccel = (this.vAcceleration * secondsElapsed);
     var vMaxVel = (this.vMaxVelocity * secondsElapsed);
 
     if(this.doMoveY) {
@@ -43,14 +43,22 @@ PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
 };
 		
 PhysicsEntity.prototype.calculateHorizontalVelocity = function(secondsElapsed) {
-	var hAccel = (this.hAcceleration * secondsElapsed);
+    var hAccel = (this.hAcceleration * secondsElapsed);
     var hMaxVel = (this.hMaxVelocity * secondsElapsed);
 
     if(this.doMoveX) {
-		if(this.dirX > 0 && this.hVelocity < hMaxVel) {
-			this.hVelocity += hAccel;
-		} else if(this.dirX < 0 && this.hVelocity > -hMaxVel) {
-			this.hVelocity -= hAccel;
+		if(this.dirX > 0) {
+            if(this.hVelocity < hMaxVel) {
+        	    this.hVelocity += hAccel;
+            } else {
+                this.hVelocity = hMaxVel;
+            }
+		} else if(this.dirX < 0) {
+            if(this.hVelocity > -hMaxVel) {
+			    this.hVelocity -= hAccel;
+            } else {
+                this.hVelocity = -hMaxVel;
+            }
 		}
 	
 	} else {
@@ -63,8 +71,19 @@ PhysicsEntity.prototype.calculateHorizontalVelocity = function(secondsElapsed) {
 	}
 };
 
+PhysicsEntity.prototype.cancelHorizontalMovement = function() {
+    this.moveX = 0;
+    this.hVelocity = 0;
+};
+
+PhysicsEntity.prototype.cancelVerticalMovement = function() {
+    this.moveY = 0;
+    this.vVelocity = 0;
+};
+
 PhysicsEntity.prototype.updateStart = function(secondsElapsed) {
-    this.currentAnimation.step();
+    PhysicsEntity.base.updateStart.call(this, secondsElapsed);
+    //this.currentAnimation.step();
 
     this.haltXDir = 0;
     this.haltYDir = 0;

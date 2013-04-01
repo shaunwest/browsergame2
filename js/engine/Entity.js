@@ -135,6 +135,7 @@ Entity.prototype.levelCollisionY = function(direction, tileDef) {
 	this.haltYDir = direction;
 };
 
+// TODO: get rid of this method
 Entity.prototype.setCurrentAnimation = function(index, onComplete, onFrameComplete) {
 	this.currentAnimation.play(this.animations[index], onComplete, onFrameComplete);
 };
@@ -174,21 +175,17 @@ Entity.prototype.cancelRepeater = function() {
     this.repeaterFunc   = null;
 };
 
+// Called before collision checks, before entity position is
+// updated and before view position is updated
 Entity.prototype.updateStart = function(secondsElapsed) {
-	this.currentAnimation.step();
+	this.currentAnimation.step(secondsElapsed);
 	
 	this.haltXDir = 0;
 	this.haltYDir = 0;
-
-    /*if(this.doMoveY) {
-        this.moveY = this.dirY * Math.round(this.vVelocity * secondsElapsed);
-    }
-
-    if(this.doMoveX) {
-        this.moveX = this.dirX * Math.round(this.hVelocity * secondsElapsed);
-    }*/
 };
 
+// Called after collision checks, after entity position is
+// updated and after view position is updated
 Entity.prototype.updateEnd = function(secondsElapsed) {
     // Manage timer
     if(this.timerFunc) {

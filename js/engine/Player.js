@@ -3,17 +3,27 @@
  */
 Player.VMAX_VELOCITY_NORMAL = 750; //12; //15;
 Player.HMAX_VELOCITY_NORMAL = 312; //5; //9;
-Player.VACCEL_NORMAL = 36; // Acceleration per second
-Player.HACCEL_NORMAL = 20; //25; //45; //90; // Acceleration per second
-Player.H_VELOCITY_HIT = 156;
+Player.VACCEL_NORMAL    = 36; // Acceleration per second
+Player.HACCEL_NORMAL    = 20; //25; //45; //90; // Acceleration per second
+Player.H_VELOCITY_HIT   = 156;
 
-Player.IDLE_LEFT    = 0;
-Player.IDLE_RIGHT   = 1;
-Player.SWORD_LEFT   = 0;
-Player.SWORD_RIGHT  = 1;
-Player.POW          = 16;
+Player.IDLE_LEFT        = 0;
+Player.IDLE_RIGHT       = 1;
+Player.JUMP_LEFT        = 2;
+Player.JUMP_RIGHT       = 3;
+Player.DUCK_LEFT        = 8;
+Player.DUCK_RIGHT       = 9;
+Player.SWORD_LEFT       = 0;
+Player.SWORD_RIGHT      = 1;
+Player.POW              = 16;
 
-Player.HIT_FRAME    = 0;
+Player.DMG_NONE         = 0;
+Player.DMG_LEFT_FRONT   = 1;
+Player.DMG_LEFT_BACK    = 2;
+Player.DMG_RIGHT_FRONT  = 3;
+Player.DMG_RIGHT_BACK   = 4;
+
+Player.HIT_FRAME        = 0;
 
 function Player(animations, def) {
 	if (arguments[0] === inheriting) return;
@@ -35,6 +45,7 @@ function Player(animations, def) {
 	this.isDucking          = false;
     this.isHit              = false;
     this.isDamaged          = false;
+    this.damagedState       = Player.DMG_NONE;
     this.isHitting          = false;
     this.didHit             = false;
 
@@ -46,6 +57,11 @@ function Player(animations, def) {
     this.currentSwordAnim   = new AnimationPlayer(this.swordAnimations[Player.SWORD_LEFT]);
 
     this.powAnimation       = this.getAnimation(Player.POW);
+
+    var self = this;
+    this.currentAnimation.onAnimationChange = function(animation) {
+        self.onAnimationChange(animation);
+    }
 }
 
 Player.prototype = new PhysicsEntity(inheriting);
@@ -140,7 +156,7 @@ Player.prototype.updateStart = function(secondsElapsed) {
     Player.base.updateStart.call(this, secondsElapsed);
 
     if(this.isAttacking) {
-        this.currentSwordAnim.step();
+        this.currentSwordAnim.step(secondsElapsed);
     }
 };
 
@@ -154,6 +170,7 @@ Player.prototype.updateEnd = function(secondsElapsed) {
     // HIT
     if(this.isHit) {
         this.isHit      = false;
+        this.isAttacking = false;
         this.isDamaged  = true;
         this.allowInput = false;
         this.doHorizontalVelocity = false;
@@ -166,73 +183,90 @@ Player.prototype.updateEnd = function(secondsElapsed) {
            self.onFlicker();
         });
 
-    // DAMAGED
-    } else if(this.isDamaged && this.dirX == Entity.DIR_LEFT) {
-        if(this.lastIntersection.x > 0) {
-            this.setCurrentAnimation(12);
-            this.hVelocity = -Player.H_VELOCITY_HIT * secondsElapsed;
+        if(this.dirX == Entity.DIR_LEFT) {
+            this.damagedState = (this.lastIntersection.x > 0) ?
+                Player.DMG_LEFT_BACK : this.damagedState = Player.DMG_LEFT_FRONT;
+
         } else {
-            this.setCurrentAnimation(10);
-            this.hVelocity = Player.H_VELOCITY_HIT * secondsElapsed;
+            this.damagedState = (this.lastIntersection.x > 0) ?
+                Player.DMG_RIGHT_FRONT : this.damagedState = Player.DMG_RIGHT_BACK;
         }
 
-    } else if(this.isDamaged && this.dirX == Entity.DIR_RIGHT) {
-        if(this.lastIntersection.x > 0) {
-            this.setCurrentAnimation(11);
-            this.hVelocity = -Player.H_VELOCITY_HIT * secondsElapsed;
-        } else {
-            this.setCurrentAnimation(13);
-            this.hVelocity = Player.H_VELOCITY_HIT * secondsElapsed;
+    } else if(this.isDamaged) {
+        switch(this.damagedState) {
+            case Player.DMG_LEFT_BACK:
+                this.setCurrentAnimation(12);
+                this.hVelocity = -Player.H_VELOCITY_HIT * secondsElapsed;
+                break;
+
+            case Player.DMG_LEFT_FRONT:
+                this.setCurrentAnimation(10);
+                this.hVelocity = Player.H_VELOCITY_HIT * secondsElapsed;
+                break;
+
+            case Player.DMG_RIGHT_FRONT:
+                this.setCurrentAnimation(11);
+                this.hVelocity = -Player.H_VELOCITY_HIT * secondsElapsed;
+                break;
+
+            case Player.DMG_RIGHT_BACK:
+                this.setCurrentAnimation(13);
+                this.hVelocity = Player.H_VELOCITY_HIT * secondsElapsed;
+                break;
         }
+
+        this.currentAnimation.startFrame = 1;
+        this.didHit = false;
 
 	// JUMP
-    } else if(!this.onGround && this.dirX == Entity.DIR_LEFT) {
-		this.setCurrentAnimation(2);
-	} else if(!this.onGround && this.dirX == Entity.DIR_RIGHT) {
-		this.setCurrentAnimation(3);
+    } else if(!this.onGround) {
+        (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.JUMP_LEFT) : this.setCurrentAnimation(Player.JUMP_RIGHT);
 
     // ATTACK
-    } else if(this.isAttacking && this.dirX == Entity.DIR_LEFT) {
-        this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_LEFT]);
-        this.setCurrentAnimation(
-            6,
-            function() {
-                self.onAttackComplete();
-            },
-            function(frameIndex) {
-                self.onAttackFrame(frameIndex);
-            }
-        );
+    } else if(this.isAttacking) {
+        if(this.dirX == Entity.DIR_LEFT) {
+            this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_LEFT]);
+            this.setCurrentAnimation(
+                6,
+                function() {
+                    self.onAttackComplete();
+                },
+                function(frameIndex) {
+                    self.onAttackFrame(frameIndex);
+                }
+            );
 
-    } else if(this.isAttacking && this.dirX == Entity.DIR_RIGHT) {
-        this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_RIGHT]);
-        this.setCurrentAnimation(
-            7,
-            function() {
-                self.onAttackComplete();
-            },
-            function(frameIndex) {
-                self.onAttackFrame(frameIndex);
-            }
-        );
+        } else {
+            this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_RIGHT]);
+            this.setCurrentAnimation(
+                7,
+                function() {
+                    self.onAttackComplete();
+                },
+                function(frameIndex) {
+                    self.onAttackFrame(frameIndex);
+                }
+            );
+        }
 
 	// WALK
 	} else if(this.moveX < 0) {
 		this.setCurrentAnimation(4);
+
 	} else if(this.moveX > 0) {
 		this.setCurrentAnimation(5);
 
-    } else if(this.isDucking && this.dirX == Entity.DIR_LEFT) {
-        this.setCurrentAnimation(8);
-    } else if(this.isDucking && this.dirX == Entity.DIR_RIGHT) {
-        this.setCurrentAnimation(9);
+    } else if(this.isDucking) {
+        (this.dirX == Entity.DIR_LEFT) ?  this.setCurrentAnimation(Player.DUCK_LEFT) : this.setCurrentAnimation(Player.DUCK_RIGHT);
 
 	// IDLE
-	} else if(this.dirX == Entity.DIR_LEFT) {
-		this.setCurrentAnimation(Player.IDLE_LEFT);
 	} else {
-		this.setCurrentAnimation(Player.IDLE_RIGHT);
-	}
+        (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.IDLE_LEFT) : this.setCurrentAnimation(Player.IDLE_RIGHT);
+    }
+};
+
+Player.prototype.onAnimationChange = function(animation) {
+    this.currentSwordAnim.reset();
 };
 
 Player.prototype.onAttackFrame = function(frameIndex) {
@@ -257,6 +291,8 @@ Player.prototype.onDamagedComplete = function() {
     this.isVisible      = true;
     this.allowInput     = true;
     this.doHorizontalVelocity = true;
+
+    this.cancelHorizontalMovement();
     this.cancelRepeater();
 };
 
