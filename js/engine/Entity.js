@@ -32,7 +32,7 @@ function Entity(animations, def) {
 	this.size               = def.width;
 	
 	this.bounds             = {left: 0, top: 0, right: 0, bottom: 0};
-    this.attackBounds       = {top: 0, width: 34, height: 96};
+    this.attackBounds       = {left: 0, top: 0, width: 34, height: 48};
 	
 	this.type               = def.type;
 	this.levelCollisions    = def.levelCollisions;
@@ -68,21 +68,28 @@ Entity.prototype.adjustedBounds = function() {
 };
 
 Entity.prototype.adjustedAttackBounds = function() {
-    if(this.dirX == Entity.DIR_RIGHT) {
+    /*if(this.dirX == Entity.DIR_RIGHT) {
         return {
-            left: this.x + this.size,
+            left: this.x + this.size + this.attackBounds.left,
             top: this.y + this.attackBounds.top,
             right: this.x + this.size + this.attackBounds.width,
-            bottom: this.y + this.size + this.attackBounds.height
+            bottom: this.y + this.attackBounds.top + this.attackBounds.height
         };
+
     } else {    // left
         return {
-            left: this.x - this.attackBounds.width,
+            left: this.x - this.attackBounds.width + this.attackBounds.left,
             top: this.y + this.attackBounds.top,
             right: this.x,
-            bottom: this.y + this.size + this.attackBounds.height
+            bottom: this.y + this.attackBounds.top + this.attackBounds.height
         };
-    }
+    }*/
+    return {
+        left: this.x + this.attackBounds.left,
+        top: this.y + this.attackBounds.top,
+        right: this.x + this.attackBounds.left + this.attackBounds.width,
+        bottom: this.y + this.attackBounds.top + this.attackBounds.height
+    };
 };
 
 Entity.prototype.intersects = function(entity) {
@@ -104,7 +111,7 @@ Entity.prototype.intersects = function(entity) {
 };
 
 Entity.prototype.attackIntersects = function(entity) {
-    if(this.isAttacking) {
+    if(this.isAttacking || this.isDownThrusting) { // TODO hmm
         var attackBounds    = this.adjustedAttackBounds();
         var bounds2         = entity.adjustedBounds();
 
@@ -135,7 +142,6 @@ Entity.prototype.levelCollisionY = function(direction, tileDef) {
 	this.haltYDir = direction;
 };
 
-// TODO: get rid of this method
 Entity.prototype.setCurrentAnimation = function(index, onComplete, onFrameComplete) {
 	this.currentAnimation.play(this.animations[index], onComplete, onFrameComplete);
 };

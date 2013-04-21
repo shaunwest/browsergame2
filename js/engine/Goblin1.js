@@ -91,8 +91,10 @@ Goblin1.prototype.onDamagedComplete = function() {
 
 Goblin1.prototype.levelCollisionX = function(direction, tileDef) {
     Goblin1.base.levelCollisionX.call(this, direction, tileDef);
-	
-	this.dirX = -this.dirX;
+
+    if(!this.isDamaged) {
+	    this.dirX = -this.dirX;
+    }
 };
 
 

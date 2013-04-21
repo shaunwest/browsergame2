@@ -6,7 +6,7 @@ function Level(tileSet, spriteSet, levelData) {
 	if (arguments[0] === inheriting) return;
 
     this.tileSet            = tileSet;
-    this.tileDefinitions    = tileSet.tileDefinitions;
+    //this.tileDefinitions    = tileSet.tileDefinitions;
     this.tileSize           = tileSet.tileSize;
 
     this.spriteSet          = spriteSet;
@@ -69,7 +69,7 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
         var newX = entity.x + moveX;
         var newY = entity.y + moveY;
 
-        trace(moveX);
+        //trace(moveX);
 
         if(moveX > 0) {
             if(newX < this.pixelWidth - this.viewMarginRight && newX - this.viewX > this.viewMarginRight) {
@@ -128,6 +128,7 @@ Level.prototype.checkEntityCollisions = function(entity1) {
                 this.handleEntityCollision(entity1, entity2, intersection);
 			}
 
+            // TODO: can this be changed to only get called under certain conditions?
             var attackIntersection = entity1.attackIntersects(entity2);
             if(attackIntersection) {
                 entity1.lastAttackIntersection = attackIntersection;
@@ -164,17 +165,17 @@ Level.prototype.checkXCollision = function(entity) {
     var moveX = entity.moveX;
     var bounds = entity.adjustedBounds();
 
-    var x1 = bounds.left + moveX;
-    var tx1 = Math.floor(x1 / this.tileSize);
+    var x1 = bounds.left + moveX,
+        tx1 = Math.floor(x1 / this.tileSize);
 
-    var x2 = bounds.right + moveX;
-    var tx2 = Math.floor((x2 - 1) / this.tileSize);
+    var x2 = bounds.right + moveX,
+        tx2 = Math.floor((x2 - 1) / this.tileSize);
 
-    var y1 = bounds.top;
-    var ty1 = Math.floor(y1 / this.tileSize);
+    var y1 = bounds.top,
+        ty1 = Math.floor(y1 / this.tileSize);
 
-    var y2 = bounds.bottom;
-    var ty2 = Math.floor((y2 - 1) / this.tileSize);
+    var y2 = bounds.bottom,
+        ty2 = Math.floor((y2 - 1) / this.tileSize);
 
     if(y1 >= 0 && y2 < this.pixelHeight) {
         if(moveX > 0) {
@@ -214,17 +215,17 @@ Level.prototype.checkYCollision = function(entity) {
 	var moveY = entity.moveY;
     var bounds = entity.adjustedBounds();
 	
-	var x1 = bounds.left;
-	var tx1 = Math.floor(x1 / this.tileSize);
+	var x1 = bounds.left,
+        tx1 = Math.floor(x1 / this.tileSize);
 	
-	var x2 = bounds.right;
-	var tx2 = Math.floor((x2 - 1) / this.tileSize);
+	var x2 = bounds.right,
+        tx2 = Math.floor((x2 - 1) / this.tileSize);
 	
-	var y1 = bounds.top + moveY;
-	var ty1 = Math.floor(y1 / this.tileSize);
+	var y1 = bounds.top + moveY,
+        ty1 = Math.floor(y1 / this.tileSize);
 	
-	var y2 = bounds.bottom + moveY;
-	var ty2 = Math.floor((y2 - 1) / this.tileSize);
+	var y2 = bounds.bottom + moveY,
+        ty2 = Math.floor((y2 - 1) / this.tileSize);
 
 	if(tx1 >= 0 && tx2 <= this.width) {
 		if(moveY > 0) { // seems to be crashing when player hits bottom border of level

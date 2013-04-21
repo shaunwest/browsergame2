@@ -29,6 +29,7 @@ GameLevel.prototype.handleEntityAttackCollision = function(attackerEntity, attac
     if(attackerEntity.type == "player" && attackerEntity.isHitting) {
         attackerEntity.didHit = true;
         attackedEntity.isHit = true;
+        console.log("hit");
         //this.removeEntity(entity2);
     }
 };

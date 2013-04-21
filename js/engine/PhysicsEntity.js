@@ -22,8 +22,8 @@ PhysicsEntity.prototype.constructor = Entity;
 PhysicsEntity.base = Entity.prototype;
 
 PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
-    var vAccel = (this.vAcceleration * secondsElapsed);
-    var vMaxVel = (this.vMaxVelocity * secondsElapsed);
+    var vAccel = (this.vAcceleration * secondsElapsed),
+        vMaxVel = (this.vMaxVelocity * secondsElapsed);
 
     if(this.doMoveY) {
 		if(this.dirY > 0 && this.vVelocity < vMaxVel) {
@@ -43,8 +43,8 @@ PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
 };
 		
 PhysicsEntity.prototype.calculateHorizontalVelocity = function(secondsElapsed) {
-    var hAccel = (this.hAcceleration * secondsElapsed);
-    var hMaxVel = (this.hMaxVelocity * secondsElapsed);
+    var hAccel = (this.hAcceleration * secondsElapsed),
+        hMaxVel = (this.hMaxVelocity * secondsElapsed);
 
     if(this.doMoveX) {
 		if(this.dirX > 0) {

@@ -4,9 +4,9 @@ TODO:
 -vertical scrolling
 
 FIXME:
--a single hit needs to be registered only once, currently happenign multiple times
 -make sure sword animation doesn't play at disallowed times
--need to properly handle when damaged enemies hit walls
+-allowed to jump in mid-air while falling from a higher location
+-also landing while damaged does not set "onGround" to true, because "allowInput" is false
 -player disappears when FPS falls too low?
 
 */
@@ -333,15 +333,28 @@ function checkKeys(secondsElapsed) {
             }
 
             // DUCK
-            if(keys[KEY_DOWN]) {
-                player.isDucking = true;
-            } else {
-                player.isDucking = false;
+            if(player.onGround) {
+                if(keys[KEY_DOWN]) {
+                    player.isDucking = true;
+                } else {
+                    player.isDucking = false;
+                }
+
+                player.allowDownThrust = true;
+            }
+
+            // DOWN ATTACK
+            if(keys[KEY_DOWN] && !player.isAttacking && !player.onGround) {
+                if(player.allowDownThrust) {
+                    player.isDownThrusting = true;
+                    player.allowDownThrust = false;
+                    player.downThrustAttackMode();
+                }
             }
 
             // ATTACK
-            if(keys[KEY_X]) {
-                if(player.allowAttack && player.onGround) {
+            if(keys[KEY_X] && !player.isDownThrusting) {
+                if(player.allowAttack) {
                     player.isAttacking = true;
                     player.allowAttack = false;
                 }
