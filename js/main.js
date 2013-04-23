@@ -4,6 +4,8 @@ TODO:
 -vertical scrolling
 
 FIXME:
+-player should regain control 0.5 seconds into damage invincibility
+-hitting jump while attacking seems to make the player jump super high
 -make sure sword animation doesn't play at disallowed times
 -allowed to jump in mid-air while falling from a higher location
 -also landing while damaged does not set "onGround" to true, because "allowInput" is false
@@ -21,6 +23,8 @@ const KEY_DOWN = 40;
 const KEY_X = 88;
 
 var config;
+
+var gameFont;
 
 var tileSetList;
 var tileSheet;
@@ -166,10 +170,22 @@ function loadLevel(levelId) {
         currentSpriteSetId = levelConfig['spriteSetId'];
         currentTriggerSetId = levelConfig['triggerSetId'];
 
-        var tileSetConfig = tileSetList[currentTileSetId];
+        //var tileSetConfig = tileSetList[currentTileSetId];
 
-        getTileSheet(tileSetConfig['tileSheetPath']);
+        //getTileSheet(tileSetConfig['tileSheetPath']);
+        getFontSheet("score_font.png");
     }
+}
+
+function getFontSheet(fontSheetPath) {
+    var fontSheet = new Image();
+    fontSheet.src = "assets/" + fontSheetPath;
+    fontSheet.onload = function() {
+        gameFont = new Font(fontSheet, true, 48, 48, 30);
+
+        var tileSetConfig = tileSetList[currentTileSetId];
+        getTileSheet(tileSetConfig['tileSheetPath']);
+    };
 }
 
 function getTileSheet(tileSheetPath) {
@@ -352,6 +368,14 @@ function checkKeys(secondsElapsed) {
                 }
             }
 
+            // FLIP
+            if(keys[KEY_UP] && player.isDownThrusting && player.didHit) {
+                //this.startJump(secondsElapsed);
+                player.vVelocity = -player.vMaxVelocity * secondsElapsed;
+                player.isFlipping = true;
+                player.allowDownThrust = true;
+            }
+
             // ATTACK
             if(keys[KEY_X] && !player.isDownThrusting) {
                 if(player.allowAttack) {
@@ -379,6 +403,7 @@ function update() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	
 	level.updateAndDraw(context, secondsElapsed);
+    //gameFont.print(context, "16738", 100, 0);
 
 	ticks++;
 

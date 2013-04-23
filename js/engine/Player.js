@@ -6,6 +6,7 @@ Player.HMAX_VELOCITY_NORMAL     = 312; //5; //9;
 Player.VACCEL_NORMAL            = 36; // Acceleration per second
 Player.HACCEL_NORMAL            = 20; //25; //45; //90; // Acceleration per second
 Player.H_VELOCITY_HIT           = 156;
+Player.DAMAGE_TIMER             = 1.0;
 
 Player.ANIM_IDLE_LEFT           = 0;
 Player.ANIM_IDLE_RIGHT          = 1;
@@ -25,13 +26,15 @@ Player.ANIM_DMG_FRONT_LEFT      = 14;
 Player.ANIM_DMG_FRONT_RIGHT     = 15;
 Player.ANIM_DMG_BACK_LEFT       = 16;
 Player.ANIM_DMG_BACK_RIGHT      = 17;
-Player.ANIM_SWORD_LEFT          = 18;
-Player.ANIM_SWORD_RIGHT         = 19;
-Player.ANIM_JUMP_SWORD_LEFT     = 20;
-Player.ANIM_JUMP_SWORD_RIGHT    = 21;
-Player.ANIM_POW                 = 22; //NOTE: 23 is unused
-Player.ANIM_DOWN_SWORD_LEFT     = 24;
-Player.ANIM_DOWN_SWORD_RIGHT    = 25;
+Player.ANIM_FLIP_LEFT           = 18;
+Player.ANIM_FLIP_RIGHT          = 19;
+Player.ANIM_SWORD_LEFT          = 20;
+Player.ANIM_SWORD_RIGHT         = 21;
+Player.ANIM_JUMP_SWORD_LEFT     = 22;
+Player.ANIM_JUMP_SWORD_RIGHT    = 23;
+Player.ANIM_POW                 = 24; //NOTE: 23 is unused
+Player.ANIM_DOWN_SWORD_LEFT     = 26;
+Player.ANIM_DOWN_SWORD_RIGHT    = 27;
 
 Player.SWORD_LEFT               = 0;
 Player.SWORD_RIGHT              = 1;
@@ -67,6 +70,7 @@ function Player(animations, def) {
     this.allowAttack        = true;
     this.allowDownThrust    = false;
 	this.isDucking          = false;
+    this.isFlipping         = false;
     this.isHit              = false;
     this.isDamaged          = false;
     this.damagedState       = Player.DMG_NONE;
@@ -113,15 +117,16 @@ Player.prototype.standardAttackMode = function() {
 };
 
 Player.prototype.downThrustAttackMode = function() {
+    this.attackBounds = {left: 24, top: 48, width: 48, height: 96};
 
-    if(this.dirX == Entity.DIR_LEFT) {
+    /*if(this.dirX == Entity.DIR_LEFT) {
         //                                            48            60
         this.attackBounds = {left: 0, top: 39, width: 24, height: 70};
 
     } else {               //      48                  48
         this.attackBounds = {left: 72, top: 39, width: 24, height: 70};
         //this.attackBounds = {left: 24, top: 39, width: 72, height: 60};
-    }
+    }*/
 };
 
 Player.prototype.walkMode = function() {
@@ -148,6 +153,9 @@ Player.prototype.startFall = function() {
 Player.prototype.canJump = function() {
 	this.allowJump = true;
 	this.onGround = true;
+
+    // cancel flip
+    this.isFlipping = false;
 
     // cancel down thrust
     this.isDownThrusting = false;
@@ -196,26 +204,26 @@ Player.prototype.getCurrentFrames = function() {
                 }
             );
         }
-    }
 
-    if(this.didHit) {
-        if(this.dirX == Entity.DIR_LEFT) {
-            currentFrames.push({
-                    'x': this.x + this.hitX,
-                    'y': this.y,
-                    'image': this.powAnimation.getFrame(0)
-                }
-            );
-        } else {
-            currentFrames.push({
-                    'x': this.x + this.hitX,
-                    'y': this.y,
-                    'image': this.powAnimation.getFrame(0)
-                }
-            );
+        if(this.didHit) {
+            if(this.dirX == Entity.DIR_LEFT) {
+                currentFrames.push({
+                        'x': this.x + this.hitX,
+                        'y': this.y,
+                        'image': this.powAnimation.getFrame(0)
+                    }
+                );
+            } else {
+                currentFrames.push({
+                        'x': this.x + this.hitX,
+                        'y': this.y,
+                        'image': this.powAnimation.getFrame(0)
+                    }
+                );
+            }
+
+            this.didHit = false;
         }
-
-        this.didHit = false;
     }
 
     return currentFrames;
@@ -237,10 +245,6 @@ Player.prototype.updateEnd = function(secondsElapsed) {
 	this.walkMode();
 
     if(this.didHit) {
-        if(this.isDownThrusting) {
-            //this.startJump(secondsElapsed);
-            //this.vVelocity = -this.vMaxVelocity * secondsElapsed;
-        }
         this.isHitting  = false;
         this.hitX       = this.lastAttackIntersection.x;
     }
@@ -249,11 +253,12 @@ Player.prototype.updateEnd = function(secondsElapsed) {
     if(this.isHit) {
         this.isHit                  = false;
         this.isAttacking            = false;
+        this.isDownThrusting        = false;
         this.isDamaged              = true;
         this.allowInput             = false;
         this.doHorizontalVelocity   = false;
 
-        this.setTimer(1, function() {
+        this.setTimer(Player.DAMAGE_TIMER, function() {
             self.onDamagedComplete();
         });
 
@@ -297,7 +302,8 @@ Player.prototype.updateEnd = function(secondsElapsed) {
         this.didHit = false;
 
     } else if(this.isDownThrusting) {
-        this.isHitting = true;
+        this.isHitting  = true;
+        this.doMoveY    = false;
 
         //(this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_JUMP_THRUST_LEFT) : this.setCurrentAnimation(Player.ANIM_JUMP_THRUST_RIGHT);
         if(this.dirX == Entity.DIR_LEFT) {
@@ -359,7 +365,11 @@ Player.prototype.updateEnd = function(secondsElapsed) {
 
     // JUMP
     } else if(!this.onGround) {
-        (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_JUMP_LEFT) : this.setCurrentAnimation(Player.ANIM_JUMP_RIGHT);
+        if(this.isFlipping) {
+            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_FLIP_LEFT) : this.setCurrentAnimation(Player.ANIM_FLIP_RIGHT);
+        } else {
+            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_JUMP_LEFT) : this.setCurrentAnimation(Player.ANIM_JUMP_RIGHT);
+        }
 
 	// WALK
 	} else if(this.moveX < 0) {
@@ -394,6 +404,9 @@ Player.prototype.onAttackComplete = function() {
     this.isAttacking = false;
     this.isDownThrusting = false;
     this.didHit = false;
+
+    // restore movement after a down thrust
+    this.doMoveY = true;
 };
 
 Player.prototype.onFlicker = function() {
