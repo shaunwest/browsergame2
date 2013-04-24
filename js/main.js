@@ -4,6 +4,7 @@ TODO:
 -vertical scrolling
 
 FIXME:
+-change flip into "power jump"
 -player should regain control 0.5 seconds into damage invincibility
 -hitting jump while attacking seems to make the player jump super high
 -make sure sword animation doesn't play at disallowed times
@@ -335,6 +336,7 @@ function checkKeys(secondsElapsed) {
                 player.stop();
             }
 
+            // TODO: make this better
             // JUMP
             if(keys[KEY_UP] && player.allowJump) {
                 player.startJump(secondsElapsed);
@@ -347,6 +349,13 @@ function checkKeys(secondsElapsed) {
             } else if(player.moveY > 1 || player.moveY < -1){
                 player.onGround = false;
             }
+
+            /*if(keys[KEY_UP] && player.allowJump) {
+                player.vVelocity = -player.vMaxVelocity * secondsElapsed;
+            } else {
+                player.onGround = true;
+                player.allowJump = true;
+            }*/
 
             // DUCK
             if(player.onGround) {
@@ -371,7 +380,7 @@ function checkKeys(secondsElapsed) {
             // FLIP
             if(keys[KEY_UP] && player.isDownThrusting && player.didHit) {
                 //this.startJump(secondsElapsed);
-                player.vVelocity = -player.vMaxVelocity * secondsElapsed;
+                player.vVelocity = -player.vMaxVelocity * 1.5 * secondsElapsed;
                 player.isFlipping = true;
                 player.allowDownThrust = true;
             }
@@ -406,7 +415,7 @@ function update() {
     //gameFont.print(context, "16738", 100, 0);
 
 	ticks++;
-
+    trace(player.isFlipping);
     requestAnimationFrame(update);
     //setTimeout( function() { update(); }, FRAME_LENGTH );
 }

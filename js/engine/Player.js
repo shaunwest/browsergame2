@@ -28,13 +28,15 @@ Player.ANIM_DMG_BACK_LEFT       = 16;
 Player.ANIM_DMG_BACK_RIGHT      = 17;
 Player.ANIM_FLIP_LEFT           = 18;
 Player.ANIM_FLIP_RIGHT          = 19;
-Player.ANIM_SWORD_LEFT          = 20;
-Player.ANIM_SWORD_RIGHT         = 21;
-Player.ANIM_JUMP_SWORD_LEFT     = 22;
-Player.ANIM_JUMP_SWORD_RIGHT    = 23;
-Player.ANIM_POW                 = 24; //NOTE: 23 is unused
-Player.ANIM_DOWN_SWORD_LEFT     = 26;
-Player.ANIM_DOWN_SWORD_RIGHT    = 27;
+Player.ANIM_PJUMP_SWORD_LEFT    = 20;
+Player.ANIM_PJUMP_SWORD_RIGHT   = 21;
+Player.ANIM_SWORD_LEFT          = 22;
+Player.ANIM_SWORD_RIGHT         = 23;
+Player.ANIM_JUMP_SWORD_LEFT     = 24;
+Player.ANIM_JUMP_SWORD_RIGHT    = 25;
+Player.ANIM_POW                 = 26; //NOTE: 27 is unused
+Player.ANIM_DOWN_SWORD_LEFT     = 28;
+Player.ANIM_DOWN_SWORD_RIGHT    = 29;
 
 Player.SWORD_LEFT               = 0;
 Player.SWORD_RIGHT              = 1;
@@ -42,6 +44,8 @@ Player.SWORD_JUMP_LEFT          = 2;
 Player.SWORD_JUMP_RIGHT         = 3;
 Player.SWORD_DOWN_LEFT          = 4;
 Player.SWORD_DOWN_RIGHT         = 5;
+Player.SWORD_PJUMP_LEFT         = 6;
+Player.SWORD_PJUMP_RIGHT        = 7;
 
 Player.DMG_NONE                 = 0;
 Player.DMG_LEFT_FRONT           = 1;
@@ -86,7 +90,9 @@ function Player(animations, def) {
         this.getAnimation(Player.ANIM_JUMP_SWORD_LEFT),
         this.getAnimation(Player.ANIM_JUMP_SWORD_RIGHT),
         this.getAnimation(Player.ANIM_DOWN_SWORD_LEFT),
-        this.getAnimation(Player.ANIM_DOWN_SWORD_RIGHT)
+        this.getAnimation(Player.ANIM_DOWN_SWORD_RIGHT),
+        this.getAnimation(Player.ANIM_PJUMP_SWORD_LEFT),
+        this.getAnimation(Player.ANIM_PJUMP_SWORD_RIGHT)
     ];
 
     this.currentSwordAnim   = new AnimationPlayer(this.swordAnimations[Player.SWORD_LEFT]);
@@ -148,14 +154,13 @@ Player.prototype.startJump = function(secondsElapsed) {
 Player.prototype.startFall = function() {
 	this.dirY = Entity.DIR_DOWN;
 	this.doMoveY = true;
+    this.isFlipping = false;
+    console.log("start fall");
 };
 
 Player.prototype.canJump = function() {
 	this.allowJump = true;
 	this.onGround = true;
-
-    // cancel flip
-    this.isFlipping = false;
 
     // cancel down thrust
     this.isDownThrusting = false;
@@ -180,7 +185,7 @@ Player.prototype.stop = function() {
 Player.prototype.getCurrentFrames = function() {
     var currentFrames = Player.base.getCurrentFrames.call(this);
 
-    if(this.isDownThrusting) {
+    if(this.isDownThrusting || this.isFlipping) {
         currentFrames.push({
                 'x': this.x,
                 'y': this.y + this.size,
@@ -232,7 +237,7 @@ Player.prototype.getCurrentFrames = function() {
 Player.prototype.updateStart = function(secondsElapsed) {
     Player.base.updateStart.call(this, secondsElapsed);
 
-    if(this.isAttacking || this.isDownThrusting) {
+    if(this.isAttacking || this.isDownThrusting || this.isFlipping) {
         this.currentSwordAnim.step(secondsElapsed);
     }
 };
@@ -366,7 +371,15 @@ Player.prototype.updateEnd = function(secondsElapsed) {
     // JUMP
     } else if(!this.onGround) {
         if(this.isFlipping) {
-            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_FLIP_LEFT) : this.setCurrentAnimation(Player.ANIM_FLIP_RIGHT);
+            if(this.dirX == Entity.DIR_LEFT) {
+                this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_PJUMP_LEFT]);
+                this.setCurrentAnimation(Player.ANIM_FLIP_LEFT);
+
+            } else {
+                this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_PJUMP_RIGHT]);
+                this.setCurrentAnimation(Player.ANIM_FLIP_RIGHT);
+            }
+
         } else {
             (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_JUMP_LEFT) : this.setCurrentAnimation(Player.ANIM_JUMP_RIGHT);
         }
