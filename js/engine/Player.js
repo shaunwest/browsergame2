@@ -1,7 +1,7 @@
 /**
  * @author shaun
  */
-Player.VMAX_VELOCITY_NORMAL     = 750; //12; //15;
+Player.VMAX_VELOCITY_NORMAL     = 562; //750; //12; //15;
 Player.HMAX_VELOCITY_NORMAL     = 312; //5; //9;
 Player.VACCEL_NORMAL            = 36; // Acceleration per second
 Player.HACCEL_NORMAL            = 20; //25; //45; //90; // Acceleration per second
@@ -55,11 +55,12 @@ Player.DMG_RIGHT_BACK           = 4;
 
 Player.HIT_FRAME                = 0;
 
-function Player(animations, def) {
+function Player(animations, def, engine) {
 	if (arguments[0] === inheriting) return;
 	
 	PhysicsEntity.call(this, animations, def);
-	
+
+    this.engine             = engine;
 	this.onGround           = false;
 	
 	this.bounds             = {left: 30, top: 15, right: 30, bottom: 0};
@@ -74,6 +75,7 @@ function Player(animations, def) {
     this.allowAttack        = true;
     this.allowDownThrust    = false;
 	this.isDucking          = false;
+    this.isFalling          = false;
     this.isFlipping         = false;
     this.isHit              = false;
     this.isDamaged          = false;
@@ -81,6 +83,9 @@ function Player(animations, def) {
     this.isHitting          = false;
     this.isDownThrusting    = false;
     this.didHit             = false;
+    this.isJumping          = false;
+    this.jumpCount          = 0;
+    this.jumpCountMax       = 10;
 
     this.hitX               = 0;
 
@@ -143,7 +148,7 @@ Player.prototype.walkMode = function() {
 	this.hAcceleration = Player.HACCEL_NORMAL;
 };
 
-Player.prototype.startJump = function(secondsElapsed) {
+/*Player.prototype.startJump = function(secondsElapsed) {
 	this.dirY = Entity.DIR_UP;
 	this.vVelocity = -this.vMaxVelocity * secondsElapsed;
 	this.doMoveY = false;
@@ -166,6 +171,34 @@ Player.prototype.canJump = function() {
     this.isDownThrusting = false;
     this.isHitting = false;
     this.standardAttackMode();
+};*/
+
+Player.prototype.startJump = function() {
+    if(this.allowJump) {
+        this.jumpCount++;
+        this.isJumping = true;
+
+    } else if(this.isDownThrusting && this.didHit) {
+        this.isJumping = true;
+        this.jumpCount = 0;
+        this.allowJump = true;
+    }
+};
+
+Player.prototype.endJump = function() {
+    if(this.isJumping) {
+        this.allowJump = false;
+        this.jumpCount = this.jumpCountMax;
+    }
+
+    if(this.onGround) {
+        this.allowJump = true;
+
+        // cancel down thrust
+        this.isDownThrusting = false;
+        this.isHitting = false;
+        this.standardAttackMode();
+    }
 };
 
 Player.prototype.moveLeft = function() {
@@ -249,10 +282,52 @@ Player.prototype.updateEnd = function(secondsElapsed) {
 
 	this.walkMode();
 
+    if(this.isDownThrusting) {
+        this.doMoveY = false;
+    } else {
+        this.doMoveY = true;
+    }
+
+    // Falling?
+    if(this.dirY == Entity.DIR_DOWN && this.vVelocity > 0) {
+        this.isFalling = true;
+    } else {
+        this.isFalling = false;
+    }
+
+    // On ground?
+    if(this.haltYDir == 1) {
+        this.onGround = true;
+    } else {
+        this.onGround = false;
+    }
+
+    // Can jump?
+    if(this.onGround) {
+        //this.allowJump = true;
+        this.jumpCount = 0;
+    }
+
+    if(this.isFalling) {
+        this.allowJump = false;
+    }
+
+    if(this.isJumping) {
+        if(this.jumpCount < this.jumpCountMax) {
+            this.vVelocity = -this.vMaxVelocity * secondsElapsed;
+        } else {
+            this.allowJump = false;
+            this.isJumping = false;
+        }
+    }
+
+    // Attacked and hit something?
     if(this.didHit) {
         this.isHitting  = false;
         this.hitX       = this.lastAttackIntersection.x;
     }
+
+    //trace("ON GROUND " + this.onGround + "<br>ALLOW JUMP " + this.allowJump + "<br>IS FALLING " + this.isFalling);
 
     // HIT
     if(this.isHit) {
@@ -260,7 +335,8 @@ Player.prototype.updateEnd = function(secondsElapsed) {
         this.isAttacking            = false;
         this.isDownThrusting        = false;
         this.isDamaged              = true;
-        this.allowInput             = false;
+        //this.allowInput             = false;
+        this.engine.disableAllKeys();
         this.doHorizontalVelocity   = false;
 
         this.setTimer(Player.DAMAGE_TIMER, function() {
@@ -280,6 +356,7 @@ Player.prototype.updateEnd = function(secondsElapsed) {
                 Player.DMG_RIGHT_FRONT : this.damagedState = Player.DMG_RIGHT_BACK;
         }
 
+    // DAMAGED
     } else if(this.isDamaged) {
         switch(this.damagedState) {
             case Player.DMG_LEFT_BACK:
@@ -306,9 +383,10 @@ Player.prototype.updateEnd = function(secondsElapsed) {
         this.currentAnimation.startFrame = 1;
         this.didHit = false;
 
+    // DOWN THRUST
     } else if(this.isDownThrusting) {
         this.isHitting  = true;
-        this.doMoveY    = false;
+        //this.doMoveY    = false;
 
         //(this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_JUMP_THRUST_LEFT) : this.setCurrentAnimation(Player.ANIM_JUMP_THRUST_RIGHT);
         if(this.dirX == Entity.DIR_LEFT) {
@@ -429,7 +507,8 @@ Player.prototype.onFlicker = function() {
 Player.prototype.onDamagedComplete = function() {
     this.isDamaged      = false;
     this.isVisible      = true;
-    this.allowInput     = true;
+
+    this.engine.enableAllKeys();
     this.doHorizontalVelocity = true;
 
     this.cancelHorizontalMovement();

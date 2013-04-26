@@ -7,6 +7,8 @@
  * See constructor for the proper character order for the font bitmap
  */
 
+var inheriting = {};
+
 Font.DEFAULT_SIZE       = 24;
 Font.DEFAULT_LINEHEIGHT = 30;
 Font.DEFAULT_TRACKING   = 24;
