@@ -148,31 +148,6 @@ Player.prototype.walkMode = function() {
 	this.hAcceleration = Player.HACCEL_NORMAL;
 };
 
-/*Player.prototype.startJump = function(secondsElapsed) {
-	this.dirY = Entity.DIR_UP;
-	this.vVelocity = -this.vMaxVelocity * secondsElapsed;
-	this.doMoveY = false;
-	this.allowJump = false;
-	this.onGround = false;
-};
-
-Player.prototype.startFall = function() {
-	this.dirY = Entity.DIR_DOWN;
-	this.doMoveY = true;
-    this.isFlipping = false;
-    console.log("start fall");
-};
-
-Player.prototype.canJump = function() {
-	this.allowJump = true;
-	this.onGround = true;
-
-    // cancel down thrust
-    this.isDownThrusting = false;
-    this.isHitting = false;
-    this.standardAttackMode();
-};*/
-
 Player.prototype.startJump = function() {
     if(this.allowJump) {
         this.jumpCount++;
@@ -282,6 +257,7 @@ Player.prototype.updateEnd = function(secondsElapsed) {
 
 	this.walkMode();
 
+    // If we're down slashing, hover in the air
     if(this.isDownThrusting) {
         this.doMoveY = false;
     } else {
@@ -329,7 +305,7 @@ Player.prototype.updateEnd = function(secondsElapsed) {
 
     //trace("ON GROUND " + this.onGround + "<br>ALLOW JUMP " + this.allowJump + "<br>IS FALLING " + this.isFalling);
 
-    // HIT
+    // GOT HIT
     if(this.isHit) {
         this.isHit                  = false;
         this.isAttacking            = false;
@@ -386,9 +362,7 @@ Player.prototype.updateEnd = function(secondsElapsed) {
     // DOWN THRUST
     } else if(this.isDownThrusting) {
         this.isHitting  = true;
-        //this.doMoveY    = false;
 
-        //(this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_JUMP_THRUST_LEFT) : this.setCurrentAnimation(Player.ANIM_JUMP_THRUST_RIGHT);
         if(this.dirX == Entity.DIR_LEFT) {
             this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_DOWN_LEFT]);
             this.setCurrentAnimation(
@@ -497,7 +471,7 @@ Player.prototype.onAttackComplete = function() {
     this.didHit = false;
 
     // restore movement after a down thrust
-    this.doMoveY = true;
+    //this.doMoveY = true;
 };
 
 Player.prototype.onFlicker = function() {

@@ -1,4 +1,4 @@
-/* Author:
+/* Author: shaun
 
 TODO:
 -vertical scrolling
@@ -11,64 +11,12 @@ FIXME:
 -player disappears when FPS falls too low?
 
 */
-const ONE_SECOND = 1000;
-const FPS = 60;
-const FRAME_LENGTH = ONE_SECOND / FPS;
 
 const KEY_LEFT = 37;
 const KEY_UP = 38;
 const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
 const KEY_X = 88;
-
-/*var config;
-
-var gameFont;
-
-var tileSetList = {};
-var tileSheet;
-var tileSet;
-
-var spriteSetList = {};
-var spriteSheetsLoading = 0;
-var spriteSet;
-
-var triggerSetList = {};
-var triggerMap = {};
-
-var canvasContainer;
-var canvas;
-var context;
-var debug;
-
-var currentLevelId;
-var currentTileSetId;
-var currentSpriteSetId;
-var currentTriggerSetId;
-var level;
-var player;
-
-var ticks = 0;
-var keys = {};
-var enabledKeys = {};
-
-var lastUpdateTime = new Date();*/
-
-//var inheriting = {};
-
-if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = (function () {
-        return window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame ||
-            window.oRequestAnimationFrame ||
-            window.msRequestAnimationFrame ||
-            function (callback, fps) {
-                window.setTimeout(callback, FRAME_LENGTH); // frames per second
-            };
-    })();
-}
-
-//init();
 
 var engine;
 
@@ -81,15 +29,17 @@ $.ajax({
 
 function configReady(data) {
     engine = new Engine({
+        'fps'               : 60,
         'canvas'            : document.getElementById('display'),
         'canvasContainer'   : document.getElementById('displayContainer'),
         'config'            : data,
         'width'             : 768,
         'height'            : 768,
         'checkKeys'         : checkKeys,
+        'createSprites'     : createSprites,
         'update'            : update,
-        'fps'               : document.getElementById('fps'),
-        'debug'             : document.getElementById('debug')
+        'fpsDisplay'        : document.getElementById('fps'),
+        'debugDisplay'      : document.getElementById('debug')
     });
 
     engine.loadLevel("level1");
@@ -99,35 +49,20 @@ function configReady(data) {
 function update(secondsElapsed) {
 }
 
-function checkKeys() {
+function checkKeys(keys) {
     if(engine.player) {
-        var player = engine.player,
-            keys = engine.keys;
+        var player = engine.player;
 
         // MOVE
         if(keys[KEY_LEFT]) {
             player.moveLeft();
-
         } else if(keys[KEY_RIGHT]) {
             player.moveRight();
-
         } else {
             player.stop();
         }
 
         // JUMP
-        /*if(keys[KEY_UP] && player.allowJump) {
-         player.startJump(secondsElapsed);
-         } else if(player.vVelocity == 0 && player.dirY == -1) {
-         player.startFall();
-         } else if(!keys[KEY_UP] && player.haltYDir == 1) {
-         player.canJump();
-         } else if(player.haltYDir == 1) {
-         player.onGround = true;
-         } else if(player.moveY > 1 || player.moveY < -1){
-         player.onGround = false;
-         }*/
-
         if(keys[KEY_UP]) {
             player.startJump();
         } else {
@@ -154,14 +89,6 @@ function checkKeys() {
             }
         }
 
-        // FLIP
-        /*if(keys[KEY_UP] && player.isDownThrusting && player.didHit) {
-         //this.startJump(secondsElapsed);
-         player.vVelocity = -player.vMaxVelocity * 1.5 * secondsElapsed;
-         player.isFlipping = true;
-         player.allowDownThrust = true;
-         }*/
-
         // ATTACK
         if(keys[KEY_X] && !player.isDownThrusting) {
             if(player.allowAttack) {
@@ -172,9 +99,22 @@ function checkKeys() {
             player.allowAttack = true;
         }
     }
+}
 
-    /*} else {
-     player.stop();
-     //player.startFall(); // FIXME!
-     }*/
+function createSprites(sprite, spriteDef, spriteSheet) {
+    var width = spriteDef.width,
+        defaultDelay = spriteDef['defaultDelay'],
+        entity;
+
+    switch(spriteDef.type) {
+        case 'player':
+            entity = new Player(engine.getAnimations(spriteSheet, width, defaultDelay), spriteDef, engine);
+            break;
+
+        case 'goblin1':
+            entity = new Goblin1(engine.getAnimations(spriteSheet, width, defaultDelay), spriteDef);
+            break;
+    }
+
+    return entity;
 }

@@ -4,12 +4,33 @@
  * Time: 3:39 PM
  */
 
+var inheriting = {};
+
+const ONE_SECOND = 1000;
+
 function Engine(props) {
     this.init(props);
 }
 
+function setRequestAnimationFrame(frameLength) {
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = (function () {
+            return window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                window.oRequestAnimationFrame ||
+                window.msRequestAnimationFrame ||
+                function (callback, fps) {
+                    window.setTimeout(callback, frameLength); // frames per second
+                };
+        })();
+    }
+}
+
 Engine.prototype.init = function(props) {
     var self = this;
+
+    this.fps                    = props.fps;
+    this.frameLength            = ONE_SECOND / this.fps;
 
     this.config                 = props.config;
 
@@ -45,18 +66,21 @@ Engine.prototype.init = function(props) {
     this.resizeCanvas();
 
     this.context                = this.canvas.getContext('2d');
-    this.fpsDisplay             = props.fps;
-    this.debug                  = props.debug;
+    this.fpsDisplay             = props.fpsDisplay;
+    this.debug                  = props.debugDisplay;
 
     this.lastUpdateTime         = new Date();
     this.ticks                  = 0;
 
     this.checkKeysCallback      = props.checkKeys;
     this.updateCallback         = props.update;
+    this.createSpritesCallback  = props.createSprites;
 
     this.initSetList('tileSets', this.tileSetList);
     this.initSetList('spriteSets', this.spriteSetList);
     this.initSetList('triggerSets', this.triggerSetList);
+
+    setRequestAnimationFrame(this.frameLength);
 
     window.addEventListener('resize', function() { self.resizeCanvas() }, false);
 };
@@ -244,22 +268,20 @@ Engine.prototype.getSprites = function(sprites) {
             spriteSheet = spriteSet.getSpriteSheet(spriteId),
             entity;
 
-        switch(spriteDef.type) {
-            case 'player':
-                this.player = new Player(this.getAnimations(spriteSheet, width, defaultDelay), spriteDef, this);
-                this.player.x = sprite.x;
-                this.player.y = sprite.y;
-                break;
-
-            case 'goblin1':
-                entity = new Goblin1(this.getAnimations(spriteSheet, width, defaultDelay), spriteDef);
-                break;
-
-            default:
-                entity = new Entity(this.getAnimations(spriteSheet, width, defaultDelay), spriteDef);
+        if(this.createSpritesCallback) {
+            entity = this.createSpritesCallback(sprite, spriteDef, spriteSheet);
         }
 
-        if(entity) {
+        if(!entity) {
+            entity = new Entity(this.getAnimations(spriteSheet, width, defaultDelay), spriteDef);
+        }
+
+        if(entity.type == "player") {
+            this.player = entity;
+            this.player.x = sprite.x;
+            this.player.y = sprite.y;
+
+        } else {
             entity.x = sprite.x;
             entity.y = sprite.y;
 
@@ -267,6 +289,8 @@ Engine.prototype.getSprites = function(sprites) {
         }
     }
 
+    // Add "player" last so it's rendered above
+    // other sprites on the z-axis
     if(this.player) {
         level.addEntity(this.player);
         level.setViewTarget(this.player);
@@ -305,7 +329,7 @@ Engine.prototype.startGame = function() {
 
 Engine.prototype.checkKeys = function(secondsElapsed) {
     if(this.checkKeysCallback) {
-        this.checkKeysCallback();
+        this.checkKeysCallback(this.keys);
     }
 };
 
