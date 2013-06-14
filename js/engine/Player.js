@@ -257,12 +257,6 @@ Player.prototype.updateEnd = function(secondsElapsed) {
 
 	this.walkMode();
 
-    // If we're down slashing, hover in the air
-    if(this.isDownThrusting) {
-        this.doMoveY = false;
-    } else {
-        this.doMoveY = true;
-    }
 
     // Falling?
     if(this.dirY == Entity.DIR_DOWN && this.vVelocity > 0) {
@@ -282,6 +276,14 @@ Player.prototype.updateEnd = function(secondsElapsed) {
     if(this.onGround) {
         //this.allowJump = true;
         this.jumpCount = 0;
+        this.isDownThrusting = false;
+    }
+
+    // If we're down slashing, hover in the air
+    if(this.isDownThrusting) {
+        this.doMoveY = false;
+    } else {
+        this.doMoveY = true;
     }
 
     if(this.isFalling) {
@@ -303,7 +305,18 @@ Player.prototype.updateEnd = function(secondsElapsed) {
         this.hitX       = this.lastAttackIntersection.x;
     }
 
-    //trace("ON GROUND " + this.onGround + "<br>ALLOW JUMP " + this.allowJump + "<br>IS FALLING " + this.isFalling);
+    // Trace various player properties
+    /*Engine.trace(
+        "ON GROUND " + this.onGround +
+        "<br>ALLOW JUMP " + this.allowJump +
+        "<br>IS FALLING " + this.isFalling +
+        "<br>IS DUCKING " + this.isDucking +
+        "<br>IS DOWNTHRUSTING " + this.isDownThrusting +
+        "<br>IS ATTACKING " + this.isAttacking +
+        "<br>HALT-Y " + this.haltYDir +
+        "<br>IS HITTING " + this.isHitting +
+        "<br>IS JUMPING " + this.isJumping
+    );*/
 
     // GOT HIT
     if(this.isHit) {
@@ -359,7 +372,7 @@ Player.prototype.updateEnd = function(secondsElapsed) {
         this.currentAnimation.startFrame = 1;
         this.didHit = false;
 
-    // DOWN THRUST
+    // DOWN SLASH
     } else if(this.isDownThrusting) {
         this.isHitting  = true;
 
@@ -469,9 +482,6 @@ Player.prototype.onAttackComplete = function() {
     this.isAttacking = false;
     this.isDownThrusting = false;
     this.didHit = false;
-
-    // restore movement after a down thrust
-    //this.doMoveY = true;
 };
 
 Player.prototype.onFlicker = function() {

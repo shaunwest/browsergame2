@@ -67,7 +67,7 @@ Engine.prototype.init = function(props) {
 
     this.context                = this.canvas.getContext('2d');
     this.fpsDisplay             = props.fpsDisplay;
-    this.debug                  = props.debugDisplay;
+    Engine.debugDisplay         = props.debugDisplay;
 
     this.lastUpdateTime         = new Date();
     this.ticks                  = 0;
@@ -365,9 +365,9 @@ Engine.prototype.tick = function() {
     this.ticks = 0;
 };
 
-Engine.prototype.trace = function(value) {
-    if(this.debug) {
-        this.debug.innerHTML = value;
+Engine.trace = function(value) {
+    if(Engine.debugDisplay) {
+        Engine.debugDisplay.innerHTML = value;
     }
 };
 
