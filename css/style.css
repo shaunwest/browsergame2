@@ -217,10 +217,44 @@ td { vertical-align: top; }
 /* ==|== primary styles =====================================================
    Author: shaun
    ========================================================================== */
-#main { position: absolute; text-align: center; width: 100%; top: 0px; left: 0px; }
-#displayContainer { margin:0px auto; text-align: left; }
+.acc {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    /*
+    Could be useful with chrome (http://stackoverflow.com/questions/10014461/why-does-enabling-hardware-acceleration-in-css3-slow-down-performance)
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    */
+}
+
+#main { position: absolute; width: 100%; top: 0px; left: 0px; }
+#displayContainer { margin:0px auto; text-align: left; overflow: hidden; }
+#display { position:absolute; z-index: 9999; }
 #fps { position: absolute; margin: 0px; padding: 0px; color: #ffffff; top: 0px; left: 0px; }
-#debug { position: absolute; margin: 0px; padding: 0px; color: #ffffff; top: 30px; left: 0px; }
+
+#debug {
+    position: absolute;
+    background-color:rgba(0,0,0,0.5);
+    margin: 0px;
+    color: #ffffff;
+    top: 30px;
+    left: 0px;
+    z-index: 9999;
+    width: 200px;
+    height: 50px;
+    padding: 10px;
+    border-bottom-right-radius: 10px;
+    border: 2px solid #222222;
+}
+
+label {
+    display: inline-block;
+    width: 40px;
+    text-align: right;
+}
 
 
 /* ==|== media queries ======================================================

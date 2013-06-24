@@ -6,12 +6,14 @@ function Level(tileSet, spriteSet, levelData) {
 	if (arguments[0] === inheriting) return;
 
     this.tileSet            = tileSet;
-    //this.tileDefinitions    = tileSet.tileDefinitions;
     this.tileSize           = tileSet.tileSize;
 
     this.spriteSet          = spriteSet;
 	this.levelData          = levelData;
 
+    this.segmentCache       = [];
+    this.segmentSize        = 2;
+    this.segmentSizePixels  = this.segmentSize * this.tileSize;
 
 	this.height             = levelData.length;
 	this.width              = levelData[0].length;
@@ -325,9 +327,96 @@ Level.prototype.getView = function() {
     };
 };
 
+Level.prototype.updateSegments = function(gameArea) {
+    var segmentSize = this.segmentSize,
+        segmentSizePixels = this.segmentSizePixels,
+        // start and end values should be in segment coordinates
+        // convert from tiles to segments
+        startX = Math.floor(this.viewX / segmentSizePixels),
+        startY = Math.floor(this.viewY / segmentSizePixels),
+        endX   = startX + Math.floor(this.viewWidth / segmentSize),
+        endY   = startY + Math.floor(this.viewHeight / segmentSize),
+        segmentCache = this.segmentCache,
+        newSegmentCache = {},
+        segment;
+
+
+    for(var y = startY; y <= endY; y++) {
+        for(var x = startX; x <= endX; x++) {
+            if(segmentCache[x] && segmentCache[x][y]) {
+                segment = segmentCache[x][y];
+                segmentCache[x][y] = null;
+
+                if(!newSegmentCache[x]) {
+                    newSegmentCache[x] = {};
+                }
+
+                newSegmentCache[x][y] = segment;
+
+                this.moveSegment(segment, x, y);
+
+            } else {
+                segment = new Segment(x, y, segmentSize, segmentSize, this);
+
+                if(segment && segment.x == x && segment.y == y) {
+                    if(!newSegmentCache[x]) {
+                        newSegmentCache[x] = {};
+                    }
+
+                    newSegmentCache[x][y] = segment;
+
+                    this.moveSegment(segment, x, y);
+
+                    //segment.canvas.style.zIndex = 9999; // DEBUG
+                    gameArea.appendChild(segment.canvas);
+
+                    if(!segment.rendered) {
+                        segment.render();
+                    }
+                }
+            }
+        }
+    }
+
+    // remove any segments that remain in the old segment cache
+    this.clearSegments(gameArea, segmentCache);
+
+    this.segmentCache = newSegmentCache;
+};
+
+Level.prototype.moveSegment = function(segment, segmentX, segmentY) {
+    var canvasX, canvasY,
+        segmentSize = this.segmentSizePixels,
+        canvas;
+
+    canvasX = (segmentX * segmentSize)  // convert from segment coords to pixel coords
+        - this.viewX;                  // move to view coords by subtracting view position
+
+    canvasY = (segmentY * segmentSize)
+        - this.viewY;
+
+    // Apply newly calculated canvas position
+    canvas = segment.canvas;
+    canvas.style.left = canvasX + "px";
+    canvas.style.top = canvasY + "px";
+};
+
+Level.prototype.clearSegments = function(gameArea, segmentCache) {
+    var segment;
+
+    for(var i in segmentCache) {
+        for(var j in segmentCache[i]) {
+            if(segmentCache[i][j]) {
+                segment = segmentCache[i][j];
+                gameArea.removeChild(segment.canvas);
+            }
+        }
+    }
+};
+
 // TODO break down into multiple functions
-Level.prototype.updateAndDraw = function(context, secondsElapsed) {
-    var startX = Math.floor(this.viewX / this.tileSize);
+Level.prototype.updateAndDraw = function(context, gameArea, secondsElapsed) {
+    /*var startX = Math.floor(this.viewX / this.tileSize);
     var startY = Math.floor(this.viewY / this.tileSize);
 
     var endX   = startX + this.viewWidth;
@@ -358,7 +447,9 @@ Level.prototype.updateAndDraw = function(context, secondsElapsed) {
                 context.drawImage(tileImage, (x * this.tileSize) - this.viewX, (y * this.tileSize) - this.viewY);
             }
         }
-    }
+    }*/
+
+    this.updateSegments(gameArea);
 
     // Track tile animation frames (zero-based)
     this.frameNumber += (secondsElapsed * this.frameSpeedMult);

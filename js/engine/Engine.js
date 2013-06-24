@@ -31,6 +31,7 @@ Engine.prototype.init = function(props) {
 
     this.fps                    = props.fps;
     this.frameLength            = ONE_SECOND / this.fps;
+    this.currentFps             = 0;
 
     this.config                 = props.config;
 
@@ -345,7 +346,7 @@ Engine.prototype.update = function() {
 
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.level.updateAndDraw(this.context, secondsElapsed);
+    this.level.updateAndDraw(this.context, this.canvasContainer, secondsElapsed);
     //this.gameFont.print(this.context, "16738", 100, 0);
 
     this.ticks++;
@@ -354,12 +355,23 @@ Engine.prototype.update = function() {
         this.updateCallback(secondsElapsed);
     }
 
+    this.traceReport();
+
     requestAnimationFrame(function() { self.update(); });
+};
+
+Engine.prototype.traceReport = function() {
+    if(Engine.debugDisplay) {
+        Engine.debugDisplay.innerHTML =
+            "<label>FPS:</label> " + this.currentFps + "<br>" +
+            "<label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY;
+    }
 };
 
 Engine.prototype.tick = function() {
     if(this.fpsDisplay) {
         this.fpsDisplay.textContent = this.ticks.toString();
+        this.currentFps = this.ticks.toString();
     }
 
     this.ticks = 0;
