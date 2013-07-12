@@ -2,6 +2,9 @@
 
 TODO:
 -vertical scrolling
+-do some code cleanup. Especially relating to Level/Segment code.
+-add fullscreen support to make iPad testing easier
+-add touch controls for iPad
 
 FIXME:
 -change flip into "power jump"
@@ -17,6 +20,7 @@ const KEY_UP = 38;
 const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
 const KEY_X = 88;
+const KEY_F = 70;
 
 var engine;
 
@@ -30,6 +34,7 @@ $.ajax({
 function configReady(data) {
     engine = new Engine({
         'fps'               : 60,
+        'gameArea'          : document.getElementById('main'),
         'canvas'            : document.getElementById('display'),
         'canvasContainer'   : document.getElementById('displayContainer'),
         'config'            : data,
@@ -38,8 +43,12 @@ function configReady(data) {
         'checkKeys'         : checkKeys,
         'createSprites'     : createSprites,
         'update'            : update,
-        'fpsDisplay'        : document.getElementById('fps'),
-        'debugDisplay'      : document.getElementById('debug')
+        'statusArea'        : document.getElementById('status'),
+        'traceArea'         : document.getElementById('trace'),
+        'controls'          : {
+            'left'          : document.getElementById('left'),
+            'right'         : document.getElementById('right')
+        }
     });
 
     engine.loadLevel("level1");
@@ -97,6 +106,10 @@ function checkKeys(keys) {
             }
         } else {
             player.allowAttack = true;
+        }
+
+        if(keys[KEY_F]) {
+            engine.launchFullScreen(document.documentElement);
         }
     }
 }

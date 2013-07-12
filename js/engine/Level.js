@@ -11,8 +11,9 @@ function Level(tileSet, spriteSet, levelData) {
     this.spriteSet          = spriteSet;
 	this.levelData          = levelData;
 
-    this.segmentCache       = [];
-    this.segmentSize        = 2;
+    this.segmentGrid        = [];
+    this.segmentCache       = {};
+    this.segmentSize        = 4;
     this.segmentSizePixels  = this.segmentSize * this.tileSize;
 
 	this.height             = levelData.length;
@@ -327,61 +328,110 @@ Level.prototype.getView = function() {
     };
 };
 
+Level.prototype.createSegments = function(gameArea) {
+    var segment,
+        segmentSize = this.segmentSize,
+        endX = Math.floor(this.viewWidth / segmentSize),
+        endY =  Math.floor(this.viewHeight / segmentSize),
+        segmentGrid = this.segmentGrid;
+
+    for(var x = 0; x <= endX; x++) {
+        segmentGrid[x] = [];
+
+        for(var y = 0; y <= endY; y++) {
+            segment = new Segment(segmentSize, segmentSize, this);
+
+            this.moveSegment(segment, x, y);
+            gameArea.appendChild(segment.canvas);
+
+            segmentGrid[x][y] = segment;
+        }
+    }
+};
+
 Level.prototype.updateSegments = function(gameArea) {
     var segmentSize = this.segmentSize,
         segmentSizePixels = this.segmentSizePixels,
-        // start and end values should be in segment coordinates
-        // convert from tiles to segments
-        startX = Math.floor(this.viewX / segmentSizePixels),
+        startX = Math.floor(this.viewX / segmentSizePixels),    // start and end values should be in segment coordinates
         startY = Math.floor(this.viewY / segmentSizePixels),
-        endX   = startX + Math.floor(this.viewWidth / segmentSize),
+        endX   = startX + Math.floor(this.viewWidth / segmentSize), // convert from tiles to segments
         endY   = startY + Math.floor(this.viewHeight / segmentSize),
-        segmentCache = this.segmentCache,
-        newSegmentCache = {},
+        activeSegments = this.segmentCache,
+        newActiveSegments = [],
+        displayGrid = this.segmentGrid,
+        gridWidth = displayGrid.length,
+        gridHeight = displayGrid[0].length,
         segment;
 
+    for(var gridY = 0; gridY < gridHeight; gridY++) {
+        for(var gridX = 0; gridX < gridWidth; gridX++) {
+            var activeX = gridX + startX;
+            var activeY = gridY + startY;
 
-    for(var y = startY; y <= endY; y++) {
-        for(var x = startX; x <= endX; x++) {
-            if(segmentCache[x] && segmentCache[x][y]) {
-                segment = segmentCache[x][y];
-                segmentCache[x][y] = null;
+            if(displayGrid[gridX]) {
+                segment = displayGrid[gridX][gridY];
 
-                if(!newSegmentCache[x]) {
-                    newSegmentCache[x] = {};
-                }
+                if(segment) {
+                    if(activeSegments[activeX] && activeSegments[activeX][activeY]) {
+                        if(!newActiveSegments[activeX]) {
+                            newActiveSegments[activeX] = [];
+                        }
 
-                newSegmentCache[x][y] = segment;
+                        newActiveSegments[activeX][activeY] = true;
 
-                this.moveSegment(segment, x, y);
+                        this.moveSegment(segment, activeX, activeY);
 
-            } else {
-                segment = new Segment(x, y, segmentSize, segmentSize, this);
+                    } else {
+                        if(!newActiveSegments[activeX]) {
+                            newActiveSegments[activeX] = [];
+                        }
+                        newActiveSegments[activeX][activeY] = true;
 
-                if(segment && segment.x == x && segment.y == y) {
-                    if(!newSegmentCache[x]) {
-                        newSegmentCache[x] = {};
-                    }
+                        this.moveSegment(segment, activeX, activeY);
 
-                    newSegmentCache[x][y] = segment;
-
-                    this.moveSegment(segment, x, y);
-
-                    //segment.canvas.style.zIndex = 9999; // DEBUG
-                    gameArea.appendChild(segment.canvas);
-
-                    if(!segment.rendered) {
-                        segment.render();
+                        segment.render(activeX, activeY);
                     }
                 }
             }
         }
     }
+    /*for(var y = startY; y <= endY; y++) {
+        for(var x = startX; x <= endX; x++) {
+            if(displayGrid[gridX]) {
+                segment = displayGrid[gridX][gridY];
+
+                if(segment) {
+                    if(activeSegments[x] && activeSegments[x][y]) {
+                        if(!newActiveSegments[x]) {
+                            newActiveSegments[x] = [];
+                        }
+
+                        newActiveSegments[x][y] = true;
+
+                        this.moveSegment(segment, x, y);
+
+                    } else {
+                        if(!newActiveSegments[x]) {
+                            newActiveSegments[x] = [];
+                        }
+                        newActiveSegments[x][y] = true;
+
+                        this.moveSegment(segment, x, y);
+
+                        segment.render(x, y);
+                    }
+                }
+            }
+            gridX++;
+        }
+        gridX = 0;
+        gridY++;
+    }*/
 
     // remove any segments that remain in the old segment cache
-    this.clearSegments(gameArea, segmentCache);
+    /*this.clearSegments(gameArea, segmentCache);*/
 
-    this.segmentCache = newSegmentCache;
+    this.segmentCache = newActiveSegments;
 };
 
 Level.prototype.moveSegment = function(segment, segmentX, segmentY) {

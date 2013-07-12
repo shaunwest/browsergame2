@@ -3,9 +3,9 @@
  * Date: 6/21/13 8:36 PM
  */
 
-function Segment(x, y, width, height, level) {
-    this.x              = x;
-    this.y              = y;
+function Segment(width, height, level) {
+    //this.x              = x;
+    //this.y              = y;
     this.width          = width;
     this.height         = height;
     this.level          = level;
@@ -23,10 +23,10 @@ function Segment(x, y, width, height, level) {
     this.context2d      = this.canvas.getContext('2d');
 }
 
-Segment.prototype.render = function() {
+Segment.prototype.render = function(segmentX, segmentY) {
     var context2d = this.context2d,
-        startX = this.x * this.width,
-        startY = this.y * this.height,
+        startX = segmentX * this.width,
+        startY = segmentY * this.height,
         levelData = this.levelData,
         tileSet = this.tileSet,
         tileSize = this.tileSize,
@@ -48,4 +48,6 @@ Segment.prototype.render = function() {
         x = 0;
         y++;
     }
+
+    this.rendered = true;
 };

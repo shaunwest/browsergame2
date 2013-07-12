@@ -13,6 +13,11 @@ function Engine(props) {
 }
 
 function setRequestAnimationFrame(frameLength) {
+    /*window.requestAnimationFrame = (function () {
+        return function (callback, fps) {
+            window.setTimeout(callback, frameLength); // frames per second
+        }
+    })();*/
     if (!window.requestAnimationFrame) {
         window.requestAnimationFrame = (function () {
             return window.webkitRequestAnimationFrame ||
@@ -30,10 +35,14 @@ Engine.prototype.init = function(props) {
     var self = this;
 
     this.fps                    = props.fps;
-    this.frameLength            = ONE_SECOND / this.fps;
+    this.frameLength            = Math.floor(ONE_SECOND / this.fps);
     this.currentFps             = 0;
 
     this.config                 = props.config;
+
+    this.controls               = props.controls;
+    this.leftButton             = this.controls.left;
+    this.rightButton            = this.controls.right;
 
     this.gameFont               = null;
 
@@ -58,6 +67,7 @@ Engine.prototype.init = function(props) {
     this.level                  = null;
     this.player                 = null;
 
+    this.gameArea               = props.gameArea,
     this.canvasContainer        = props.canvasContainer;
 
     this.canvas                 = props.canvas;
@@ -67,8 +77,8 @@ Engine.prototype.init = function(props) {
     this.resizeCanvas();
 
     this.context                = this.canvas.getContext('2d');
-    this.fpsDisplay             = props.fpsDisplay;
-    Engine.debugDisplay         = props.debugDisplay;
+    this.statusArea             = props.statusArea;
+    Engine.traceArea            = props.traceArea;
 
     this.lastUpdateTime         = new Date();
     this.ticks                  = 0;
@@ -77,11 +87,24 @@ Engine.prototype.init = function(props) {
     this.updateCallback         = props.update;
     this.createSpritesCallback  = props.createSprites;
 
+    this.isFullScreen           = false;
+
     this.initSetList('tileSets', this.tileSetList);
     this.initSetList('spriteSets', this.spriteSetList);
     this.initSetList('triggerSets', this.triggerSetList);
 
     setRequestAnimationFrame(this.frameLength);
+
+    // Events
+    document.addEventListener("fullscreenchange", function(e) {
+        console.log("fullscreenchange event! ", e);
+    });
+    document.addEventListener("mozfullscreenchange", function(e) {
+        console.log("mozfullscreenchange event! ", e);
+    });
+    document.addEventListener("webkitfullscreenchange", function(e) {
+        console.log("webkitfullscreenchange event! ", e);
+    });
 
     window.addEventListener('resize', function() { self.resizeCanvas() }, false);
 };
@@ -99,6 +122,30 @@ Engine.prototype.resizeCanvas = function() {
     }
 };
 
+// helper methods
+Engine.prototype.launchFullScreen = function(element) {
+    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
+
+    if(!this.isFullScreen) {
+        if(element.requestFullScreen) {
+            element.requestFullScreen();
+        } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if(element.webkitRequestFullScreen) {
+            element.webkitRequestFullScreen();
+            console.log("FULLSCREEN!");
+        }
+
+        this.isFullScreen = true;
+    }
+};
+
+Engine.prototype.cancelFullScreen = function() {
+    if(document.cancelFullScreen) { document.cancelFullScreen(); }
+    else if(document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
+    else if(document.webkitCancelFullScreen) { document.webkitCancelFullScreen(); }
+};
+
 Engine.prototype.enableAllKeys = function() {
     var enabledKeys = this.enabledKeys;
 
@@ -107,6 +154,7 @@ Engine.prototype.enableAllKeys = function() {
     enabledKeys[KEY_RIGHT]  = true;
     enabledKeys[KEY_DOWN]   = true;
     enabledKeys[KEY_X]      = true;
+    enabledKeys[KEY_F]      = true;
 };
 
 Engine.prototype.disableAllKeys = function() {
@@ -117,6 +165,7 @@ Engine.prototype.disableAllKeys = function() {
     enabledKeys[KEY_RIGHT]  = false;
     enabledKeys[KEY_DOWN]   = false;
     enabledKeys[KEY_X]      = false;
+    enabledKeys[KEY_F]      = false;
 };
 
 Engine.prototype.onKeyDown = function(e){
@@ -130,6 +179,29 @@ Engine.prototype.onKeyDown = function(e){
 
 Engine.prototype.onKeyUp = function(e) {
     this.keys[e.keyCode] = false;
+};
+
+Engine.prototype.onTouchStart = function(e) {
+    var touch = e.touches[0];
+
+    e.preventDefault();
+
+    switch(touch.target) {
+        case this.leftButton:
+            this.keys[KEY_LEFT] = true;
+            break;
+
+        case this.rightButton:
+            this.keys[KEY_RIGHT] = true;
+            break;
+    }
+};
+
+Engine.prototype.onTouchEnd = function(e) {
+    e.preventDefault();
+
+    this.keys[KEY_LEFT] = false;
+    this.keys[KEY_RIGHT] = false;
 };
 
 Engine.prototype.initSetList = function(configId, list) {
@@ -316,14 +388,17 @@ Engine.prototype.getAnimations = function(spriteSheet, size, defaultDelay) {
 };
 
 Engine.prototype.startGame = function() {
-    var self = this;
+    window.addEventListener('keydown', Util.call(this, this.onKeyDown), true);
+    window.addEventListener('keyup', Util.call(this, this.onKeyUp), true);
 
-    window.addEventListener('keydown', function(e) { self.onKeyDown(e); }, true);
-    window.addEventListener('keyup', function(e) { self.onKeyUp(e); }, true);
+    window.addEventListener("touchstart", Util.call(this, this.onTouchStart), true);
+    window.addEventListener("touchend", Util.call(this, this.onTouchEnd), true);
 
     this.enableAllKeys();
 
-    setInterval(function() { self.tick(); }, ONE_SECOND);
+    setInterval(Util.call(this, this.tick), ONE_SECOND);
+
+    this.level.createSegments(this.canvasContainer);
 
     this.update();
 };
@@ -355,31 +430,27 @@ Engine.prototype.update = function() {
         this.updateCallback(secondsElapsed);
     }
 
-    this.traceReport();
+    this.displayStatus();
 
-    requestAnimationFrame(function() { self.update(); });
+    requestAnimationFrame(Util.call(this, this.update));
 };
 
-Engine.prototype.traceReport = function() {
-    if(Engine.debugDisplay) {
-        Engine.debugDisplay.innerHTML =
+Engine.prototype.displayStatus = function() {
+    if(this.statusArea) {
+        this.statusArea.innerHTML =
             "<label>FPS:</label> " + this.currentFps + "<br>" +
             "<label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY;
     }
 };
 
 Engine.prototype.tick = function() {
-    if(this.fpsDisplay) {
-        this.fpsDisplay.textContent = this.ticks.toString();
-        this.currentFps = this.ticks.toString();
-    }
-
+    this.currentFps = this.ticks.toString();
     this.ticks = 0;
 };
 
 Engine.trace = function(value) {
-    if(Engine.debugDisplay) {
-        Engine.debugDisplay.innerHTML = value;
+    if(Engine.traceArea) {
+        Engine.traceArea.innerHTML = value;
     }
 };
 

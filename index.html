@@ -9,6 +9,8 @@
 
     <!-- Mobile viewport optimized: j.mp/bplateviewport -->
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <!-- For full screen (iOS home screen only) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -17,12 +19,18 @@
         <div id="displayContainer" class="acc">
             <canvas id="display"></canvas>
         </div>
-        <div role="complementary" id="fps"></div>
-        <div role="complementary" id="debug"></div>
+        <div role="complementary" id="status"></div>
+        <div role="complementary" id="trace"></div>
+        <div id="controls">
+            <div id="left"></div>
+            <div id="right"></div>
+        </div>
     </div>
 
     <script src="js/lib/jquery-1.6.4.min.js"></script>
 
+    <script defer src="js/engine/Util.js"></script>
+    <script defer src="js/engine/Grid.js"></script>
     <script defer src="js/engine/Engine.js"></script>
     <script defer src="js/engine/Font.js"></script>
     <script defer src="js/engine/TileSet.js"></script>
