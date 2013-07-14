@@ -6,7 +6,8 @@
 function Util() {}
 
 Util.call = function(context, func) {
+    var args = Array.prototype.slice.call(arguments, 2);
     return function() {
-        func.apply(context, arguments);
+        func.apply(context, (args.length > 0) ? args : arguments);
     };
 };

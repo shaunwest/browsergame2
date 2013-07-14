@@ -2,12 +2,12 @@
  * @author shaun
  */
 
-function GameLevel(tileSet, spriteSet, levelData) {
+function GameLevel(tileSet, spriteSet, levelData, gameArea) {
 	if (arguments[0] === inheriting) return;
 
     //this.levelData = levelData;
 
-	Level.call(this, tileSet, spriteSet, levelData);
+	Level.call(this, tileSet, spriteSet, levelData, gameArea);
 }
 
 GameLevel.prototype = new Level(inheriting);

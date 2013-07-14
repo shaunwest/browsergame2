@@ -328,7 +328,7 @@ Engine.prototype.spriteSheetReady = function(sprites) {
 
 Engine.prototype.getSprites = function(sprites) {
     var levelConfig = this.config['levels'][this.currentLevelId],
-        level = new GameLevel(this.tileSet, this.spriteSet, levelConfig['midground']),
+        level = new GameLevel(this.tileSet, this.spriteSet, levelConfig['midground'], this.canvasContainer),
         spriteSet = this.spriteSet,
         numSprites = sprites.length;
 
@@ -398,7 +398,8 @@ Engine.prototype.startGame = function() {
 
     setInterval(Util.call(this, this.tick), ONE_SECOND);
 
-    this.level.createSegments(this.canvasContainer);
+    ///this.level.createSegments(this.canvasContainer);
+    this.level.init();
 
     this.update();
 };
@@ -410,12 +411,12 @@ Engine.prototype.checkKeys = function(secondsElapsed) {
 };
 
 Engine.prototype.update = function() {
-    var self = this;
-
     var now = new Date();
     var secondsElapsed = (now - this.lastUpdateTime) / ONE_SECOND;
 
     this.lastUpdateTime = now;
+
+    this.level.grid.queue.update(); //todo: re-write
 
     this.checkKeys(secondsElapsed);
 
@@ -439,7 +440,8 @@ Engine.prototype.displayStatus = function() {
     if(this.statusArea) {
         this.statusArea.innerHTML =
             "<label>FPS:</label> " + this.currentFps + "<br>" +
-            "<label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY;
+            "<label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
+            "<label>Grid Pos:</label> " + this.level.grid.viewX + ", " + this.level.grid.viewY;
     }
 };
 

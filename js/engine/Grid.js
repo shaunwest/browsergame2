@@ -17,10 +17,10 @@ Grid.DIR_UP = -1;
 Grid.DIR_DOWN = 1;
 
 function Grid(config) {
-    this.init(config);
+    this.initConfig(config);
 }
 
-Grid.prototype.init = function(config) {
+Grid.prototype.initConfig = function(config) {
     if(!config) {
         this.exception("Grid: no config provided");
     }
@@ -39,8 +39,8 @@ Grid.prototype.init = function(config) {
     this.viewHeight                     = config.viewHeight || this.exception("Grid: view height not provided or 0");
 
     this.dataSourceCellSize             = config.dataSourceCellSize || Grid.DEFAULT_CELL_SIZE;
-    this.dataSourceWidth                = this.dataSource.length;
-    this.dataSourceHeight               = this.dataSource[0].length;
+    this.dataSourceHeight               = this.dataSource.length;
+    this.dataSourceWidth                = this.dataSource[0].length;
     this.sourceWidthPixels              = this.dataSourceWidth * this.dataSourceCellSize;
     this.sourceHeightPixels             = this.dataSourceHeight * this.dataSourceCellSize;
 
@@ -54,8 +54,8 @@ Grid.prototype.init = function(config) {
     this.segmentSize                    = this.cellsPerSegment * this.dataSourceCellSize;       // value in pixels
     this.gridWidth                      = Math.floor(this.viewWidth / this.segmentSize) + 1;    // add 1 extra segment
     this.gridHeight                     = Math.floor(this.viewHeight / this.segmentSize) + 1;
-    this.containerElement.style.width   = this.gridWidth * this.segmentSize;
-    this.containerElement.style.height  = this.gridHeight * this.segmentSize;
+    //this.containerElement.style.width   = this.gridWidth * this.segmentSize;
+    //this.containerElement.style.height  = this.gridHeight * this.segmentSize;
     this.gridPositionX                  = Grid.ORIGIN_X;
     this.gridPositionY                  = Grid.ORIGIN_Y;
     this.segments                       = [[], []];
@@ -78,19 +78,10 @@ Grid.prototype.scroll = function(xDir, yDir, xAmount, yAmount) {
         gridPositionX = this.gridPositionX,
         gridPositionY = this.gridPositionY;
 
-    if(xDir != 0 || yDir != 0) {
+    if(xAmount > 0 || yAmount > 0) {
+    //if(xDir != 0 || yDir != 0) {
         this.viewX += deltaX;
-
-        if(this.viewX > 0) {
-            this.viewX = 0;
-            gridPositionX = 0;
-
-        } else if(this.viewX < -this.sourceWidthPixels + this.viewWidth) {
-            this.viewX = -this.sourceWidthPixels + this.viewWidth;
-
-        } else {
-            gridPositionX += deltaX;
-        }
+        gridPositionX += deltaX;
 
         if(gridPositionX > 0) {
             gridPositionX = -segmentSize + 1;
@@ -102,17 +93,7 @@ Grid.prototype.scroll = function(xDir, yDir, xAmount, yAmount) {
         }
 
         this.viewY += deltaY;
-
-        if(this.viewY > 0) {
-            this.viewY = 0;
-            gridPositionY = 0;
-
-        } else if(this.viewY < -this.sourceHeightPixels + this.viewHeight) {
-            this.viewY = -this.sourceHeightPixels + this.viewHeight;
-
-        } else {
-            gridPositionY += deltaY;
-        }
+        gridPositionY += deltaY;
 
         if(gridPositionY > 0) {
             gridPositionY = -segmentSize + 1;
@@ -142,11 +123,11 @@ Grid.prototype.createSegments = function() {
         segments1 = this.segments[this.activeSegmentsIndex],
         segments2 = this.segments[this.nextSegmentsIndex];
 
-    for(var gridX = 0; gridX < gridWidth; gridX++) {
-        segments1[gridX] = [];
-        segments2[gridX] = [];
+    for(var gridY = 0; gridY < gridHeight; gridY++) {
+        segments1[gridY] = [];
+        segments2[gridY] = [];
 
-        for(var gridY = 0; gridY < gridHeight; gridY++) {
+        for(var gridX = 0; gridX < gridWidth; gridX++) {
             this.createSegment(gridX, gridY);
         }
     }
@@ -157,7 +138,7 @@ Grid.prototype.createSegment = function(gridX, gridY) {
         segments = this.segments[this.activeSegmentsIndex];
 
     this.containerElement.appendChild(segment);
-    segments[gridX][gridY] = segment;
+    segments[gridY][gridX] = segment;
 };
 
 Grid.prototype.createCanvas = function(gridX, gridY) {
@@ -177,18 +158,20 @@ Grid.prototype.createCanvas = function(gridX, gridY) {
 
 Grid.prototype.shiftPositions = function(hDir, vDir) {
     var newX, newY,
-        redraw,
+        redraw, adjustX = 0,
         segment;
 
-    for(var gridX = 0; gridX < this.gridWidth; gridX++) {
-        for(var gridY = 0; gridY < this.gridHeight; gridY++) {
-            segment = this.segments[this.activeSegmentsIndex][gridX][gridY];
+    for(var gridY = 0; gridY < this.gridHeight; gridY++) {
+        for(var gridX = 0; gridX < this.gridWidth; gridX++) {
+            segment = this.segments[this.activeSegmentsIndex][gridY][gridX];
+
             redraw = false;
 
             if(hDir == -1) {  //DIR_LEFT
                 if(gridX == 0) {
                     newX = this.gridWidth - 1;
                     redraw = true;
+                    adjustX = 0;
                 } else {
                     newX = gridX + hDir;
                 }
@@ -197,6 +180,7 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
                 if(gridX == this.gridWidth - 1) {
                     newX = 0;
                     redraw = true;
+                    adjustX = 4;
                 } else {
                     newX = gridX + hDir;
                 }
@@ -231,13 +215,24 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
                         this,
                         this.renderSegment,
                         segment,
-                        Math.floor(((newX * this.segmentSize) - this.viewX) / this.dataSourceCellSize),
-                        Math.floor(((newY * this.segmentSize) - this.viewY) / this.dataSourceCellSize)
+                        //Math.floor(this.viewX / this.dataSourceCellSize),
+                        //Math.floor(this.viewY / this.dataSourceCellSize)
+                        (Math.floor(((newX * this.segmentSize) - this.viewX) / this.segmentSize) * this.cellsPerSegment) - adjustX,
+                        Math.floor(((newY * this.segmentSize) - this.viewY) / this.segmentSize) * this.cellsPerSegment
                     )
                 );
+
+                console.log("shift " + ((Math.floor(-this.viewX / this.segmentSize) * this.cellsPerSegment) - adjustX));
+                /*Util.call(
+                    this,
+                    this.renderSegment,
+                    segment,
+                    Math.floor(((newX * this.segmentSize) - this.viewX) / this.segmentSize) * this.cellsPerSegment, //this.dataSourceCellSize),
+                    Math.floor(((newY * this.segmentSize) - this.viewY) / this.segmentSize) * this.cellsPerSegment //this.dataSourceCellSize)
+                )();*/
             }
 
-            this.segments[this.nextSegmentsIndex][newX][newY] = segment;
+            this.segments[this.nextSegmentsIndex][newY][newX] = segment;
         }
     }
 
@@ -248,14 +243,15 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
         this.activeSegmentsIndex = 0;
         this.nextSegmentsIndex++;
     }
+
+
 };
 
 Grid.prototype.update = function() {
     var segment;
-
-    for(var gridX = 0; gridX < this.gridWidth; gridX++) {
-        for(var gridY = 0; gridY < this.gridHeight; gridY++) {
-            segment = this.segments[this.activeSegmentsIndex][gridX][gridY];
+    for(var gridY = 0; gridY < this.gridHeight; gridY++) {
+        for(var gridX = 0; gridX < this.gridWidth; gridX++) {
+            segment = this.segments[this.activeSegmentsIndex][gridY][gridX];
 
             segment.style.left = (this.gridPositionX + (gridX * this.segmentSize))  + "px";
             segment.style.top = (this.gridPositionY + (gridY * this.segmentSize)) + "px";
@@ -276,36 +272,38 @@ Grid.prototype.renderSegment = function(segment, dataX, dataY) {
             finalX = dataX + cellX;
             finalY = dataY + cellY;
 
-            if(this.dataSource[finalX]) {
-                dataId = this.dataSource[finalX][finalY];
+            if(this.dataSource[finalY]) {
+                dataId = this.dataSource[finalY][finalX];
                 if(dataId !== undefined) {
                     asset = this.assetTable[dataId];
                     if(asset) {
-                        context2d.drawImage(asset, cellX * cellSize, cellY * cellSize);
+                        context2d.drawImage(asset.image, cellX * cellSize, cellY * cellSize);
 
-                        // Append two pixels from the next segment along the right edge.
+                        /*// Append two pixels from the next segment along the right edge.
                         // This is to fix a display glitch in iOS devices.
                         if(cellX == this.cellsPerSegment - 1) {
-                            if(this.dataSource[finalX + 1]) {
-                                asset = this.assetTable[this.dataSource[finalX + 1][finalY]];
+                            //if(this.dataSource[finalX + 1]) {
+                            if(this.dataSource[finalY][finalX + 1]) {
+                                asset = this.assetTable[this.dataSource[finalY][finalX + 1]];
                                                   // image,sx,sy,sw,    sh,    dx,      dy, dw, dh
-                                context2d.drawImage(asset, 0, 0, 2, cellSize, cellSize, 0, 2, cellSize);
+                                context2d.drawImage(asset.image, 0, 0, 2, cellSize, cellSize, 0, 2, cellSize);
                             }
                         }
 
                         // Append two pixels along the bottom edge as well.
                         if(cellY == this.cellsPerSegment - 1) {
-                            if(this.dataSource[finalX][finalY + 1]) {
-                                asset = this.assetTable[this.dataSource[finalX][finalY + 1]];
+                            //if(this.dataSource[finalX][finalY + 1]) {
+                            if(this.dataSource[finalY + 1]) {
+                                asset = this.assetTable[this.dataSource[finalY + 1][finalX]];
 
                                 context2d.drawImage(
-                                    asset,         // image
+                                    asset.image,         // image
                                     0, 0,           // sx,sy
                                     cellSize, 2,    // sw,sh
                                     0, cellSize,    // dx,dy
                                     cellSize, 2);   // dw,dh
                             }
-                        }
+                        }*/
                     }
                 }
             }

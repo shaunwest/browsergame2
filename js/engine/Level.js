@@ -2,7 +2,7 @@
  * @author shaun
  */
 
-function Level(tileSet, spriteSet, levelData) {
+function Level(tileSet, spriteSet, levelData, gameArea) {
 	if (arguments[0] === inheriting) return;
 
     this.tileSet            = tileSet;
@@ -10,6 +10,7 @@ function Level(tileSet, spriteSet, levelData) {
 
     this.spriteSet          = spriteSet;
 	this.levelData          = levelData;
+    this.gameArea           = gameArea;
 
     this.segmentGrid        = [];
     this.segmentCache       = {};
@@ -27,8 +28,10 @@ function Level(tileSet, spriteSet, levelData) {
     this.viewX              = 0;
     this.viewY              = 0;
 
-    this.viewMoveX           = 0;
-    this.viewMoveY           = 0;
+    this.viewMoveX          = 0;
+    this.viewMoveY          = 0;
+    this.dirX               = 0;
+    this.dirY               = 0;
 
     this.viewWidth          = 17;
     this.viewHeight         = 17;
@@ -42,7 +45,21 @@ function Level(tileSet, spriteSet, levelData) {
     this.frameNumber        = 0;
     this.maxFrames          = 100;
     this.frameSpeedMult     = 3;
+
+    this.grid               = new Grid({containerElement: gameArea,
+        viewWidth: this.viewWidth * this.tileSize,
+        viewHeight: this.viewHeight * this.tileSize,
+        viewX: -this.viewX,
+        viewY: -this.viewY,
+        dataSource: levelData,
+        assetTable: tileSet.tiles,
+        cellsPerSegment: 4,
+        dataSourceCellSize: this.tileSize});
 }
+
+Level.prototype.init = function() {
+    this.grid.createSegments();
+};
 
 Level.prototype.addEntity = function(entity) {
 	this.entities.push(entity);
@@ -77,9 +94,11 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
         if(moveX > 0) {
             if(newX < this.pixelWidth - this.viewMarginRight && newX - this.viewX > this.viewMarginRight) {
                 this.viewMoveX = moveX;
+                this.dirX = 1;
 
             } else {
                 this.viewMoveX = 0;
+                this.dirX = 0;
             }
 
             entity.x = newX;
@@ -87,9 +106,11 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
         } else if(moveX < 0) {
             if(newX > this.viewMarginLeft && newX - this.viewX < this.viewMarginLeft) {
                this.viewMoveX = moveX;
+                this.dirX = -1;
 
             } else {
                 this.viewMoveX = 0;
+                this.dirX = 0;
             }
 
             entity.x = newX;
@@ -97,6 +118,8 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
         } else {
             this.viewMoveX = 0;
             this.viewMoveY = 0;
+            this.dirX = 0;
+            this.dirY = 0;
         }
 
         entity.y = newY;
@@ -308,7 +331,7 @@ Level.prototype.getTile = function(x, y) {
     return this.tileSet.getTileDefinition(tileId);
 };
 
-Level.prototype.moveView = function(deltaX, deltaY) {
+Level.prototype.moveView = function(deltaX, deltaY, dirX, dirY) {
     this.viewX += deltaX;
     this.viewY += deltaY;
 
@@ -319,6 +342,8 @@ Level.prototype.moveView = function(deltaX, deltaY) {
     if(this.viewY < 0) {
         this.viewY = 0;
     }
+
+    this.grid.scroll(-dirX, -dirY, Math.abs(deltaX), Math.abs(deltaY));
 };
 
 Level.prototype.getView = function() {
@@ -328,7 +353,7 @@ Level.prototype.getView = function() {
     };
 };
 
-Level.prototype.createSegments = function(gameArea) {
+/*Level.prototype.createSegments = function(gameArea) {
     var segment,
         segmentSize = this.segmentSize,
         endX = Math.floor(this.viewWidth / segmentSize),
@@ -395,41 +420,6 @@ Level.prototype.updateSegments = function(gameArea) {
             }
         }
     }
-    /*for(var y = startY; y <= endY; y++) {
-        for(var x = startX; x <= endX; x++) {
-            if(displayGrid[gridX]) {
-                segment = displayGrid[gridX][gridY];
-
-                if(segment) {
-                    if(activeSegments[x] && activeSegments[x][y]) {
-                        if(!newActiveSegments[x]) {
-                            newActiveSegments[x] = [];
-                        }
-
-                        newActiveSegments[x][y] = true;
-
-                        this.moveSegment(segment, x, y);
-
-                    } else {
-                        if(!newActiveSegments[x]) {
-                            newActiveSegments[x] = [];
-                        }
-                        newActiveSegments[x][y] = true;
-
-                        this.moveSegment(segment, x, y);
-
-                        segment.render(x, y);
-                    }
-                }
-            }
-            gridX++;
-        }
-        gridX = 0;
-        gridY++;
-    }*/
-
-    // remove any segments that remain in the old segment cache
-    /*this.clearSegments(gameArea, segmentCache);*/
 
     this.segmentCache = newActiveSegments;
 };
@@ -462,44 +452,11 @@ Level.prototype.clearSegments = function(gameArea, segmentCache) {
             }
         }
     }
-};
+};*/
 
 // TODO break down into multiple functions
 Level.prototype.updateAndDraw = function(context, gameArea, secondsElapsed) {
-    /*var startX = Math.floor(this.viewX / this.tileSize);
-    var startY = Math.floor(this.viewY / this.tileSize);
-
-    var endX   = startX + this.viewWidth;
-    var endY   = startY + this.viewHeight;
-
-    // Draw level
-    for(var y = startY; y < endY; y++) {
-        for(var x = startX; x < endX; x++) {
-            var tileId = this.levelData[y][x];
-            var tile = this.tileSet.getTile(tileId);
-            if(tile) {
-                var tileImage;
-
-                var frames = tile['frames'];
-                if(frames.length > 0) {
-                    var frameIndex = Math.floor(this.frameNumber) % (frames.length + 1);
-                    if(frameIndex == 0) {
-                        tileImage = tile['image'];
-
-                    } else {
-                        tileImage = frames[frameIndex - 1];
-                    }
-
-                } else {
-                    tileImage = tile['image'];
-                }
-
-                context.drawImage(tileImage, (x * this.tileSize) - this.viewX, (y * this.tileSize) - this.viewY);
-            }
-        }
-    }*/
-
-    this.updateSegments(gameArea);
+    //this.updateSegments(gameArea);
 
     // Track tile animation frames (zero-based)
     this.frameNumber += (secondsElapsed * this.frameSpeedMult);
@@ -524,7 +481,9 @@ Level.prototype.updateAndDraw = function(context, gameArea, secondsElapsed) {
 	}
 
     // Adjust the view position if necessary
-    this.moveView(this.viewMoveX, this.viewMoveY);
+    this.moveView(this.viewMoveX, this.viewMoveY, this.dirX, this.dirY);
+
+    this.grid.update();
 };
 
 
