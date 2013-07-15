@@ -12,28 +12,7 @@ function Engine(props) {
     this.init(props);
 }
 
-function setRequestAnimationFrame(frameLength) {
-    /*window.requestAnimationFrame = (function () {
-        return function (callback, fps) {
-            window.setTimeout(callback, frameLength); // frames per second
-        }
-    })();*/
-    if (!window.requestAnimationFrame) {
-        window.requestAnimationFrame = (function () {
-            return window.webkitRequestAnimationFrame ||
-                window.mozRequestAnimationFrame ||
-                window.oRequestAnimationFrame ||
-                window.msRequestAnimationFrame ||
-                function (callback, fps) {
-                    window.setTimeout(callback, frameLength); // frames per second
-                };
-        })();
-    }
-}
-
 Engine.prototype.init = function(props) {
-    var self = this;
-
     this.fps                    = props.fps;
     this.frameLength            = Math.floor(ONE_SECOND / this.fps);
     this.currentFps             = 0;
@@ -50,7 +29,6 @@ Engine.prototype.init = function(props) {
     this.tileSet                = null;
 
     this.spriteSetList          = {};
-    this.spriteSheetsLoading    = 0;
     this.spriteSet              = null;
 
     this.triggerSetList         = {};
@@ -87,26 +65,15 @@ Engine.prototype.init = function(props) {
     this.updateCallback         = props.update;
     this.createSpritesCallback  = props.createSprites;
 
-    this.isFullScreen           = false;
+    this.updateFunc             = Util.call(this, this.update);
 
     this.initSetList('tileSets', this.tileSetList);
     this.initSetList('spriteSets', this.spriteSetList);
     this.initSetList('triggerSets', this.triggerSetList);
 
-    setRequestAnimationFrame(this.frameLength);
+    Util.setRequestAnimationFrame(this.frameLength);
 
-    // Events
-    document.addEventListener("fullscreenchange", function(e) {
-        console.log("fullscreenchange event! ", e);
-    });
-    document.addEventListener("mozfullscreenchange", function(e) {
-        console.log("mozfullscreenchange event! ", e);
-    });
-    document.addEventListener("webkitfullscreenchange", function(e) {
-        console.log("webkitfullscreenchange event! ", e);
-    });
-
-    window.addEventListener('resize', function() { self.resizeCanvas() }, false);
+    window.addEventListener('resize', Util.call(this, this.resizeCanvas), false);
 };
 
 Engine.prototype.resizeCanvas = function() {
@@ -120,30 +87,6 @@ Engine.prototype.resizeCanvas = function() {
     } else {
         canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "768px"; //newWidth + "px";
     }
-};
-
-// helper methods
-Engine.prototype.launchFullScreen = function(element) {
-    var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.webkitFullscreenEnabled;
-
-    if(!this.isFullScreen) {
-        if(element.requestFullScreen) {
-            element.requestFullScreen();
-        } else if(element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
-        } else if(element.webkitRequestFullScreen) {
-            element.webkitRequestFullScreen();
-            console.log("FULLSCREEN!");
-        }
-
-        this.isFullScreen = true;
-    }
-};
-
-Engine.prototype.cancelFullScreen = function() {
-    if(document.cancelFullScreen) { document.cancelFullScreen(); }
-    else if(document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
-    else if(document.webkitCancelFullScreen) { document.webkitCancelFullScreen(); }
 };
 
 Engine.prototype.enableAllKeys = function() {
@@ -246,14 +189,12 @@ Engine.prototype.getFontSheet = function(fontSheetPath) {
 };
 
 Engine.prototype.getTileSheet = function(tileSheetPath) {
-    var self = this;
-
     var tileSheet = new Image();
     tileSheet.src = "assets/" + tileSheetPath;
-    tileSheet.onload = function() {
-        self.tileSet = new TileSet(self.tileSetList[self.currentTileSetId], tileSheet, self.config.tileSize);
-        self.tileSheetReady();
-    };
+    tileSheet.onload = Util.call(this, function() {
+        this.tileSet = new TileSet(this.tileSetList[this.currentTileSetId], tileSheet, this.config.tileSize);
+        this.tileSheetReady();
+    });
 };
 
 Engine.prototype.tileSheetReady = function() {
@@ -263,7 +204,7 @@ Engine.prototype.tileSheetReady = function() {
     this.getTriggers(levelConfig['triggers']);
 
     this.spriteSet = new SpriteSet(this.spriteSetList[this.currentSpriteSetId]);
-    this.getSpriteSheets(levelConfig['sprites'], this.spriteSetList[this.currentSpriteSetId]['spriteDefinitions']);
+    this.loadSpriteAssets(this.spriteSetList[this.currentSpriteSetId]['spriteDefinitions'], Util.call(this, this.getSprites, levelConfig['sprites']));
 };
 
 Engine.prototype.createTriggerMap = function(triggerDefinitions) {
@@ -281,13 +222,15 @@ Engine.prototype.createTriggerMap = function(triggerDefinitions) {
 Engine.prototype.getTriggers = function(triggers) {
     var triggerMap = this.triggerMap,
         numTriggers = triggers.length,
-        level = this.level;
+        level = this.level,
+        trigger, triggerDef,
+        entity;
 
     for(var i = 0; i < numTriggers; i++) {
-        var trigger = triggers[i];
-        var triggerDef = triggerMap[trigger.triggerId];
+        trigger = triggers[i];
+        triggerDef = triggerMap[trigger.triggerId];
 
-        var entity = new Entity(null, triggerDef);
+        entity = new Entity(null, triggerDef);
         entity.x = trigger.x;
         entity.y = trigger.y;
 
@@ -295,34 +238,30 @@ Engine.prototype.getTriggers = function(triggers) {
     }
 };
 
-Engine.prototype.getSpriteSheets = function(sprites, spriteDefinitions) {
-    var self = this,
-        numSpriteDefs = spriteDefinitions.length,
-        spriteSet = this.spriteSet;
+Engine.prototype.loadSpriteAssets = function(spriteDefinitions, ready, index) {
+    index = Util.def(index, 0);
 
-    for(var i = 0; i < numSpriteDefs; i++) {
-        var spriteDef = spriteDefinitions[i];
-        var spriteId = spriteDef['id'];
+    var spriteDef = spriteDefinitions[index],
+        spriteSet = this.spriteSet,
+        spriteId,
+        spriteSheet;
+
+    if(spriteDef) {
+        spriteId = spriteDef['id'];
 
         if(!spriteSet.getSpriteSheet(spriteId)) {
-            this.spriteSheetsLoading++;
-
-            var spriteSheet = new Image();
+            spriteSheet = new Image();
             spriteSheet.src = "assets/" + spriteDef['filePath'];
-            spriteSheet.onload = function() {
-                self.spriteSheetReady(sprites);
-            };
+            spriteSheet.onload = Util.call(this, function() {
+                spriteSet.addSpriteSheet(spriteId, spriteSheet);
 
-            spriteSet.addSpriteSheet(spriteId, spriteSheet);
+                if(++index >= spriteDefinitions.length) {
+                    ready();
+                } else {
+                    this.loadSpriteAssets(spriteDefinitions, ready, index);
+                }
+            });
         }
-    }
-};
-
-Engine.prototype.spriteSheetReady = function(sprites) {
-    this.spriteSheetsLoading--;
-
-    if(this.spriteSheetsLoading == 0) {
-        this.getSprites(sprites);
     }
 };
 
@@ -336,7 +275,7 @@ Engine.prototype.getSprites = function(sprites) {
         var sprite = sprites[i],
             spriteId = sprite['spriteId'],
             spriteDef = spriteSet.getSpriteDefinition(spriteId),
-            width = spriteDef.width,
+            width = spriteDef['width'],
             defaultDelay = spriteDef['defaultDelay'],
             spriteSheet = spriteSet.getSpriteSheet(spriteId),
             entity;
@@ -398,7 +337,6 @@ Engine.prototype.startGame = function() {
 
     setInterval(Util.call(this, this.tick), ONE_SECOND);
 
-    ///this.level.createSegments(this.canvasContainer);
     this.level.init();
 
     this.update();
@@ -411,8 +349,8 @@ Engine.prototype.checkKeys = function(secondsElapsed) {
 };
 
 Engine.prototype.update = function() {
-    var now = new Date();
-    var secondsElapsed = (now - this.lastUpdateTime) / ONE_SECOND;
+    var now = new Date(),
+        secondsElapsed = (now - this.lastUpdateTime) / ONE_SECOND;
 
     this.lastUpdateTime = now;
 
@@ -431,17 +369,17 @@ Engine.prototype.update = function() {
         this.updateCallback(secondsElapsed);
     }
 
-    this.displayStatus();
+    ///this.displayStatus();
 
-    requestAnimationFrame(Util.call(this, this.update));
+    requestAnimationFrame(this.updateFunc);
 };
 
 Engine.prototype.displayStatus = function() {
     if(this.statusArea) {
-        this.statusArea.innerHTML =
+       this.statusArea.innerHTML =
             "<label>FPS:</label> " + this.currentFps + "<br>" +
             "<label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
-            "<label>Grid Pos:</label> " + this.level.grid.viewX + ", " + this.level.grid.viewY;
+            "<label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX;
     }
 };
 

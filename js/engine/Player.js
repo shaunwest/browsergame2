@@ -63,7 +63,7 @@ function Player(animations, def, engine) {
     this.engine             = engine;
 	this.onGround           = false;
 	
-	this.bounds             = {left: 30, top: 15, right: 30, bottom: 0};
+	this.boundsDefinition   = {left: 30, top: 15, right: 30, bottom: 0};
 			
 	this.doMoveY            = true;
 

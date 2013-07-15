@@ -9,7 +9,7 @@ function Goblin1(animations, def) {
 
 	this.onGround               = false;
 	
-	this.bounds                 = {left: 30, top: 15, right: 30, bottom: 0};
+	this.boundsDefinition       = {left: 30, top: 15, right: 30, bottom: 0};
 			
 	this.doMoveY                = true;
 	this.doMoveX                = true;

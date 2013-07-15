@@ -26,7 +26,7 @@ var engine;
 
 $.ajax({
     type: "get",
-    url: "assets/test4.conf",
+    url: "assets/test5.conf",
     dataType: "json",
     success: configReady
 });
@@ -107,15 +107,11 @@ function checkKeys(keys) {
         } else {
             player.allowAttack = true;
         }
-
-        if(keys[KEY_F]) {
-            engine.launchFullScreen(document.documentElement);
-        }
     }
 }
 
 function createSprites(sprite, spriteDef, spriteSheet) {
-    var width = spriteDef.width,
+    var width = spriteDef['width'],
         defaultDelay = spriteDef['defaultDelay'],
         entity;
 

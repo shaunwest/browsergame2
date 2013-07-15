@@ -29,15 +29,15 @@ function Entity(animations, def) {
 	this.haltYDir           = 0;
 	
 	this.animations         = animations;
-	this.size               = def.width;
+	this.size               = def['width'];
 	
-	this.bounds             = {left: 0, top: 0, right: 0, bottom: 0};
+	this.boundsDefinition   = {left: 0, top: 0, right: 0, bottom: 0};
     this.attackBounds       = {left: 0, top: 0, width: 34, height: 48};
 	
-	this.type               = def.type;
-	this.levelCollisions    = def.levelCollisions;
-	this.entityCollisions   = def.entityCollisions;
-	this.resolveCollisions  = def.resolveCollisions;
+	this.type               = def['type'];
+	this.levelCollisions    = def['levelCollisions'];
+	this.entityCollisions   = def['entityCollisions'];
+	this.resolveCollisions  = def['resolveCollisions'];
 
     this.lastIntersection   = null;
     this.lastHitIntersection= null;
@@ -58,12 +58,28 @@ function Entity(animations, def) {
 	this.currentAnimation   = new AnimationPlayer(animation);
 }
 
+Entity.prototype.boundsLeft = function() {
+    return this.x + this.boundsDefinition.left;
+};
+
+Entity.prototype.boundsTop = function() {
+    return this.y + this.boundsDefinition.top;
+};
+
+Entity.prototype.boundsRight = function() {
+    return this.x + (this.size - this.boundsDefinition.right);
+};
+
+Entity.prototype.boundsBottom = function() {
+    return this.y + (this.size - this.boundsDefinition.bottom);
+};
+
 Entity.prototype.adjustedBounds = function() {
 	return {
-		left: this.x + this.bounds.left,
-		top: this.y + this.bounds.top, 
-		right: this.x + (this.size - this.bounds.right), 
-		bottom: this.y + (this.size - this.bounds.bottom)
+		left: this.x + this.boundsDefinition.left,
+		top: this.y + this.boundsDefinition.top,
+		right: this.x + (this.size - this.boundsDefinition.right),
+		bottom: this.y + (this.size - this.boundsDefinition.bottom)
 	};
 };
 
@@ -93,13 +109,10 @@ Entity.prototype.adjustedAttackBounds = function() {
 };
 
 Entity.prototype.intersects = function(entity) {
-    var bounds1 = this.adjustedBounds();
-    var bounds2 = entity.adjustedBounds();
-    
-    if(bounds2.left > bounds1.right || 
-       bounds2.right < bounds1.left ||
-       bounds2.top > bounds1.bottom ||
-       bounds2.bottom < bounds1.top) {
+    if(entity.boundsLeft() > this.boundsRight() ||
+        entity.boundsRight() < this.boundsLeft() ||
+        entity.boundsTop() > this.boundsBottom() ||
+        entity.boundsBottom() < this.boundsTop()) {
     	return null;    	
     
     } else {

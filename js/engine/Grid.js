@@ -62,6 +62,9 @@ Grid.prototype.initConfig = function(config) {
     this.activeSegmentsIndex            = 0;
     this.nextSegmentsIndex              = 1;
 
+    this.posX                           = 0;
+    this.posY                           = 0;
+
     this.queue                          = new FrameQueue();
 };
 
@@ -69,14 +72,53 @@ Grid.prototype.exception = function(error) {
     throw error;
 };
 
-Grid.prototype.scroll = function(xDir, yDir, xAmount, yAmount) {
+
+Grid.prototype.setPosition = function(x, y) {
+    var segmentSize = this.segmentSize,
+        deltaX = x - this.posX,
+        deltaY = y - this.posY,
+        gridPositionX = this.gridPositionX + deltaX,
+        gridPositionY = this.gridPositionY + deltaY,
+        shiftX = 0,
+        shiftY = 0;
+
+    if(deltaX != 0) {    // only change state if an actual change occurred!
+        this.posX = x;
+        if(deltaX > 0) { // Slide left, kick to the right, shift to the left, grid pos is 0 on shifts
+            if(gridPositionX >= segmentSize) {
+                gridPositionX = gridPositionX - segmentSize;
+                shiftX = -1;
+            }
+
+        } else if (deltaX < 0) { // Slide right, shift to the right, kick to the left, grid pos is -segmentSize on shifts
+            if(gridPositionX < 0) {
+                gridPositionX = segmentSize + gridPositionX;
+                shiftX = 1;
+            }
+        }
+    }
+
+    if(deltaY != 0) {
+        this.posY = y;
+    }
+
+    if(shiftX != 0) {
+        this.shiftPositions(shiftX, shiftY);
+    }
+
+    this.gridPositionX = gridPositionX;
+    this.gridPositionY = gridPositionY;
+};
+
+/*Grid.prototype.scroll = function(xDir, yDir, xAmount, yAmount) {
     var segmentSize = this.segmentSize,
         deltaX = xDir * xAmount,
         deltaY = yDir * yAmount,
         doShiftX = false,
         doShiftY = false,
         gridPositionX = this.gridPositionX,
-        gridPositionY = this.gridPositionY;
+        gridPositionY = this.gridPositionY,
+        diffX;
 
     if(xAmount > 0 || yAmount > 0) {
     //if(xDir != 0 || yDir != 0) {
@@ -84,23 +126,25 @@ Grid.prototype.scroll = function(xDir, yDir, xAmount, yAmount) {
         gridPositionX += deltaX;
 
         if(gridPositionX > 0) {
-            gridPositionX = -segmentSize + 1;
+            diffX = gridPositionX % segmentSize;
+            gridPositionX = -segmentSize + 1 + diffX;
             doShiftX = true;
 
         } else if(gridPositionX <= -segmentSize) {
-            gridPositionX = 0;
+            diffX = gridPositionX % segmentSize;
+            gridPositionX = diffX;
             doShiftX = true;
         }
 
         this.viewY += deltaY;
         gridPositionY += deltaY;
 
-        if(gridPositionY > 0) {
-            gridPositionY = -segmentSize + 1;
+        if(gridPositionY > segmentSize) {
+            gridPositionY = 0;
             doShiftY = true;
 
-        } else if(gridPositionY <= -segmentSize) {
-            gridPositionY = 0;
+        } else if(gridPositionY <0 ) {
+            gridPositionY = segmentSize;
             doShiftY = true;
         }
 
@@ -114,8 +158,10 @@ Grid.prototype.scroll = function(xDir, yDir, xAmount, yAmount) {
 
         this.gridPositionX = gridPositionX;
         this.gridPositionY = gridPositionY;
+
+        console.log(diffX);
     }
-};
+};*/
 
 Grid.prototype.createSegments = function() {
     var gridWidth = this.gridWidth,
@@ -151,7 +197,7 @@ Grid.prototype.createCanvas = function(gridX, gridY) {
     canvas.width = canvas.height = this.segmentSize + 2;
     canvas.style.position = "absolute";
 
-    this.renderSegment(canvas, cellX - Math.floor(this.viewX / dataSourceCellSize), cellY - Math.floor(this.viewY / dataSourceCellSize));
+    this.renderSegment(canvas, cellX + Math.floor(this.posX / dataSourceCellSize), cellY + Math.floor(this.posY / dataSourceCellSize));
 
     return canvas;
 };
@@ -164,25 +210,24 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
     for(var gridY = 0; gridY < this.gridHeight; gridY++) {
         for(var gridX = 0; gridX < this.gridWidth; gridX++) {
             segment = this.segments[this.activeSegmentsIndex][gridY][gridX];
-
             redraw = false;
 
-            if(hDir == -1) {  //DIR_LEFT
+            if(hDir == -1) {  // move left, kick to the right, shift left
                 if(gridX == 0) {
                     newX = this.gridWidth - 1;
                     redraw = true;
                     adjustX = 0;
                 } else {
-                    newX = gridX + hDir;
+                    newX = gridX - 1;
                 }
 
-            } else if(hDir == 1) { // DIR_RIGHT
+            } else if(hDir == 1) { // move right, kick to the left, shift right
                 if(gridX == this.gridWidth - 1) {
                     newX = 0;
                     redraw = true;
                     adjustX = 4;
                 } else {
-                    newX = gridX + hDir;
+                    newX = gridX + 1;
                 }
 
             } else {
@@ -194,7 +239,7 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
                     newY = this.gridHeight - 1;
                     redraw = true;
                 } else {
-                    newY = gridY + vDir;
+                    newY = gridY - 1;
                 }
 
             } else if(vDir == 1) { // DIR_DOWN
@@ -202,7 +247,7 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
                     newY = 0;
                     redraw = true;
                 } else {
-                    newY = gridY + vDir;
+                    newY = gridY + 1;
                 }
 
             } else {
@@ -217,12 +262,12 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
                         segment,
                         //Math.floor(this.viewX / this.dataSourceCellSize),
                         //Math.floor(this.viewY / this.dataSourceCellSize)
-                        (Math.floor(((newX * this.segmentSize) - this.viewX) / this.segmentSize) * this.cellsPerSegment) - adjustX,
-                        Math.floor(((newY * this.segmentSize) - this.viewY) / this.segmentSize) * this.cellsPerSegment
+                        (Math.floor(((newX * this.segmentSize) + this.posX) / this.segmentSize) * this.cellsPerSegment), // - adjustX,
+                        Math.floor(((newY * this.segmentSize) + this.posY) / this.segmentSize) * this.cellsPerSegment
                     )
                 );
 
-                console.log("shift " + ((Math.floor(-this.viewX / this.segmentSize) * this.cellsPerSegment) - adjustX));
+                //console.log("shift " + ((Math.floor(this.posX / this.segmentSize) * this.cellsPerSegment)));
                 /*Util.call(
                     this,
                     this.renderSegment,
@@ -243,8 +288,6 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
         this.activeSegmentsIndex = 0;
         this.nextSegmentsIndex++;
     }
-
-
 };
 
 Grid.prototype.update = function() {
@@ -253,8 +296,8 @@ Grid.prototype.update = function() {
         for(var gridX = 0; gridX < this.gridWidth; gridX++) {
             segment = this.segments[this.activeSegmentsIndex][gridY][gridX];
 
-            segment.style.left = (this.gridPositionX + (gridX * this.segmentSize))  + "px";
-            segment.style.top = (this.gridPositionY + (gridY * this.segmentSize)) + "px";
+            segment.style.left = ((gridX * this.segmentSize) - this.gridPositionX)  + "px";
+            segment.style.top = ((gridY * this.segmentSize) - this.gridPositionY) + "px";
         }
     }
 

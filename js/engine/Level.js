@@ -49,8 +49,8 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
     this.grid               = new Grid({containerElement: gameArea,
         viewWidth: this.viewWidth * this.tileSize,
         viewHeight: this.viewHeight * this.tileSize,
-        viewX: -this.viewX,
-        viewY: -this.viewY,
+        viewX: this.viewX,
+        viewY: this.viewY,
         dataSource: levelData,
         assetTable: tileSet.tiles,
         cellsPerSegment: 4,
@@ -70,7 +70,10 @@ Level.prototype.addTrigger = function(entity) {
 };
 
 Level.prototype.updateEntity = function(entity, secondsElapsed) {
-	entity.updateStart(secondsElapsed);
+	var moveX, moveY,
+        newX, newY;
+
+    entity.updateStart(secondsElapsed);
 
 	if(entity.levelCollisions) {
 		this.checkXCollision(entity);
@@ -82,12 +85,12 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
 		this.checkTriggerCollisions(entity);
 	}
 
-    var moveX = entity.moveX;
-    var moveY = entity.moveY;
+    moveX = entity.moveX;
+    moveY = entity.moveY;
 
     if(entity === this.viewTarget) {
-        var newX = entity.x + moveX;
-        var newY = entity.y + moveY;
+        newX = entity.x + moveX;
+        newY = entity.y + moveY;
 
         //trace(moveX);
 
@@ -145,8 +148,10 @@ Level.prototype.setViewTarget = function(entity) {
 };
 
 Level.prototype.checkEntityCollisions = function(entity1) {
-	for(var i = 0; i < this.entities.length; i++) {
-		var entity2 = this.entities[i];
+	var entity2;
+
+    for(var i = 0; i < this.entities.length; i++) {
+		entity2 = this.entities[i];
 		if(entity2 && entity1 !== entity2) {
 			var intersection = entity1.intersects(entity2);
 			if(intersection) {
@@ -188,20 +193,17 @@ Level.prototype.handleEntityAttackCollision = function(attackingEntity, attacked
 };
 
 Level.prototype.checkXCollision = function(entity) {
-    var moveX = entity.moveX;
-    var bounds = entity.adjustedBounds();
-
-    var x1 = bounds.left + moveX,
-        tx1 = Math.floor(x1 / this.tileSize);
-
-    var x2 = bounds.right + moveX,
-        tx2 = Math.floor((x2 - 1) / this.tileSize);
-
-    var y1 = bounds.top,
-        ty1 = Math.floor(y1 / this.tileSize);
-
-    var y2 = bounds.bottom,
-        ty2 = Math.floor((y2 - 1) / this.tileSize);
+    var moveX = entity.moveX,
+        bounds = entity.adjustedBounds(),
+        x1 = bounds.left + moveX,
+        tx1 = Math.floor(x1 / this.tileSize),
+        x2 = bounds.right + moveX,
+        tx2 = Math.floor((x2 - 1) / this.tileSize),
+        y1 = bounds.top,
+        ty1 = Math.floor(y1 / this.tileSize),
+        y2 = bounds.bottom,
+        ty2 = Math.floor((y2 - 1) / this.tileSize),
+        i;
 
     if(y1 >= 0 && y2 < this.pixelHeight) {
         if(moveX > 0) {
@@ -210,7 +212,7 @@ Level.prototype.checkXCollision = function(entity) {
                 entity.levelCollisionX(1);
 
             } else {
-                for(var i = ty1; i <= ty2; i++) {
+                for(i = ty1; i <= ty2; i++) {
                     if(this.isSolid(tx2, i)) {
                         this.stopRight(entity, tx2);
                         entity.levelCollisionX(1, this.getTile(tx2, i));
@@ -238,20 +240,17 @@ Level.prototype.checkXCollision = function(entity) {
 };
 		
 Level.prototype.checkYCollision = function(entity) {
-	var moveY = entity.moveY;
-    var bounds = entity.adjustedBounds();
-	
-	var x1 = bounds.left,
-        tx1 = Math.floor(x1 / this.tileSize);
-	
-	var x2 = bounds.right,
-        tx2 = Math.floor((x2 - 1) / this.tileSize);
-	
-	var y1 = bounds.top + moveY,
-        ty1 = Math.floor(y1 / this.tileSize);
-	
-	var y2 = bounds.bottom + moveY,
-        ty2 = Math.floor((y2 - 1) / this.tileSize);
+	var moveY = entity.moveY,
+        bounds = entity.adjustedBounds(),
+        x1 = bounds.left,
+        tx1 = Math.floor(x1 / this.tileSize),
+        x2 = bounds.right,
+        tx2 = Math.floor((x2 - 1) / this.tileSize),
+        y1 = bounds.top + moveY,
+        ty1 = Math.floor(y1 / this.tileSize),
+        y2 = bounds.bottom + moveY,
+        ty2 = Math.floor((y2 - 1) / this.tileSize),
+        i;
 
 	if(tx1 >= 0 && tx2 <= this.width) {
 		if(moveY > 0) { // seems to be crashing when player hits bottom border of level
@@ -260,7 +259,7 @@ Level.prototype.checkYCollision = function(entity) {
 				entity.levelCollisionY(1);
 				
 			} else {
-                for(var i = tx1; i <= tx2; i++) {
+                for(i = tx1; i <= tx2; i++) {
                     if(this.isSolid(i, ty2) || this.isPlatform(i, ty2)) {
                         this.stopDown(entity, ty2);
                         entity.levelCollisionY(1, this.getTile(i, ty2));
@@ -289,46 +288,40 @@ Level.prototype.checkYCollision = function(entity) {
 
 Level.prototype.stopRight = function(entity, value) {
 	if(entity.resolveCollisions) {
-		entity.x = (value * this.tileSize) + entity.bounds.right;
+		entity.x = (value * this.tileSize) + entity.boundsDefinition.right;
 		entity.x -= entity.size;
 	}
 };
 
 Level.prototype.stopLeft = function(entity, value) {
 	if(entity.resolveCollisions) {
-		entity.x = ((value + 1) * this.tileSize) - entity.bounds.left;
+		entity.x = ((value + 1) * this.tileSize) - entity.boundsDefinition.left;
 	}
 };
 
 Level.prototype.stopDown = function(entity, value) {
 	if(entity.resolveCollisions) {
-		entity.y = (value * this.tileSize) + entity.bounds.bottom;
+		entity.y = (value * this.tileSize) + entity.boundsDefinition.bottom;
 		entity.y -= entity.size;
 	} 
 };
 
 Level.prototype.stopUp = function(entity, value) {
 	if(entity.resolveCollisions) {
-		entity.y = ((value + 1) * this.tileSize) - entity.bounds.top;
+		entity.y = ((value + 1) * this.tileSize) - entity.boundsDefinition.top;
 	}
 };
 
 Level.prototype.isSolid = function(x, y) {
-	var def = this.getTile(x, y);
-	
-	return def.solid;
+	return this.getTile(x, y)['solid'];
 };
 
 Level.prototype.isPlatform = function(x, y) {
-	var def = this.getTile(x, y);
-	
-	return def.platform;
+	return this.getTile(x, y)['platform'];
 };
 
 Level.prototype.getTile = function(x, y) {
-	var tileId = this.levelData[y][x];
-	//return this.tileDefinitions[tileId];
-    return this.tileSet.getTileDefinition(tileId);
+    return this.tileSet.getTileDefinition(this.levelData[y][x]);
 };
 
 Level.prototype.moveView = function(deltaX, deltaY, dirX, dirY) {
@@ -343,121 +336,13 @@ Level.prototype.moveView = function(deltaX, deltaY, dirX, dirY) {
         this.viewY = 0;
     }
 
-    this.grid.scroll(-dirX, -dirY, Math.abs(deltaX), Math.abs(deltaY));
+    //this.grid.scroll(-dirX, -dirY, Math.abs(deltaX), Math.abs(deltaY));
+    //this.grid.scroll(-dirX, -dirY, Math.abs(deltaX), Math.abs(deltaY));
+    this.grid.setPosition(this.viewX, this.viewY);
 };
-
-Level.prototype.getView = function() {
-    return {
-        'x': this.viewX,
-        'y': this.viewY
-    };
-};
-
-/*Level.prototype.createSegments = function(gameArea) {
-    var segment,
-        segmentSize = this.segmentSize,
-        endX = Math.floor(this.viewWidth / segmentSize),
-        endY =  Math.floor(this.viewHeight / segmentSize),
-        segmentGrid = this.segmentGrid;
-
-    for(var x = 0; x <= endX; x++) {
-        segmentGrid[x] = [];
-
-        for(var y = 0; y <= endY; y++) {
-            segment = new Segment(segmentSize, segmentSize, this);
-
-            this.moveSegment(segment, x, y);
-            gameArea.appendChild(segment.canvas);
-
-            segmentGrid[x][y] = segment;
-        }
-    }
-};
-
-Level.prototype.updateSegments = function(gameArea) {
-    var segmentSize = this.segmentSize,
-        segmentSizePixels = this.segmentSizePixels,
-        startX = Math.floor(this.viewX / segmentSizePixels),    // start and end values should be in segment coordinates
-        startY = Math.floor(this.viewY / segmentSizePixels),
-        endX   = startX + Math.floor(this.viewWidth / segmentSize), // convert from tiles to segments
-        endY   = startY + Math.floor(this.viewHeight / segmentSize),
-        activeSegments = this.segmentCache,
-        newActiveSegments = [],
-        displayGrid = this.segmentGrid,
-        gridWidth = displayGrid.length,
-        gridHeight = displayGrid[0].length,
-        segment;
-
-    for(var gridY = 0; gridY < gridHeight; gridY++) {
-        for(var gridX = 0; gridX < gridWidth; gridX++) {
-            var activeX = gridX + startX;
-            var activeY = gridY + startY;
-
-            if(displayGrid[gridX]) {
-                segment = displayGrid[gridX][gridY];
-
-                if(segment) {
-                    if(activeSegments[activeX] && activeSegments[activeX][activeY]) {
-                        if(!newActiveSegments[activeX]) {
-                            newActiveSegments[activeX] = [];
-                        }
-
-                        newActiveSegments[activeX][activeY] = true;
-
-                        this.moveSegment(segment, activeX, activeY);
-
-                    } else {
-                        if(!newActiveSegments[activeX]) {
-                            newActiveSegments[activeX] = [];
-                        }
-                        newActiveSegments[activeX][activeY] = true;
-
-                        this.moveSegment(segment, activeX, activeY);
-
-                        segment.render(activeX, activeY);
-                    }
-                }
-            }
-        }
-    }
-
-    this.segmentCache = newActiveSegments;
-};
-
-Level.prototype.moveSegment = function(segment, segmentX, segmentY) {
-    var canvasX, canvasY,
-        segmentSize = this.segmentSizePixels,
-        canvas;
-
-    canvasX = (segmentX * segmentSize)  // convert from segment coords to pixel coords
-        - this.viewX;                  // move to view coords by subtracting view position
-
-    canvasY = (segmentY * segmentSize)
-        - this.viewY;
-
-    // Apply newly calculated canvas position
-    canvas = segment.canvas;
-    canvas.style.left = canvasX + "px";
-    canvas.style.top = canvasY + "px";
-};
-
-Level.prototype.clearSegments = function(gameArea, segmentCache) {
-    var segment;
-
-    for(var i in segmentCache) {
-        for(var j in segmentCache[i]) {
-            if(segmentCache[i][j]) {
-                segment = segmentCache[i][j];
-                gameArea.removeChild(segment.canvas);
-            }
-        }
-    }
-};*/
 
 // TODO break down into multiple functions
 Level.prototype.updateAndDraw = function(context, gameArea, secondsElapsed) {
-    //this.updateSegments(gameArea);
-
     // Track tile animation frames (zero-based)
     this.frameNumber += (secondsElapsed * this.frameSpeedMult);
     if(this.frameNumber >= this.maxFrames) {
