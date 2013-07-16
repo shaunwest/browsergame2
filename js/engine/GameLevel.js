@@ -14,8 +14,8 @@ GameLevel.prototype = new Level(inheriting);
 GameLevel.prototype.constructor = Level;
 GameLevel.base = Level.prototype;
 
-GameLevel.prototype.handleEntityCollision = function(entity1, entity2, intersection) {
-	GameLevel.base.handleEntityCollision.call(this, entity1, entity2, intersection);
+GameLevel.prototype.handleEntityCollision = function(entity1, entity2, intersectionX, intersectionY) {
+	GameLevel.base.handleEntityCollision.call(this, entity1, entity2, intersectionX, intersectionY);
 	
 	if(entity1.type == "player" && !entity1.isDamaged && !entity2.isDead) {
 		//this.removeEntity(entity1);
@@ -34,8 +34,8 @@ GameLevel.prototype.handleEntityAttackCollision = function(attackerEntity, attac
     }
 };
 
-GameLevel.prototype.handleTriggerCollision = function(entity, trigger, intersection) {
-	GameLevel.base.handleTriggerCollision.call(this, entity, trigger, intersection);
+GameLevel.prototype.handleTriggerCollision = function(entity, trigger, intersectionX, intersectionY) {
+	GameLevel.base.handleTriggerCollision.call(this, entity, trigger, intersectionX, intersectionY);
 	
 	if(entity.type == "player") {
 	}

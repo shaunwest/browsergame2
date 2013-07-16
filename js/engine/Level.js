@@ -12,11 +12,6 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
 	this.levelData          = levelData;
     this.gameArea           = gameArea;
 
-    this.segmentGrid        = [];
-    this.segmentCache       = {};
-    this.segmentSize        = 4;
-    this.segmentSizePixels  = this.segmentSize * this.tileSize;
-
 	this.height             = levelData.length;
 	this.width              = levelData[0].length;
 	
@@ -53,7 +48,7 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
         viewY: this.viewY,
         dataSource: levelData,
         assetTable: tileSet.tiles,
-        cellsPerSegment: 4,
+        cellsPerSegment: 8,
         dataSourceCellSize: this.tileSize});
 }
 
@@ -91,8 +86,6 @@ Level.prototype.updateEntity = function(entity, secondsElapsed) {
     if(entity === this.viewTarget) {
         newX = entity.x + moveX;
         newY = entity.y + moveY;
-
-        //trace(moveX);
 
         if(moveX > 0) {
             if(newX < this.pixelWidth - this.viewMarginRight && newX - this.viewX > this.viewMarginRight) {
@@ -153,40 +146,39 @@ Level.prototype.checkEntityCollisions = function(entity1) {
     for(var i = 0; i < this.entities.length; i++) {
 		entity2 = this.entities[i];
 		if(entity2 && entity1 !== entity2) {
-			var intersection = entity1.intersects(entity2);
-			if(intersection) {
-                entity1.lastIntersection = intersection;
-                this.handleEntityCollision(entity1, entity2, intersection);
-			}
+            if(entity1.intersects(entity2)) {
+                this.handleEntityCollision(entity1, entity2, entity1.lastIntersectionX, entity1.lastIntersectionY);
+            }
 
+            // DEBUG: removed temporarily for performance testing
             // TODO: can this be changed to only get called under certain conditions?
-            var attackIntersection = entity1.attackIntersects(entity2);
+            /*var attackIntersection = entity1.attackIntersects(entity2);
             if(attackIntersection) {
                 entity1.lastAttackIntersection = attackIntersection;
                 entity2.lastHitIntersection = attackIntersection;
 
                 this.handleEntityAttackCollision(entity1, entity2, attackIntersection);
-            }
+            }*/
 		}
 	}
 };
 
+// TODO: test
 Level.prototype.checkTriggerCollisions = function(entity) {
 	for(var i = 0; i < this.triggers.length; i++) {
 		var trigger = this.triggers[i];
 		if(trigger) {
-			var intersection = entity.intersects(trigger);
-			if(intersection) {
-				this.handleTriggerCollision(entity, trigger, intersection);
+			if(entity.intersects(trigger)) {
+				this.handleTriggerCollision(entity, trigger, entity.lastIntersectionX, entity.lastIntersectionY);
 			}
 		}
 	}
 };
 
-Level.prototype.handleEntityCollision = function(entity1, entity2, intersection) {
+Level.prototype.handleEntityCollision = function(entity1, entity2, intersectionX, intersectionY) {
 };
 
-Level.prototype.handleTriggerCollision = function(entity, trigger, intersection) {
+Level.prototype.handleTriggerCollision = function(entity, trigger, intersectionX, intersectionY) {
 };
 
 Level.prototype.handleEntityAttackCollision = function(attackingEntity, attackedEntity, intersection) {
@@ -194,14 +186,13 @@ Level.prototype.handleEntityAttackCollision = function(attackingEntity, attacked
 
 Level.prototype.checkXCollision = function(entity) {
     var moveX = entity.moveX,
-        bounds = entity.adjustedBounds(),
-        x1 = bounds.left + moveX,
+        x1 = entity.boundsLeft() + moveX,
         tx1 = Math.floor(x1 / this.tileSize),
-        x2 = bounds.right + moveX,
+        x2 = entity.boundsRight() + moveX,
         tx2 = Math.floor((x2 - 1) / this.tileSize),
-        y1 = bounds.top,
+        y1 = entity.boundsTop(),
         ty1 = Math.floor(y1 / this.tileSize),
-        y2 = bounds.bottom,
+        y2 = entity.boundsBottom(),
         ty2 = Math.floor((y2 - 1) / this.tileSize),
         i;
 
@@ -241,14 +232,13 @@ Level.prototype.checkXCollision = function(entity) {
 		
 Level.prototype.checkYCollision = function(entity) {
 	var moveY = entity.moveY,
-        bounds = entity.adjustedBounds(),
-        x1 = bounds.left,
+        x1 = entity.boundsLeft(),
         tx1 = Math.floor(x1 / this.tileSize),
-        x2 = bounds.right,
+        x2 = entity.boundsRight(),
         tx2 = Math.floor((x2 - 1) / this.tileSize),
-        y1 = bounds.top + moveY,
+        y1 = entity.boundsTop() + moveY,
         ty1 = Math.floor(y1 / this.tileSize),
-        y2 = bounds.bottom + moveY,
+        y2 = entity.boundsBottom() + moveY,
         ty2 = Math.floor((y2 - 1) / this.tileSize),
         i;
 
@@ -336,8 +326,6 @@ Level.prototype.moveView = function(deltaX, deltaY, dirX, dirY) {
         this.viewY = 0;
     }
 
-    //this.grid.scroll(-dirX, -dirY, Math.abs(deltaX), Math.abs(deltaY));
-    //this.grid.scroll(-dirX, -dirY, Math.abs(deltaX), Math.abs(deltaY));
     this.grid.setPosition(this.viewX, this.viewY);
 };
 
@@ -349,26 +337,27 @@ Level.prototype.updateAndDraw = function(context, gameArea, secondsElapsed) {
         this.frameNumber = 0;
     }
 
-    // Draw entities
+    this.updateAndDrawEntities(context, secondsElapsed);
+    this.moveView(this.viewMoveX, this.viewMoveY, this.dirX, this.dirY);
+
+    this.grid.update();
+};
+
+Level.prototype.updateAndDrawEntities = function(context, secondsElapsed) {
     for(var i = 0; i < this.entities.length; i++) {
-		var entity = this.entities[i];
-		if(entity) {
-			this.updateEntity(entity, secondsElapsed);
+        var entity = this.entities[i];
+        if(entity) {
+            this.updateEntity(entity, secondsElapsed);
 
             if(entity.isVisible) {
                 var currentFrames = entity.getCurrentFrames();
                 for(var j = 0; j < currentFrames.length; j++) {
                     var frame = currentFrames[j];
-                    context.drawImage(frame.image, frame.x - this.viewX, frame.y - this.viewY);
+                    //context.drawImage(frame.image, frame.x - this.viewX, frame.y - this.viewY);
                 }
             }
-		}
-	}
-
-    // Adjust the view position if necessary
-    this.moveView(this.viewMoveX, this.viewMoveY, this.dirX, this.dirY);
-
-    this.grid.update();
+        }
+    }
 };
 
 

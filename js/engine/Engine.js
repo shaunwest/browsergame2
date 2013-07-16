@@ -82,10 +82,16 @@ Engine.prototype.resizeCanvas = function() {
         canvasContainer = this.canvasContainer,
         canvas = this.canvas;
 
-    if(newWidth > newHeight) {
-        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "768px"; //newHeight + "px";
+    /*if(newWidth > newHeight) {
+        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "1024px"; //"768px"; //newHeight + "px";
     } else {
-        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "768px"; //newWidth + "px";
+        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "1024px"; //"768px"; //newWidth + "px";
+    }*/
+
+    if(newWidth > newHeight) {
+        canvasContainer.style.width = canvasContainer.style.height = canvas.width + "px"; //"1024px"; //"768px"; //newHeight + "px";
+    } else {
+        canvasContainer.style.width = canvasContainer.style.height = canvas.width + "px"; //"1024px"; //"768px"; //newWidth + "px";
     }
 };
 
@@ -358,7 +364,7 @@ Engine.prototype.update = function() {
 
     this.checkKeys(secondsElapsed);
 
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    ///this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.level.updateAndDraw(this.context, this.canvasContainer, secondsElapsed);
     //this.gameFont.print(this.context, "16738", 100, 0);

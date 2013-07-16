@@ -337,11 +337,11 @@ Player.prototype.updateEnd = function(secondsElapsed) {
         });
 
         if(this.dirX == Entity.DIR_LEFT) {
-            this.damagedState = (this.lastIntersection.x > 0) ?
+            this.damagedState = (this.lastIntersectionX > 0) ?
                 Player.DMG_LEFT_BACK : this.damagedState = Player.DMG_LEFT_FRONT;
 
         } else {
-            this.damagedState = (this.lastIntersection.x > 0) ?
+            this.damagedState = (this.lastIntersectionX > 0) ?
                 Player.DMG_RIGHT_FRONT : this.damagedState = Player.DMG_RIGHT_BACK;
         }
 

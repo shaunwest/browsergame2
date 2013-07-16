@@ -82,86 +82,40 @@ Grid.prototype.setPosition = function(x, y) {
         shiftX = 0,
         shiftY = 0;
 
-    if(deltaX != 0) {    // only change state if an actual change occurred!
+    if(deltaX != 0) {    // Only change state if there's a reason. In this case h-movement happened.
         this.posX = x;
-        if(deltaX > 0) { // Slide left, kick to the right, shift to the left, grid pos is 0 on shifts
-            if(gridPositionX >= segmentSize) {
-                gridPositionX = gridPositionX - segmentSize;
-                shiftX = -1;
-            }
 
-        } else if (deltaX < 0) { // Slide right, shift to the right, kick to the left, grid pos is -segmentSize on shifts
-            if(gridPositionX < 0) {
-                gridPositionX = segmentSize + gridPositionX;
-                shiftX = 1;
-            }
+        if(deltaX > 0 && gridPositionX >= segmentSize) { // Slide left, kick to the right, shift to the left, grid pos is 0 on shifts
+            gridPositionX = gridPositionX - segmentSize;
+            shiftX = -1;
+
+        } else if (deltaX < 0 && gridPositionX < 0) { // Slide right, shift to the right, kick to the left, grid pos is -segmentSize on shifts
+            gridPositionX = segmentSize + gridPositionX;
+            shiftX = 1;
         }
     }
 
+    // TODO: v-scrolling still needs to be tested
     if(deltaY != 0) {
         this.posY = y;
+
+        if(deltaY > 0 && gridPositionY >= segmentSize) { // Slide left, kick to the right, shift to the left, grid pos is 0 on shifts
+            gridPositionY = gridPositionY - segmentSize;
+            shiftY = -1;
+
+        } else if (deltaY < 0 && gridPositionY < 0) { // Slide right, shift to the right, kick to the left, grid pos is -segmentSize on shifts
+            gridPositionY = segmentSize + gridPositionY;
+            shiftY = 1;
+        }
     }
 
-    if(shiftX != 0) {
+    if(shiftX != 0 || shiftY != 0) {
         this.shiftPositions(shiftX, shiftY);
     }
 
     this.gridPositionX = gridPositionX;
     this.gridPositionY = gridPositionY;
 };
-
-/*Grid.prototype.scroll = function(xDir, yDir, xAmount, yAmount) {
-    var segmentSize = this.segmentSize,
-        deltaX = xDir * xAmount,
-        deltaY = yDir * yAmount,
-        doShiftX = false,
-        doShiftY = false,
-        gridPositionX = this.gridPositionX,
-        gridPositionY = this.gridPositionY,
-        diffX;
-
-    if(xAmount > 0 || yAmount > 0) {
-    //if(xDir != 0 || yDir != 0) {
-        this.viewX += deltaX;
-        gridPositionX += deltaX;
-
-        if(gridPositionX > 0) {
-            diffX = gridPositionX % segmentSize;
-            gridPositionX = -segmentSize + 1 + diffX;
-            doShiftX = true;
-
-        } else if(gridPositionX <= -segmentSize) {
-            diffX = gridPositionX % segmentSize;
-            gridPositionX = diffX;
-            doShiftX = true;
-        }
-
-        this.viewY += deltaY;
-        gridPositionY += deltaY;
-
-        if(gridPositionY > segmentSize) {
-            gridPositionY = 0;
-            doShiftY = true;
-
-        } else if(gridPositionY <0 ) {
-            gridPositionY = segmentSize;
-            doShiftY = true;
-        }
-
-        if(doShiftX && doShiftY) {
-            this.shiftPositions(xDir, yDir);
-        } else if(doShiftX) {
-            this.shiftPositions(xDir, 0);
-        } else if(doShiftY) {
-            this.shiftPositions(0, yDir);
-        }
-
-        this.gridPositionX = gridPositionX;
-        this.gridPositionY = gridPositionY;
-
-        console.log(diffX);
-    }
-};*/
 
 Grid.prototype.createSegments = function() {
     var gridWidth = this.gridWidth,
@@ -260,21 +214,10 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
                         this,
                         this.renderSegment,
                         segment,
-                        //Math.floor(this.viewX / this.dataSourceCellSize),
-                        //Math.floor(this.viewY / this.dataSourceCellSize)
                         (Math.floor(((newX * this.segmentSize) + this.posX) / this.segmentSize) * this.cellsPerSegment), // - adjustX,
                         Math.floor(((newY * this.segmentSize) + this.posY) / this.segmentSize) * this.cellsPerSegment
                     )
                 );
-
-                //console.log("shift " + ((Math.floor(this.posX / this.segmentSize) * this.cellsPerSegment)));
-                /*Util.call(
-                    this,
-                    this.renderSegment,
-                    segment,
-                    Math.floor(((newX * this.segmentSize) - this.viewX) / this.segmentSize) * this.cellsPerSegment, //this.dataSourceCellSize),
-                    Math.floor(((newY * this.segmentSize) - this.viewY) / this.segmentSize) * this.cellsPerSegment //this.dataSourceCellSize)
-                )();*/
             }
 
             this.segments[this.nextSegmentsIndex][newY][newX] = segment;
@@ -296,12 +239,12 @@ Grid.prototype.update = function() {
         for(var gridX = 0; gridX < this.gridWidth; gridX++) {
             segment = this.segments[this.activeSegmentsIndex][gridY][gridX];
 
+            // This is so that style changes are made all at once. Probably isn't necessary in modern browsers.
+            //segment.style.cssText = "position: absolute; left: " + ((gridX * this.segmentSize) - this.gridPositionX) + "px; top: " + ((gridY * this.segmentSize) - this.gridPositionY)  + "px;";
             segment.style.left = ((gridX * this.segmentSize) - this.gridPositionX)  + "px";
             segment.style.top = ((gridY * this.segmentSize) - this.gridPositionY) + "px";
         }
     }
-
-    //this.queue.update();
 };
 
 Grid.prototype.renderSegment = function(segment, dataX, dataY) {

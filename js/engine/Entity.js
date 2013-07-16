@@ -39,7 +39,8 @@ function Entity(animations, def) {
 	this.entityCollisions   = def['entityCollisions'];
 	this.resolveCollisions  = def['resolveCollisions'];
 
-    this.lastIntersection   = null;
+    this.lastIntersectionX  = 0;
+    this.lastIntersectionY  = 0
     this.lastHitIntersection= null;
     this.lastAttackIntersection = null;
 
@@ -74,15 +75,6 @@ Entity.prototype.boundsBottom = function() {
     return this.y + (this.size - this.boundsDefinition.bottom);
 };
 
-Entity.prototype.adjustedBounds = function() {
-	return {
-		left: this.x + this.boundsDefinition.left,
-		top: this.y + this.boundsDefinition.top,
-		right: this.x + (this.size - this.boundsDefinition.right),
-		bottom: this.y + (this.size - this.boundsDefinition.bottom)
-	};
-};
-
 Entity.prototype.adjustedAttackBounds = function() {
     /*if(this.dirX == Entity.DIR_RIGHT) {
         return {
@@ -113,25 +105,24 @@ Entity.prototype.intersects = function(entity) {
         entity.boundsRight() < this.boundsLeft() ||
         entity.boundsTop() > this.boundsBottom() ||
         entity.boundsBottom() < this.boundsTop()) {
-    	return null;    	
+    	return false;
     
     } else {
-    	return {
-    		x: (entity.x - this.x),
-    		y: (entity.y - this.y)
-    	};	
+        this.lastIntersectionX = entity.x - this.x;
+        this.lastIntersectionY = entity.y - this.y;
+    	return true;
     }
 };
 
 Entity.prototype.attackIntersects = function(entity) {
     if(this.isAttacking || this.isDownThrusting) { // TODO hmm
         var attackBounds    = this.adjustedAttackBounds();
-        var bounds2         = entity.adjustedBounds();
+        //var bounds2         = entity.adjustedBounds();
 
-        if(bounds2.left > attackBounds.right ||
-            bounds2.right < attackBounds.left ||
-            bounds2.top > attackBounds.bottom ||
-            bounds2.bottom < attackBounds.top) {
+        if(entity.boundsLeft() > attackBounds.right ||
+            entity.boundsRight() < attackBounds.left ||
+            entity.boundsTop() > attackBounds.bottom ||
+            entity.boundsBottom() < attackBounds.top) {
             return null;
 
         } else {

@@ -230,7 +230,13 @@ td { vertical-align: top; }
     */
 }
 
-#main { position: absolute; width: 100%;}
+/*
+On retina display, use media scaling to scale down to half size, and use this
+to scale back up (http://29a.ch/2011/5/27/fast-html5-canvas-on-iphone-mobile-safari-performance)
+canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); }*/
+
+#main { position: absolute; width: 100%; }
+/*#main { position: absolute; -webkit-transform: scale3d(2, 2, 0) translate3d(192px, 192px, 0);}*/
 /*:-webkit-full-screen #main {
     width: 100%;
     height: 100%;
