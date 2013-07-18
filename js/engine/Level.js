@@ -28,8 +28,8 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
     this.dirX               = 0;
     this.dirY               = 0;
 
-    this.viewWidth          = 17;
-    this.viewHeight         = 17;
+    this.viewWidth          = Math.floor(gameArea.offsetWidth / this.tileSize) + 1;
+    this.viewHeight         = Math.floor(gameArea.offsetHeight / this.tileSize)+ 1;
 
     this.viewMarginLeft     = 288; //192; //64;
     this.viewMarginRight    = 384; //480; //160;
@@ -48,7 +48,7 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
         viewY: this.viewY,
         dataSource: levelData,
         assetTable: tileSet.tiles,
-        cellsPerSegment: 8,
+        cellsPerSegment: 4,
         dataSourceCellSize: this.tileSize});
 }
 
@@ -353,7 +353,7 @@ Level.prototype.updateAndDrawEntities = function(context, secondsElapsed) {
                 var currentFrames = entity.getCurrentFrames();
                 for(var j = 0; j < currentFrames.length; j++) {
                     var frame = currentFrames[j];
-                    //context.drawImage(frame.image, frame.x - this.viewX, frame.y - this.viewY);
+                    context.drawImage(frame.image, frame.x - this.viewX, frame.y - this.viewY);
                 }
             }
         }

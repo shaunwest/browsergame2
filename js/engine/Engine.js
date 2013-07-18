@@ -14,11 +14,7 @@ function Engine(props) {
 
 Engine.prototype.init = function(props) {
     this.fps                    = props.fps;
-    this.frameLength            = Math.floor(ONE_SECOND / this.fps);
-    this.currentFps             = 0;
-
     this.config                 = props.config;
-
     this.controls               = props.controls;
     this.leftButton             = this.controls.left;
     this.rightButton            = this.controls.right;
@@ -58,9 +54,6 @@ Engine.prototype.init = function(props) {
     this.statusArea             = props.statusArea;
     Engine.traceArea            = props.traceArea;
 
-    this.lastUpdateTime         = new Date();
-    this.ticks                  = 0;
-
     this.checkKeysCallback      = props.checkKeys;
     this.updateCallback         = props.update;
     this.createSpritesCallback  = props.createSprites;
@@ -71,7 +64,7 @@ Engine.prototype.init = function(props) {
     this.initSetList('spriteSets', this.spriteSetList);
     this.initSetList('triggerSets', this.triggerSetList);
 
-    Util.setRequestAnimationFrame(this.frameLength);
+    this.chrono                 = new Chrono(this.fps, this.updateFunc);
 
     window.addEventListener('resize', Util.call(this, this.resizeCanvas), false);
 };
@@ -88,11 +81,14 @@ Engine.prototype.resizeCanvas = function() {
         canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "1024px"; //"768px"; //newWidth + "px";
     }*/
 
-    if(newWidth > newHeight) {
+    /*if(newWidth > newHeight) {
         canvasContainer.style.width = canvasContainer.style.height = canvas.width + "px"; //"1024px"; //"768px"; //newHeight + "px";
     } else {
         canvasContainer.style.width = canvasContainer.style.height = canvas.width + "px"; //"1024px"; //"768px"; //newWidth + "px";
-    }
+    }*/
+
+    canvasContainer.style.width = canvas.width + "px";
+    canvasContainer.style.height = canvas.height + "px";
 };
 
 Engine.prototype.enableAllKeys = function() {
@@ -341,11 +337,8 @@ Engine.prototype.startGame = function() {
 
     this.enableAllKeys();
 
-    setInterval(Util.call(this, this.tick), ONE_SECOND);
-
     this.level.init();
-
-    this.update();
+    this.chrono.start();
 };
 
 Engine.prototype.checkKeys = function(secondsElapsed) {
@@ -354,44 +347,31 @@ Engine.prototype.checkKeys = function(secondsElapsed) {
     }
 };
 
-Engine.prototype.update = function() {
-    var now = new Date(),
-        secondsElapsed = (now - this.lastUpdateTime) / ONE_SECOND;
-
-    this.lastUpdateTime = now;
-
+Engine.prototype.update = function(secondsElapsed) {
     this.level.grid.queue.update(); //todo: re-write
 
     this.checkKeys(secondsElapsed);
 
-    ///this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.level.updateAndDraw(this.context, this.canvasContainer, secondsElapsed);
     //this.gameFont.print(this.context, "16738", 100, 0);
-
-    this.ticks++;
 
     if(this.updateCallback) {
         this.updateCallback(secondsElapsed);
     }
 
-    ///this.displayStatus();
-
-    requestAnimationFrame(this.updateFunc);
+    this.displayStatus();
 };
 
 Engine.prototype.displayStatus = function() {
     if(this.statusArea) {
        this.statusArea.innerHTML =
-            "<label>FPS:</label> " + this.currentFps + "<br>" +
+            "<label>FPS:</label> " + this.chrono.fps + "<br>" +
             "<label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
-            "<label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX;
+            "<label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +
+            "<label>PPos:</label> " + this.player.x + ", " + this.player.y;
     }
-};
-
-Engine.prototype.tick = function() {
-    this.currentFps = this.ticks.toString();
-    this.ticks = 0;
 };
 
 Engine.trace = function(value) {

@@ -16,7 +16,7 @@ Util.def = function(arg, defaultValue) {
     return typeof arg === 'undefined' ? defaultValue : arg;
 };
 
-Util.setRequestAnimationFrame = function(frameLength) {
+/*Util.setRequestAnimationFrame = function(frameLength) {
     if (!window.requestAnimationFrame) {
         window.requestAnimationFrame = (function () {
             return window.webkitRequestAnimationFrame ||
@@ -28,4 +28,4 @@ Util.setRequestAnimationFrame = function(frameLength) {
                 };
         })();
     }
-}
+};*/

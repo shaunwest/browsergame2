@@ -3,7 +3,6 @@
  * Date: 6/26/13 7:06 PM
  */
 
-
 Grid.DEFAULT_CELL_SIZE = 48;
 Grid.DEFAULT_CELLS_PER_SEGMENT = 4;
 
@@ -33,16 +32,14 @@ Grid.prototype.initConfig = function(config) {
 
     this.containerElement               = config.containerElement || this.exception("Grid: no containerElement provided");
 
-    this.viewX                          = config.viewX || Grid.ORIGIN_X;
-    this.viewY                          = config.viewY || Grid.ORIGIN_Y;
     this.viewWidth                      = config.viewWidth || this.exception("Grid: view width not provided or 0");
     this.viewHeight                     = config.viewHeight || this.exception("Grid: view height not provided or 0");
 
     this.dataSourceCellSize             = config.dataSourceCellSize || Grid.DEFAULT_CELL_SIZE;
     this.dataSourceHeight               = this.dataSource.length;
     this.dataSourceWidth                = this.dataSource[0].length;
-    this.sourceWidthPixels              = this.dataSourceWidth * this.dataSourceCellSize;
-    this.sourceHeightPixels             = this.dataSourceHeight * this.dataSourceCellSize;
+    //this.sourceWidthPixels              = this.dataSourceWidth * this.dataSourceCellSize;
+    //this.sourceHeightPixels             = this.dataSourceHeight * this.dataSourceCellSize;
 
     this.assetTable                     = config.assetTable || this.exception("Grid: no asset table provided");
 
@@ -52,8 +49,8 @@ Grid.prototype.initConfig = function(config) {
 
     this.cellsPerSegment                = config.cellsPerSegment || Grid.DEFAULT_CELLS_PER_SEGMENT;
     this.segmentSize                    = this.cellsPerSegment * this.dataSourceCellSize;       // value in pixels
-    this.gridWidth                      = Math.floor(this.viewWidth / this.segmentSize) + 1;    // add 1 extra segment
-    this.gridHeight                     = Math.floor(this.viewHeight / this.segmentSize) + 1;
+    this.gridWidth                      = Math.ceil(this.viewWidth / this.segmentSize);    // add 1 extra segment
+    this.gridHeight                     = Math.ceil(this.viewHeight / this.segmentSize);
     //this.containerElement.style.width   = this.gridWidth * this.segmentSize;
     //this.containerElement.style.height  = this.gridHeight * this.segmentSize;
     this.gridPositionX                  = Grid.ORIGIN_X;

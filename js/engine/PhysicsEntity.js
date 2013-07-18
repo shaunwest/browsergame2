@@ -43,20 +43,31 @@ PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
 };
 		
 PhysicsEntity.prototype.calculateHorizontalVelocity = function(secondsElapsed) {
-    var hAccel = (this.hAcceleration * secondsElapsed),
-        hMaxVel = (this.hMaxVelocity * secondsElapsed);
+    var hAccel = this.hAcceleration * secondsElapsed,
+        hMaxVel = this.hMaxVelocity * secondsElapsed;
 
     if(this.doMoveX) {
 		if(this.dirX > 0) {
-            if(this.hVelocity < hMaxVel) {
+            /*if(this.hVelocity < hMaxVel) {
         	    this.hVelocity += hAccel;
             } else {
                 this.hVelocity = hMaxVel;
+            }*/
+            this.hVelocity += hAccel;
+
+            if(this.hVelocity > hMaxVel) {
+                this.hVelocity = hMaxVel;
             }
+
+            console.log(this.hVelocity + "; " + hMaxVel);
 		} else if(this.dirX < 0) {
-            if(this.hVelocity > -hMaxVel) {
+            /*if(this.hVelocity > -hMaxVel) {
 			    this.hVelocity -= hAccel;
             } else {
+                this.hVelocity = -hMaxVel;
+            }*/
+            this.hVelocity -= hAccel;
+            if(this.hVelocity < -hMaxVel) {
                 this.hVelocity = -hMaxVel;
             }
 		}
@@ -96,8 +107,8 @@ PhysicsEntity.prototype.updateStart = function(secondsElapsed) {
 	    this.calculateHorizontalVelocity(secondsElapsed);
     }
 	
-	this.moveY = Math.round(this.vVelocity);
-	this.moveX = Math.round(this.hVelocity);
+	this.moveY = Math.ceil(this.vVelocity);
+	this.moveX = Math.ceil(this.hVelocity);
 };
 
 PhysicsEntity.prototype.levelCollisionX = function(direction, tileDef) {

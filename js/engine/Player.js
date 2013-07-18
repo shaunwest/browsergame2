@@ -250,6 +250,21 @@ Player.prototype.updateStart = function(secondsElapsed) {
     }
 };
 
+Player.prototype.traceProperties = function() {
+    Engine.trace(
+        "<label>onGround:</label> " + this.onGround +
+            "<br><label>allowJump:</label> " + this.allowJump +
+            "<br><label>isFalling:</label> " + this.isFalling +
+            "<br><label>isDucking:</label> " + this.isDucking +
+            "<br><label>isDownThrust:</label> " + this.isDownThrusting +
+            "<br><label>isAttacking:</label> " + this.isAttacking +
+            "<br><label>haltYDir:</label> " + this.haltYDir +
+            "<br><label>isHitting:</label> " + this.isHitting +
+            "<br><label>isJumping:</label> " + this.isJumping +
+            "<br><label>moveX:</label> " + this.moveX
+    );
+};
+
 Player.prototype.updateEnd = function(secondsElapsed) {
 	Player.base.updateEnd.call(this, secondsElapsed);
 
@@ -305,18 +320,12 @@ Player.prototype.updateEnd = function(secondsElapsed) {
         this.hitX       = this.lastAttackIntersection.x;
     }
 
-    // Trace various player properties
-    /*Engine.trace(
-        "ON GROUND " + this.onGround +
-        "<br>ALLOW JUMP " + this.allowJump +
-        "<br>IS FALLING " + this.isFalling +
-        "<br>IS DUCKING " + this.isDucking +
-        "<br>IS DOWNTHRUSTING " + this.isDownThrusting +
-        "<br>IS ATTACKING " + this.isAttacking +
-        "<br>HALT-Y " + this.haltYDir +
-        "<br>IS HITTING " + this.isHitting +
-        "<br>IS JUMPING " + this.isJumping
-    );*/
+    // DEBUG
+    this.traceProperties();
+    //console.log(this.moveX);
+    //if(this.haltYDir == 0) {
+    //    console.log(this.haltYDir + "; " + secondsElapsed + "; " + this.moveY);
+    //}
 
     // GOT HIT
     if(this.isHit) {
