@@ -3,8 +3,7 @@
  * Date: 6/26/13 7:06 PM
  */
 
-Grid.DEFAULT_CELL_SIZE = 48;
-Grid.DEFAULT_CELLS_PER_SEGMENT = 4;
+Grid.DEFAULT_SEGMENT_SIZE = 4;
 
 Grid.ORIGIN_X = 0;
 Grid.ORIGIN_Y = 0;
@@ -24,35 +23,13 @@ Grid.prototype.initConfig = function(config) {
         this.exception("Grid: no config provided");
     }
 
-    this.dataSource                     = config.dataSource || this.exception("Grid: no data source provided");
-
-    if(!(this.dataSource instanceof Array) || !(this.dataSource[0] instanceof Array)) {
-        this.exception("Grid: data source malformed. Should be 2-d Array.");
-    }
-
+    this.drawFunc                       = config.drawFunc;
     this.containerElement               = config.containerElement || this.exception("Grid: no containerElement provided");
-
-    this.viewWidth                      = config.viewWidth || this.exception("Grid: view width not provided or 0");
-    this.viewHeight                     = config.viewHeight || this.exception("Grid: view height not provided or 0");
-
-    this.dataSourceCellSize             = config.dataSourceCellSize || Grid.DEFAULT_CELL_SIZE;
-    this.dataSourceHeight               = this.dataSource.length;
-    this.dataSourceWidth                = this.dataSource[0].length;
-    //this.sourceWidthPixels              = this.dataSourceWidth * this.dataSourceCellSize;
-    //this.sourceHeightPixels             = this.dataSourceHeight * this.dataSourceCellSize;
-
-    this.assetTable                     = config.assetTable || this.exception("Grid: no asset table provided");
-
-    if(!(this.assetTable instanceof Object)) {
-        this.exception("Grid: assetTable malformed. Should be Object.");
-    }
-
-    this.cellsPerSegment                = config.cellsPerSegment || Grid.DEFAULT_CELLS_PER_SEGMENT;
-    this.segmentSize                    = this.cellsPerSegment * this.dataSourceCellSize;       // value in pixels
-    this.gridWidth                      = Math.ceil(this.viewWidth / this.segmentSize);    // add 1 extra segment
+    this.viewWidth                      = config.viewWidth || this.exception("Grid: view width zero or not provided");
+    this.viewHeight                     = config.viewHeight || this.exception("Grid: view height zero or not provided");
+    this.segmentSize                    = config.segmentSize || Grid.DEFAULT_SEGMENT_SIZE;
+    this.gridWidth                      = Math.ceil(this.viewWidth / this.segmentSize);
     this.gridHeight                     = Math.ceil(this.viewHeight / this.segmentSize);
-    //this.containerElement.style.width   = this.gridWidth * this.segmentSize;
-    //this.containerElement.style.height  = this.gridHeight * this.segmentSize;
     this.gridPositionX                  = Grid.ORIGIN_X;
     this.gridPositionY                  = Grid.ORIGIN_Y;
     this.segments                       = [[], []];
@@ -68,7 +45,6 @@ Grid.prototype.initConfig = function(config) {
 Grid.prototype.exception = function(error) {
     throw error;
 };
-
 
 Grid.prototype.setPosition = function(x, y) {
     var segmentSize = this.segmentSize,
@@ -86,7 +62,7 @@ Grid.prototype.setPosition = function(x, y) {
             gridPositionX = gridPositionX - segmentSize;
             shiftX = -1;
 
-        } else if (deltaX < 0 && gridPositionX < 0) { // Slide right, shift to the right, kick to the left, grid pos is -segmentSize on shifts
+        } else if (deltaX < 0 && gridPositionX < 0) { // Slide right, shift to the right, kick to the left, grid pos is segmentSize on shifts
             gridPositionX = segmentSize + gridPositionX;
             shiftX = 1;
         }
@@ -139,16 +115,14 @@ Grid.prototype.createSegment = function(gridX, gridY) {
 };
 
 Grid.prototype.createCanvas = function(gridX, gridY) {
-    var dataSourceCellSize = this.dataSourceCellSize,
-        cellsPerSegment = this.cellsPerSegment,
-        cellX = gridX * cellsPerSegment,
-        cellY = gridY * cellsPerSegment;
-
     var canvas = document.createElement("canvas");
     canvas.width = canvas.height = this.segmentSize + 2;
     canvas.style.position = "absolute";
 
-    this.renderSegment(canvas, cellX + Math.floor(this.posX / dataSourceCellSize), cellY + Math.floor(this.posY / dataSourceCellSize));
+    this.drawFunc(canvas,
+        Math.floor(((gridX * this.segmentSize) + this.posX) / this.segmentSize),
+        Math.floor(((gridY * this.segmentSize) + this.posY) / this.segmentSize)
+    );
 
     return canvas;
 };
@@ -206,14 +180,10 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
             }
 
             if(redraw) {
-                this.queue.enqueue(
-                    Util.call(
-                        this,
-                        this.renderSegment,
-                        segment,
-                        (Math.floor(((newX * this.segmentSize) + this.posX) / this.segmentSize) * this.cellsPerSegment), // - adjustX,
-                        Math.floor(((newY * this.segmentSize) + this.posY) / this.segmentSize) * this.cellsPerSegment
-                    )
+                this.drawFunc(
+                    segment,
+                    Math.floor(((newX * this.segmentSize) + this.posX) / this.segmentSize),
+                    Math.floor(((newY * this.segmentSize) + this.posY) / this.segmentSize)
                 );
             }
 
@@ -230,7 +200,7 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
     }
 };
 
-Grid.prototype.update = function() {
+Grid.prototype.reposition = function() {
     var segment;
     for(var gridY = 0; gridY < this.gridHeight; gridY++) {
         for(var gridX = 0; gridX < this.gridWidth; gridX++) {
@@ -244,7 +214,7 @@ Grid.prototype.update = function() {
     }
 };
 
-Grid.prototype.renderSegment = function(segment, dataX, dataY) {
+/*Grid.prototype.renderSegment = function(segment, dataX, dataY) {
     var cellSize = this.dataSourceCellSize,
         context2d = segment.getContext('2d'),
         finalX, finalY,
@@ -261,7 +231,7 @@ Grid.prototype.renderSegment = function(segment, dataX, dataY) {
                     asset = this.assetTable[dataId];
                     if(asset) {
                         context2d.drawImage(asset.image, cellX * cellSize, cellY * cellSize);
-
+*/
                         /*// Append two pixels from the next segment along the right edge.
                         // This is to fix a display glitch in iOS devices.
                         if(cellX == this.cellsPerSegment - 1) {
@@ -287,9 +257,9 @@ Grid.prototype.renderSegment = function(segment, dataX, dataY) {
                                     cellSize, 2);   // dw,dh
                             }
                         }*/
-                    }
+/*                    }
                 }
             }
         }
     }
-};
+};*/

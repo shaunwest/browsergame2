@@ -341,6 +341,14 @@ Engine.prototype.startGame = function() {
     this.chrono.start();
 };
 
+Engine.prototype.pauseGame = function() {
+    this.chrono.stop();
+};
+
+Engine.prototype.unpauseGame = function() {// FIXME: this doesn't quite work as expected. Re-think.
+    this.chrono.start();
+};
+
 Engine.prototype.checkKeys = function(secondsElapsed) {
     if(this.checkKeysCallback) {
         this.checkKeysCallback(this.keys);
@@ -354,7 +362,8 @@ Engine.prototype.update = function(secondsElapsed) {
 
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.level.updateAndDraw(this.context, this.canvasContainer, secondsElapsed);
+    this.level.update(secondsElapsed);
+    this.level.draw(this.context);
     //this.gameFont.print(this.context, "16738", 100, 0);
 
     if(this.updateCallback) {
@@ -367,10 +376,14 @@ Engine.prototype.update = function(secondsElapsed) {
 Engine.prototype.displayStatus = function() {
     if(this.statusArea) {
        this.statusArea.innerHTML =
-            "<label>FPS:</label> " + this.chrono.fps + "<br>" +
-            "<label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
-            "<label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +
-            "<label>PPos:</label> " + this.player.x + ", " + this.player.y;
+            "<label>FPS:</label> " + this.chrono.fps +
+            /*"<br><label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
+            "<br><label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +*/
+            "<br><label>PPos:</label> " + this.player.x + ", " + this.player.y +
+            "<br><label>PMoveX:</label> " + this.player.moveX +
+            "<br><label>Elapsed Min:</label> " + this.chrono.elapsedMin +
+            "<br><label>Elapsed Max:</label> " + this.chrono.elapsedMax;
+
     }
 };
 

@@ -321,7 +321,7 @@ Player.prototype.updateEnd = function(secondsElapsed) {
     }
 
     // DEBUG
-    this.traceProperties();
+    //this.traceProperties();
     //console.log(this.moveX);
     //if(this.haltYDir == 0) {
     //    console.log(this.haltYDir + "; " + secondsElapsed + "; " + this.moveY);

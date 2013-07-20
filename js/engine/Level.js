@@ -7,6 +7,7 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
 
     this.tileSet            = tileSet;
     this.tileSize           = tileSet.tileSize;
+    this.tilesPerSegment    = 8;
 
     this.spriteSet          = spriteSet;
 	this.levelData          = levelData;
@@ -41,15 +42,16 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
     this.maxFrames          = 100;
     this.frameSpeedMult     = 3;
 
-    this.grid               = new Grid({containerElement: gameArea,
+    this.grid               = new Grid({
+        containerElement: gameArea,
+        drawFunc: Util.call(this, this.drawSegment),
         viewWidth: this.viewWidth * this.tileSize,
         viewHeight: this.viewHeight * this.tileSize,
         viewX: this.viewX,
         viewY: this.viewY,
-        dataSource: levelData,
-        assetTable: tileSet.tiles,
-        cellsPerSegment: 4,
-        dataSourceCellSize: this.tileSize});
+        cellsPerSegment: 8,
+        segmentSize: this.tileSize * 8
+    });
 }
 
 Level.prototype.init = function() {
@@ -329,32 +331,91 @@ Level.prototype.moveView = function(deltaX, deltaY, dirX, dirY) {
     this.grid.setPosition(this.viewX, this.viewY);
 };
 
-// TODO break down into multiple functions
-Level.prototype.updateAndDraw = function(context, gameArea, secondsElapsed) {
-    // Track tile animation frames (zero-based)
-    this.frameNumber += (secondsElapsed * this.frameSpeedMult);
-    if(this.frameNumber >= this.maxFrames) {
-        this.frameNumber = 0;
+Level.prototype.drawSegment = function(segment, segmentX, segmentY) {
+    var tileSize = this.tileSize,
+        tileX = segmentX * this.tilesPerSegment,
+        tileY = segmentY * this.tilesPerSegment,
+        context2d = segment.getContext('2d'),
+        finalX, finalY,
+        dataId, asset;
+
+    for(var cellY = 0; cellY < this.tilesPerSegment; cellY++) {
+        for(var cellX = 0; cellX < this.tilesPerSegment; cellX++) {
+            finalX = tileX + cellX;
+            finalY = tileY + cellY;
+
+            if(this.levelData[finalY]) {
+                dataId = this.levelData[finalY][finalX];
+                if(dataId !== undefined) {
+                    asset = this.tileSet.tiles[dataId];
+                    if(asset) {
+                        context2d.drawImage(asset.image, cellX * tileSize, cellY * tileSize);
+
+                        /*// Append two pixels from the next segment along the right edge.
+                         // This is to fix a display glitch in iOS devices.
+                         if(cellX == this.cellsPerSegment - 1) {
+                         //if(this.dataSource[finalX + 1]) {
+                         if(this.dataSource[finalY][finalX + 1]) {
+                         asset = this.assetTable[this.dataSource[finalY][finalX + 1]];
+                         // image,sx,sy,sw,    sh,    dx,      dy, dw, dh
+                         context2d.drawImage(asset.image, 0, 0, 2, tileSize, tileSize, 0, 2, tileSize);
+                         }
+                         }
+
+                         // Append two pixels along the bottom edge as well.
+                         if(cellY == this.cellsPerSegment - 1) {
+                         //if(this.dataSource[finalX][finalY + 1]) {
+                         if(this.dataSource[finalY + 1]) {
+                         asset = this.assetTable[this.dataSource[finalY + 1][finalX]];
+
+                         context2d.drawImage(
+                         asset.image,         // image
+                         0, 0,           // sx,sy
+                         tileSize, 2,    // sw,sh
+                         0, tileSize,    // dx,dy
+                         tileSize, 2);   // dw,dh
+                         }
+                         }*/
+                    }
+                }
+            }
+        }
     }
-
-    this.updateAndDrawEntities(context, secondsElapsed);
-    this.moveView(this.viewMoveX, this.viewMoveY, this.dirX, this.dirY);
-
-    this.grid.update();
 };
 
-Level.prototype.updateAndDrawEntities = function(context, secondsElapsed) {
+Level.prototype.update = function(secondsElapsed) {
+    // Track tile animation frames (zero-based)
+    /*this.frameNumber += (secondsElapsed * this.frameSpeedMult);
+    if(this.frameNumber >= this.maxFrames) {
+        this.frameNumber = 0;
+    }*/
+
+    this.moveView(this.viewMoveX, this.viewMoveY, this.dirX, this.dirY);
+    this.updateEntities(secondsElapsed);
+};
+
+Level.prototype.draw = function(context) {
+    this.drawEntities(context);
+    this.grid.reposition();
+};
+
+Level.prototype.updateEntities = function(secondsElapsed) {
     for(var i = 0; i < this.entities.length; i++) {
         var entity = this.entities[i];
         if(entity) {
             this.updateEntity(entity, secondsElapsed);
+        }
+    }
+};
 
-            if(entity.isVisible) {
-                var currentFrames = entity.getCurrentFrames();
-                for(var j = 0; j < currentFrames.length; j++) {
-                    var frame = currentFrames[j];
-                    context.drawImage(frame.image, frame.x - this.viewX, frame.y - this.viewY);
-                }
+Level.prototype.drawEntities = function(context) {
+    for(var i = 0; i < this.entities.length; i++) {
+        var entity = this.entities[i];
+        if(entity && entity.isVisible) {
+            var currentFrames = entity.getCurrentFrames();
+            for(var j = 0; j < currentFrames.length; j++) {
+                var frame = currentFrames[j];
+                context.drawImage(frame.image, frame.x - this.viewX, frame.y - this.viewY);
             }
         }
     }

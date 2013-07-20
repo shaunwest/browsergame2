@@ -26,10 +26,17 @@ PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
         vMaxVel = (this.vMaxVelocity * secondsElapsed);
 
     if(this.doMoveY) {
-		if(this.dirY > 0 && this.vVelocity < vMaxVel) {
-			this.vVelocity += vAccel;
-		} else if(this.dirY < 0 && this.vVelocity > -vMaxVel) {
-			this.vVelocity -= vAccel;
+		if(this.dirY > 0) {
+            this.vVelocity += vAccel;
+            if(this.vVelocity > vMaxVel) {
+                this.vVelocity = vMaxVel;
+            }
+
+		} else if(this.dirY < 0) {
+            this.vVelocity -= vAccel;
+            if(this.vVelocity < -vMaxVel) {
+			    this.vVelocity = -vMaxVel;
+            }
 		}
 		
 	} else {
@@ -48,24 +55,12 @@ PhysicsEntity.prototype.calculateHorizontalVelocity = function(secondsElapsed) {
 
     if(this.doMoveX) {
 		if(this.dirX > 0) {
-            /*if(this.hVelocity < hMaxVel) {
-        	    this.hVelocity += hAccel;
-            } else {
-                this.hVelocity = hMaxVel;
-            }*/
             this.hVelocity += hAccel;
-
             if(this.hVelocity > hMaxVel) {
                 this.hVelocity = hMaxVel;
             }
 
-            console.log(this.hVelocity + "; " + hMaxVel);
-		} else if(this.dirX < 0) {
-            /*if(this.hVelocity > -hMaxVel) {
-			    this.hVelocity -= hAccel;
-            } else {
-                this.hVelocity = -hMaxVel;
-            }*/
+        } else if(this.dirX < 0) {
             this.hVelocity -= hAccel;
             if(this.hVelocity < -hMaxVel) {
                 this.hVelocity = -hMaxVel;
@@ -106,9 +101,13 @@ PhysicsEntity.prototype.updateStart = function(secondsElapsed) {
     if(this.doHorizontalVelocity) {
 	    this.calculateHorizontalVelocity(secondsElapsed);
     }
-	
-	this.moveY = Math.ceil(this.vVelocity);
-	this.moveX = Math.ceil(this.hVelocity);
+
+    //this.moveY = (this.vVelocity >= 0) ? Math.floor(this.vVelocity) : Math.ceil(this.vVelocity);
+    //this.moveX = (this.hVelocity >= 0) ? Math.floor(this.hVelocity) : Math.ceil(this.hVelocity);
+
+    this.moveY = Math.round(this.vVelocity);
+    this.moveX = Math.round(this.hVelocity);
+    //console.log(this.vVelocity + "; " +this.moveY);
 };
 
 PhysicsEntity.prototype.levelCollisionX = function(direction, tileDef) {

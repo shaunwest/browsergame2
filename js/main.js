@@ -21,6 +21,7 @@ const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
 const KEY_X = 88;
 const KEY_F = 70;
+const KEY_G = 71;
 
 var engine;
 
