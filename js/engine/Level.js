@@ -2,12 +2,12 @@
  * @author shaun
  */
 
-function Level(tileSet, spriteSet, levelData, gameArea) {
+function Level(tileSet, spriteSet, levelData, gameArea, viewWidth, viewHeight) {
 	if (arguments[0] === inheriting) return;
 
     this.tileSet            = tileSet;
     this.tileSize           = tileSet.tileSize;
-    this.tilesPerSegment    = 8;
+    this.tilesPerSegment    = 4;
 
     this.spriteSet          = spriteSet;
 	this.levelData          = levelData;
@@ -29,8 +29,11 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
     this.dirX               = 0;
     this.dirY               = 0;
 
-    this.viewWidth          = Math.floor(gameArea.offsetWidth / this.tileSize) + 1;
-    this.viewHeight         = Math.floor(gameArea.offsetHeight / this.tileSize)+ 1;
+    this.viewWidthPixels    = viewWidth || gameArea.offsetWidth;
+    this.viewHeightPixels   = viewHeight || gameArea.offsetHeight;
+
+    this.viewWidth          = Math.floor(this.viewWidthPixels / this.tileSize) + 1;
+    this.viewHeight         = Math.floor(this.viewHeightPixels / this.tileSize) + 1;
 
     this.viewMarginLeft     = 288; //192; //64;
     this.viewMarginRight    = 384; //480; //160;
@@ -38,24 +41,49 @@ function Level(tileSet, spriteSet, levelData, gameArea) {
 	this.entities           = [];
 	this.triggers           = [];
 
+    this.segmentRenders     = [];
+
     this.frameNumber        = 0;
     this.maxFrames          = 100;
     this.frameSpeedMult     = 3;
 
+    this.queue              = new FrameQueue();
+
+    var that = this;    // TODO: gross. fix.
     this.grid               = new Grid({
         containerElement: gameArea,
-        drawFunc: Util.call(this, this.drawSegment),
+        drawFunc: function(segment, segmentX, segmentY, levelX, levelY) {
+            that.queue.enqueue(Util.call(that, that.drawSegment, segment, segmentX, segmentY, levelX, levelY))
+        },
         viewWidth: this.viewWidth * this.tileSize,
         viewHeight: this.viewHeight * this.tileSize,
         viewX: this.viewX,
         viewY: this.viewY,
-        cellsPerSegment: 8,
-        segmentSize: this.tileSize * 8
+        segmentSize: this.tileSize * this.tilesPerSegment
     });
 }
 
 Level.prototype.init = function() {
+    this.initSegmentRenders();
     this.grid.createSegments();
+};
+
+Level.prototype.initSegmentRenders = function() {
+    var gridWidth = this.grid.gridWidth,
+        gridHeight = this.grid.gridHeight,
+        segmentSize = this.grid.segmentSize,
+        segmentRenders = this.segmentRenders,
+        canvas;
+
+    for(var gridX = 0; gridX < gridWidth; gridX++) {
+        segmentRenders[gridX] = [];
+
+        for(var gridY = 0; gridY < gridHeight; gridY++) {
+            canvas = document.createElement('canvas');
+            canvas.width = canvas.height = segmentSize;
+            segmentRenders[gridX][gridY] = canvas;
+        }
+    }
 };
 
 Level.prototype.addEntity = function(entity) {
@@ -331,16 +359,41 @@ Level.prototype.moveView = function(deltaX, deltaY, dirX, dirY) {
     this.grid.setPosition(this.viewX, this.viewY);
 };
 
-Level.prototype.drawSegment = function(segment, segmentX, segmentY) {
+Level.prototype.drawSegment = function(segment, segmentX, segmentY, levelX, levelY) {
+    this.queue.enqueue(Util.call(this, this.preRenderSegment, segment, segmentX, segmentY, levelX, levelY));
+    this.queue.enqueue(Util.call(this, this.renderSegment, segment, segmentX, segmentY));
+};
+
+Level.prototype.renderSegment = function(segment, segmentX, segmentY) {
+    var context2d = segment.getContext('2d'),
+        image = this.segmentRenders[segmentX][segmentY];
+
+    context2d.drawImage(image, 0, 0);
+};
+
+Level.prototype.preRenderSegment = function(segment, segmentX, segmentY, levelX, levelY) {
     var tileSize = this.tileSize,
-        tileX = segmentX * this.tilesPerSegment,
-        tileY = segmentY * this.tilesPerSegment,
-        context2d = segment.getContext('2d'),
+        tileX = levelX * this.tilesPerSegment,
+        tileY = levelY * this.tilesPerSegment,
+        tilesPerSegment = this.tilesPerSegment,
+        image = this.segmentRenders[segmentX][segmentY],
+        //context2d = segment.getContext('2d'),
+        context2d,
         finalX, finalY,
         dataId, asset;
 
-    for(var cellY = 0; cellY < this.tilesPerSegment; cellY++) {
-        for(var cellX = 0; cellX < this.tilesPerSegment; cellX++) {
+    /*if(this.segments[segmentX] && this.segments[segmentX][segmentY]) {
+        image = this.segments[segmentX][segmentY];
+    } else {
+        //console.log("create canvas");
+        image = document.createElement('canvas');
+        image.width = image.height = this.grid.segmentSize;
+    }*/
+
+    context2d = image.getContext('2d');
+
+    for(var cellY = 0; cellY < tilesPerSegment; cellY++) {
+        for(var cellX = 0; cellX < tilesPerSegment; cellX++) {
             finalX = tileX + cellX;
             finalY = tileY + cellY;
 
@@ -381,6 +434,11 @@ Level.prototype.drawSegment = function(segment, segmentX, segmentY) {
             }
         }
     }
+
+    /*if(!this.segments[segmentX]) {
+        this.segments[segmentX] = [];
+    }
+    this.segments[segmentX][segmentY] = image;*/
 };
 
 Level.prototype.update = function(secondsElapsed) {
@@ -389,7 +447,7 @@ Level.prototype.update = function(secondsElapsed) {
     if(this.frameNumber >= this.maxFrames) {
         this.frameNumber = 0;
     }*/
-
+    this.queue.update();
     this.moveView(this.viewMoveX, this.viewMoveY, this.dirX, this.dirY);
     this.updateEntities(secondsElapsed);
 };

@@ -38,8 +38,9 @@ function configReady(data) {
         'gameArea'          : document.getElementById('main'),
         'canvas'            : document.getElementById('display'),
         'canvasContainer'   : document.getElementById('displayContainer'),
+        'gridContainer'     : document.getElementById('grid'),
         'config'            : data,
-        'width'             : 768,
+        'width'             : 1024,
         'height'            : 768,
         'checkKeys'         : checkKeys,
         'createSprites'     : createSprites,
@@ -122,7 +123,7 @@ function createSprites(sprite, spriteDef, spriteSheet) {
             break;
 
         case 'goblin1':
-            entity = new Goblin1(engine.getAnimations(spriteSheet, width, defaultDelay), spriteDef);
+            //entity = new Goblin1(engine.getAnimations(spriteSheet, width, defaultDelay), spriteDef);
             break;
     }
 

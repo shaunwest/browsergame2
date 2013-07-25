@@ -6,8 +6,6 @@
 
 var inheriting = {};
 
-const ONE_SECOND = 1000;
-
 function Engine(props) {
     this.init(props);
 }
@@ -16,6 +14,8 @@ Engine.prototype.init = function(props) {
     this.fps                    = props.fps;
     this.config                 = props.config;
     this.controls               = props.controls;
+    this.width                  = props.width;
+    this.height                 = props.height;
     this.leftButton             = this.controls.left;
     this.rightButton            = this.controls.right;
 
@@ -43,10 +43,11 @@ Engine.prototype.init = function(props) {
 
     this.gameArea               = props.gameArea,
     this.canvasContainer        = props.canvasContainer;
+    this.gridContainer          = props.gridContainer;
 
     this.canvas                 = props.canvas;
-    this.canvas.width           = props.width;
-    this.canvas.height          = props.height;
+    this.canvas.width           = this.width;
+    this.canvas.height          = this.height;
 
     this.resizeCanvas();
 
@@ -59,12 +60,13 @@ Engine.prototype.init = function(props) {
     this.createSpritesCallback  = props.createSprites;
 
     this.updateFunc             = Util.call(this, this.update);
+    this.drawFunc               = Util.call(this, this.draw);
 
     this.initSetList('tileSets', this.tileSetList);
     this.initSetList('spriteSets', this.spriteSetList);
     this.initSetList('triggerSets', this.triggerSetList);
 
-    this.chrono                 = new Chrono(this.fps, this.updateFunc);
+    this.chrono                 = new Chrono(this.fps, this.updateFunc, this.drawFunc);
 
     window.addEventListener('resize', Util.call(this, this.resizeCanvas), false);
 };
@@ -87,8 +89,8 @@ Engine.prototype.resizeCanvas = function() {
         canvasContainer.style.width = canvasContainer.style.height = canvas.width + "px"; //"1024px"; //"768px"; //newWidth + "px";
     }*/
 
-    canvasContainer.style.width = canvas.width + "px";
-    canvasContainer.style.height = canvas.height + "px";
+    //canvasContainer.style.width = (canvas.width) + "px";
+    //canvasContainer.style.height = (canvas.height) + "px";
 };
 
 Engine.prototype.enableAllKeys = function() {
@@ -269,7 +271,7 @@ Engine.prototype.loadSpriteAssets = function(spriteDefinitions, ready, index) {
 
 Engine.prototype.getSprites = function(sprites) {
     var levelConfig = this.config['levels'][this.currentLevelId],
-        level = new GameLevel(this.tileSet, this.spriteSet, levelConfig['midground'], this.canvasContainer),
+        level = new GameLevel(this.tileSet, this.spriteSet, levelConfig['midground'], this.gridContainer, this.width, this.height),
         spriteSet = this.spriteSet,
         numSprites = sprites.length;
 
@@ -355,7 +357,7 @@ Engine.prototype.checkKeys = function(secondsElapsed) {
     }
 };
 
-Engine.prototype.update = function(secondsElapsed) {
+/*Engine.prototype.update = function(secondsElapsed) {
     this.level.grid.queue.update(); //todo: re-write
 
     this.checkKeys(secondsElapsed);
@@ -371,6 +373,23 @@ Engine.prototype.update = function(secondsElapsed) {
     }
 
     this.displayStatus();
+};*/
+
+Engine.prototype.update = function(secondsElapsed) {
+    this.checkKeys(secondsElapsed);
+    this.level.update(secondsElapsed);
+
+    //this.gameFont.print(this.context, "16738", 100, 0);
+
+    if(this.updateCallback) {
+        this.updateCallback(secondsElapsed);
+    }
+};
+
+Engine.prototype.draw = function() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.level.draw(this.context);
+    //this.displayStatus();
 };
 
 Engine.prototype.displayStatus = function() {

@@ -5,9 +5,10 @@
 
 Chrono.ONE_SECOND = 1000;
 
-function Chrono(targetFps, updateFunc) {
+function Chrono(targetFps, updateFunc, drawFunc) {
     this.targetFps      = targetFps;
     this.updateFunc     = updateFunc;
+    this.drawFunc       = drawFunc;
     this.frameFunc      = Util.call(this, this.frame);
     this.fps            = 0;
     this.ticks          = 0;
@@ -20,9 +21,12 @@ function Chrono(targetFps, updateFunc) {
     this.elapsedMin     = 1;
     this.elapsedMax     = 0;
     this.frameLength    = Math.floor(Chrono.ONE_SECOND / this.targetFps);
+    this.frameLengthSec = this.frameLength / Chrono.ONE_SECOND;
     this.frameTimerId   = 0;
     this.oneSecTimerId  = 0;
     this.running        = false;
+    this.accumulator    = 0.0;
+    this.maxFrameLength = this.frameLengthSec * 2;
 
     this.initRequestAnimationFrame(this.frameLength);
 }
@@ -42,26 +46,47 @@ Chrono.prototype.stop = function() {
 Chrono.prototype.frame = function() {
     var now = +new Date(),
         secondsElapsed = (now - this.lastUpdateTime) / Chrono.ONE_SECOND,
-        deltaTime;
+        deltaTime,
+        alpha;
 
-    this.lastUpdateTime = now;
-
-    /*while ( secondsElapsed > 0.0 )
-    {
-        deltaTime = Math.min(secondsElapsed, this.frameLength);
-        // do update
-        secondsElapsed -= deltaTime;
+    /*if(secondsElapsed > this.maxFrameLength) {
+        secondsElapsed = this.maxFrameLength;
     }*/
 
-    // do render
+    this.lastUpdateTime = now;
+    /*this.accumulator += secondsElapsed;
+
+    while (this.accumulator >= this.frameLengthSec)
+    {
+        this.updateFunc(this.frameLengthSec);
+        this.accumulator -= this.frameLengthSec;
+    }
+
+    alpha = this.accumulator / this.frameLengthSec;
+
+    this.drawFunc(alpha);*/
+
+
+    /*while (secondsElapsed > 0.0) {
+        console.log(secondsElapsed);
+        deltaTime = Math.min(secondsElapsed, this.frameLengthSec);
+        this.updateFunc(deltaTime);
+
+        secondsElapsed -= deltaTime;
+    }
+
+    this.drawFunc();*/
+
 
     /*if(this.elapsedSeconds > 0) {
         this.elapsedMin = Math.min(secondsElapsed, this.elapsedMin);
         this.elapsedMax = Math.max(secondsElapsed, this.elapsedMax);
     }*/
-    //secondsElapsed = this.getAverageElapsed(secondsElapsed);
+    secondsElapsed = this.getAverageElapsed(secondsElapsed);
 
     this.updateFunc(secondsElapsed);
+    this.drawFunc();
+
     this.ticks++;
 
     if(this.running) {

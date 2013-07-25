@@ -5,7 +5,7 @@
 
 Grid.DEFAULT_SEGMENT_SIZE = 4;
 
-Grid.ORIGIN_X = 0;
+Grid.ORIGIN_X = 0; // 192
 Grid.ORIGIN_Y = 0;
 
 Grid.DIR_NONE = 0;
@@ -28,8 +28,8 @@ Grid.prototype.initConfig = function(config) {
     this.viewWidth                      = config.viewWidth || this.exception("Grid: view width zero or not provided");
     this.viewHeight                     = config.viewHeight || this.exception("Grid: view height zero or not provided");
     this.segmentSize                    = config.segmentSize || Grid.DEFAULT_SEGMENT_SIZE;
-    this.gridWidth                      = Math.ceil(this.viewWidth / this.segmentSize);
-    this.gridHeight                     = Math.ceil(this.viewHeight / this.segmentSize);
+    this.gridWidth                      = Math.ceil(this.viewWidth / this.segmentSize) + 1;
+    this.gridHeight                     = Math.ceil(this.viewHeight / this.segmentSize) + 1;
     this.gridPositionX                  = Grid.ORIGIN_X;
     this.gridPositionY                  = Grid.ORIGIN_Y;
     this.segments                       = [[], []];
@@ -50,20 +50,25 @@ Grid.prototype.setPosition = function(x, y) {
     var segmentSize = this.segmentSize,
         deltaX = x - this.posX,
         deltaY = y - this.posY,
-        gridPositionX = this.gridPositionX + deltaX,
-        gridPositionY = this.gridPositionY + deltaY,
         shiftX = 0,
         shiftY = 0;
+
+    this.gridPositionX += deltaX;
+    this.gridPositionY += deltaY;
+
+    // If delta is positive, then the scene is sliding to the LEFT
+    // If delta is negative, then the scene is sliding to the RIGHT
 
     if(deltaX != 0) {    // Only change state if there's a reason. In this case h-movement happened.
         this.posX = x;
 
-        if(deltaX > 0 && gridPositionX >= segmentSize) { // Slide left, kick to the right, shift to the left, grid pos is 0 on shifts
-            gridPositionX = gridPositionX - segmentSize;
+        // gridPositionX >= view width - segment size * Math.floor(segment count)??
+        if(deltaX > 0 && this.gridPositionX >= segmentSize) { // Slide left, kick to the right, shift to the left, grid pos is around 0 on shifts
+            this.gridPositionX -= segmentSize;
             shiftX = -1;
-
-        } else if (deltaX < 0 && gridPositionX < 0) { // Slide right, shift to the right, kick to the left, grid pos is segmentSize on shifts
-            gridPositionX = segmentSize + gridPositionX;
+                                                // segmentSize
+        } else if (deltaX < 0 && this.gridPositionX < 0) { // Slide right, shift to the right, kick to the left, grid pos is around segmentSize on shifts
+            this.gridPositionX += segmentSize;
             shiftX = 1;
         }
     }
@@ -72,12 +77,12 @@ Grid.prototype.setPosition = function(x, y) {
     if(deltaY != 0) {
         this.posY = y;
 
-        if(deltaY > 0 && gridPositionY >= segmentSize) { // Slide left, kick to the right, shift to the left, grid pos is 0 on shifts
-            gridPositionY = gridPositionY - segmentSize;
+        if(deltaY > 0 && this.gridPositionY >= segmentSize) { // Slide left, kick to the right, shift to the left, grid pos is 0 on shifts
+            this.gridPositionY -= segmentSize;
             shiftY = -1;
 
         } else if (deltaY < 0 && gridPositionY < 0) { // Slide right, shift to the right, kick to the left, grid pos is -segmentSize on shifts
-            gridPositionY = segmentSize + gridPositionY;
+            gridPositionY += segmentSize;
             shiftY = 1;
         }
     }
@@ -85,9 +90,6 @@ Grid.prototype.setPosition = function(x, y) {
     if(shiftX != 0 || shiftY != 0) {
         this.shiftPositions(shiftX, shiftY);
     }
-
-    this.gridPositionX = gridPositionX;
-    this.gridPositionY = gridPositionY;
 };
 
 Grid.prototype.createSegments = function() {
@@ -120,6 +122,9 @@ Grid.prototype.createCanvas = function(gridX, gridY) {
     canvas.style.position = "absolute";
 
     this.drawFunc(canvas,
+        //Math.floor(((gridX * this.segmentSize) + (this.posX - this.segmentSize)) / this.segmentSize),
+        gridX,
+        gridY,
         Math.floor(((gridX * this.segmentSize) + this.posX) / this.segmentSize),
         Math.floor(((gridY * this.segmentSize) + this.posY) / this.segmentSize)
     );
@@ -129,7 +134,7 @@ Grid.prototype.createCanvas = function(gridX, gridY) {
 
 Grid.prototype.shiftPositions = function(hDir, vDir) {
     var newX, newY,
-        redraw, adjustX = 0,
+        redraw,
         segment;
 
     for(var gridY = 0; gridY < this.gridHeight; gridY++) {
@@ -141,7 +146,6 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
                 if(gridX == 0) {
                     newX = this.gridWidth - 1;
                     redraw = true;
-                    adjustX = 0;
                 } else {
                     newX = gridX - 1;
                 }
@@ -150,7 +154,6 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
                 if(gridX == this.gridWidth - 1) {
                     newX = 0;
                     redraw = true;
-                    adjustX = 4;
                 } else {
                     newX = gridX + 1;
                 }
@@ -182,6 +185,8 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
             if(redraw) {
                 this.drawFunc(
                     segment,
+                    newX,
+                    newY,
                     Math.floor(((newX * this.segmentSize) + this.posX) / this.segmentSize),
                     Math.floor(((newY * this.segmentSize) + this.posY) / this.segmentSize)
                 );
@@ -202,14 +207,15 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
 
 Grid.prototype.reposition = function() {
     var segment;
+
     for(var gridY = 0; gridY < this.gridHeight; gridY++) {
         for(var gridX = 0; gridX < this.gridWidth; gridX++) {
             segment = this.segments[this.activeSegmentsIndex][gridY][gridX];
 
             // This is so that style changes are made all at once. Probably isn't necessary in modern browsers.
             //segment.style.cssText = "position: absolute; left: " + ((gridX * this.segmentSize) - this.gridPositionX) + "px; top: " + ((gridY * this.segmentSize) - this.gridPositionY)  + "px;";
-            segment.style.left = ((gridX * this.segmentSize) - this.gridPositionX)  + "px";
-            segment.style.top = ((gridY * this.segmentSize) - this.gridPositionY) + "px";
+            segment.style.left = ((gridX * this.segmentSize) - (this.gridPositionX))  + "px";
+            segment.style.top = ((gridY * this.segmentSize) - (this.gridPositionY)) + "px";
         }
     }
 };
