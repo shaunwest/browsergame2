@@ -81,8 +81,8 @@ Grid.prototype.setPosition = function(x, y) {
             this.gridPositionY -= segmentSize;
             shiftY = -1;
 
-        } else if (deltaY < 0 && gridPositionY < 0) { // Slide right, shift to the right, kick to the left, grid pos is -segmentSize on shifts
-            gridPositionY += segmentSize;
+        } else if (deltaY < 0 && this.gridPositionY < 0) { // Slide right, shift to the right, kick to the left, grid pos is -segmentSize on shifts
+            this.gridPositionY += segmentSize;
             shiftY = 1;
         }
     }
