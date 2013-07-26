@@ -65,7 +65,7 @@ function Player(animations, def, engine) {
 	this.boundsDefinition   = {left: 30, top: 15, right: 30, bottom: 0};
 			
 	this.doMoveY            = true;
-
+    this.doVerticalVelocity = false;
 	this.vMaxVelocity       = Player.VMAX_VELOCITY_NORMAL;
 	this.vAcceleration      = Player.VACCEL_NORMAL;
 

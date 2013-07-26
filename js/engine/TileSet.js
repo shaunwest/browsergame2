@@ -78,7 +78,7 @@ TileSet.prototype.parseTileFrames = function(parentTileDef, tileSheet) {
 };
 
 TileSet.prototype.getTile = function(tileId) {
-    if(this.tiles.hasOwnProperty(tileId)) {
+    if(this.tiles[tileId]) {
         return this.tiles[tileId];
     }
 
@@ -86,7 +86,8 @@ TileSet.prototype.getTile = function(tileId) {
 };
 
 TileSet.prototype.getTileDefinition = function(tileId) {
-    if(this.tileDefMap.hasOwnProperty(tileId)) {
+    // note: for some reason using hasOwnProperty here causes a memory leak
+    if(this.tileDefMap[tileId]) {
         return this.tileDefMap[tileId];
     }
 

@@ -93,7 +93,7 @@ Engine.prototype.resizeCanvas = function() {
     //canvasContainer.style.height = (canvas.height) + "px";
 };
 
-Engine.prototype.enableAllKeys = function() {
+/*Engine.prototype.enableAllKeys = function() {
     var enabledKeys = this.enabledKeys;
 
     enabledKeys[KEY_LEFT]   = true;
@@ -122,7 +122,11 @@ Engine.prototype.onKeyDown = function(e){
     if(enabledKeys.hasOwnProperty(keyCode)) {
         this.keys[keyCode] = enabledKeys[keyCode];
     }
+};*/
+Engine.prototype.onKeyDown = function(e){
+    this.keys[e.keyCode] = true;
 };
+
 
 Engine.prototype.onKeyUp = function(e) {
     this.keys[e.keyCode] = false;
@@ -193,12 +197,26 @@ Engine.prototype.getFontSheet = function(fontSheetPath) {
 };
 
 Engine.prototype.getTileSheet = function(tileSheetPath) {
+    var self = this;
+
     var tileSheet = new Image();
     tileSheet.src = "assets/" + tileSheetPath;
-    tileSheet.onload = Util.call(this, function() {
+    tileSheet.onload = function() {
+        self.onTileSheetLoaded(tileSheet);
+    };
+    /*tileSheet.onload = function() {
+        self.tileSet = new TileSet(self.tileSetList[self.currentTileSetId], tileSheet, self.config.tileSize);
+        self.tileSheetReady();
+    };*/
+    /*tileSheet.onload = Util.call(this, function() {
         this.tileSet = new TileSet(this.tileSetList[this.currentTileSetId], tileSheet, this.config.tileSize);
         this.tileSheetReady();
-    });
+    });*/
+};
+
+Engine.prototype.onTileSheetLoaded = function(tileSheet) {
+    this.tileSet = new TileSet(this.tileSetList[this.currentTileSetId], tileSheet, this.config.tileSize);
+    this.tileSheetReady();
 };
 
 Engine.prototype.tileSheetReady = function() {
@@ -337,7 +355,7 @@ Engine.prototype.startGame = function() {
     window.addEventListener("touchstart", Util.call(this, this.onTouchStart), true);
     window.addEventListener("touchend", Util.call(this, this.onTouchEnd), true);
 
-    this.enableAllKeys();
+    //this.enableAllKeys();
 
     this.level.init();
     this.chrono.start();

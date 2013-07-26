@@ -4,8 +4,7 @@
  */
 
 
-function FrameQueue(context) {
-    this.context    = context;
+function FrameQueue() {
     this.queue      = [];
 }
 
@@ -14,13 +13,7 @@ FrameQueue.prototype.enqueue = function(func) {
 };
 
 FrameQueue.prototype.dequeue = function() {
-    var func = this.queue.shift();
-
-    if(this.context) {
-        func.call(this.context);
-    } else {
-        func();
-    }
+    this.queue.shift()();
 };
 
 FrameQueue.prototype.update = function() {
