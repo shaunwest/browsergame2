@@ -42,14 +42,18 @@ function configReady(data) {
         'config'            : data,
         'width'             : 1024,
         'height'            : 768,
-        'checkKeys'         : checkKeys,
+        'checkUserActions'  : checkUserActions,
         'createSprites'     : createSprites,
         'update'            : update,
         'statusArea'        : document.getElementById('status'),
         'traceArea'         : document.getElementById('trace'),
-        'controls'          : {
-            'left'          : document.getElementById('left'),
-            'right'         : document.getElementById('right')
+        'actions'          :
+        {
+            'left'          : {'key': KEY_LEFT, 'el': document.getElementById('left')},
+            'right'         : {'key': KEY_RIGHT, 'el': document.getElementById('right')},
+            'up'            : {'key': KEY_UP},
+            'down'          : {'key': KEY_DOWN},
+            'attack'        : {'key': KEY_X}
         }
     });
 
@@ -60,21 +64,21 @@ function configReady(data) {
 function update(secondsElapsed) {
 }
 
-function checkKeys(keys) {
+function checkUserActions(actions) {
     if(engine.player) {
         var player = engine.player;
 
         // MOVE
-        if(keys[KEY_LEFT]) {
+        if(actions['left']) {
             player.moveLeft();
-        } else if(keys[KEY_RIGHT]) {
+        } else if(actions['right']) {
             player.moveRight();
         } else {
             player.stop();
         }
 
         // JUMP
-        if(keys[KEY_UP]) {
+        if(actions['up']) {
             player.startJump();
         } else {
             player.endJump();
@@ -82,7 +86,7 @@ function checkKeys(keys) {
 
         // DUCK
         if(player.onGround) {
-            if(keys[KEY_DOWN]) {
+            if(actions['down']) {
                 player.isDucking = true;
             } else {
                 player.isDucking = false;
@@ -92,7 +96,7 @@ function checkKeys(keys) {
         }
 
         // DOWN ATTACK
-        if(keys[KEY_DOWN] && !player.isAttacking && !player.onGround) {
+        if(actions['down'] && !player.isAttacking && !player.onGround) {
             if(player.allowDownThrust) {
                 player.isDownThrusting = true;
                 player.allowDownThrust = false;
@@ -101,7 +105,7 @@ function checkKeys(keys) {
         }
 
         // ATTACK
-        if(keys[KEY_X] && !player.isDownThrusting) {
+        if(actions['attack'] && !player.isDownThrusting) {
             if(player.allowAttack) {
                 player.isAttacking = true;
                 player.allowAttack = false;

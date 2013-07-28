@@ -13,11 +13,9 @@ function Engine(props) {
 Engine.prototype.init = function(props) {
     this.fps                    = props.fps;
     this.config                 = props.config;
-    this.controls               = props.controls;
+    this.actions                = props.actions;
     this.width                  = props.width;
     this.height                 = props.height;
-    this.leftButton             = this.controls.left;
-    this.rightButton            = this.controls.right;
 
     this.gameFont               = null;
 
@@ -29,9 +27,6 @@ Engine.prototype.init = function(props) {
 
     this.triggerSetList         = {};
     this.triggerMap             = {};
-
-    this.keys                   = {};
-    this.enabledKeys            = {};
 
     this.currentLevelId         = "";
     this.currentTileSetId       = "";
@@ -55,7 +50,7 @@ Engine.prototype.init = function(props) {
     this.statusArea             = props.statusArea;
     Engine.traceArea            = props.traceArea;
 
-    this.checkKeysCallback      = props.checkKeys;
+    this.checkActionsCallback   = props.checkUserActions;
     this.updateCallback         = props.update;
     this.createSpritesCallback  = props.createSprites;
 
@@ -66,6 +61,7 @@ Engine.prototype.init = function(props) {
     this.initSetList('spriteSets', this.spriteSetList);
     this.initSetList('triggerSets', this.triggerSetList);
 
+    this.userAction             = new UserAction(this.actions);
     this.loadQueue              = new FuncQueue(this);
     this.chrono                 = new Chrono(this.fps, this.updateFunc, this.drawFunc);
 
@@ -93,37 +89,6 @@ Engine.prototype.resizeCanvas = function() {
     //canvasContainer.style.width = (canvas.width) + "px";
     //canvasContainer.style.height = (canvas.height) + "px";
 };
-
-/*Engine.prototype.enableAllKeys = function() {
-    var enabledKeys = this.enabledKeys;
-
-    enabledKeys[KEY_LEFT]   = true;
-    enabledKeys[KEY_UP]     = true;
-    enabledKeys[KEY_RIGHT]  = true;
-    enabledKeys[KEY_DOWN]   = true;
-    enabledKeys[KEY_X]      = true;
-    enabledKeys[KEY_F]      = true;
-};
-
-Engine.prototype.disableAllKeys = function() {
-    var enabledKeys = this.enabledKeys;
-
-    enabledKeys[KEY_LEFT]   = false;
-    enabledKeys[KEY_UP]     = false;
-    enabledKeys[KEY_RIGHT]  = false;
-    enabledKeys[KEY_DOWN]   = false;
-    enabledKeys[KEY_X]      = false;
-    enabledKeys[KEY_F]      = false;
-};
-
-Engine.prototype.onKeyDown = function(e){
-    var keyCode = e.keyCode,
-        enabledKeys = this.enabledKeys;
-
-    if(enabledKeys.hasOwnProperty(keyCode)) {
-        this.keys[keyCode] = enabledKeys[keyCode];
-    }
-};*/
 
 Engine.prototype.initSetList = function(configId, list) {
     var sets = this.config[configId],
@@ -313,48 +278,9 @@ Engine.prototype.getAnimations = function(spriteSheet, size, defaultDelay) {
 };
 
 Engine.prototype.startGame = function() {
-    window.addEventListener('keydown', Util.call(this, this.onKeyDown), true);
-    window.addEventListener('keyup', Util.call(this, this.onKeyUp), true);
-
-    window.addEventListener("touchstart", Util.call(this, this.onTouchStart), true);
-    window.addEventListener("touchend", Util.call(this, this.onTouchEnd), true);
-
-    //this.enableAllKeys();
-
+    this.userAction.enableAll();
     this.level.init();
     this.chrono.start();
-};
-
-Engine.prototype.onKeyDown = function(e){
-    this.keys[e.keyCode] = true;
-};
-
-
-Engine.prototype.onKeyUp = function(e) {
-    this.keys[e.keyCode] = false;
-};
-
-Engine.prototype.onTouchStart = function(e) {
-    var touch = e.touches[0];
-
-    e.preventDefault();
-
-    switch(touch.target) {
-        case this.leftButton:
-            this.keys[KEY_LEFT] = true;
-            break;
-
-        case this.rightButton:
-            this.keys[KEY_RIGHT] = true;
-            break;
-    }
-};
-
-Engine.prototype.onTouchEnd = function(e) {
-    e.preventDefault();
-
-    this.keys[KEY_LEFT] = false;
-    this.keys[KEY_RIGHT] = false;
 };
 
 Engine.prototype.pauseGame = function() {
@@ -365,14 +291,14 @@ Engine.prototype.unpauseGame = function() {// FIXME: this doesn't quite work as 
     this.chrono.start();
 };
 
-Engine.prototype.checkKeys = function(secondsElapsed) {
-    if(this.checkKeysCallback) {
-        this.checkKeysCallback(this.keys);
+Engine.prototype.checkActions = function() {
+    if(this.checkActionsCallback) {
+        this.checkActionsCallback(this.userAction.actions);
     }
 };
 
 Engine.prototype.update = function(secondsElapsed) {
-    this.checkKeys(secondsElapsed);
+    this.checkActions();
     this.level.update(secondsElapsed);
 
     //this.gameFont.print(this.context, "16738", 100, 0);
