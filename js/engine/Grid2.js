@@ -3,22 +3,22 @@
  * Date: 6/26/13 7:06 PM
  */
 
-Grid.DEFAULT_SEGMENT_SIZE = 4;
+Grid2.DEFAULT_SEGMENT_SIZE = 4;
 
-Grid.ORIGIN_X = 0; // 192
-Grid.ORIGIN_Y = 0;
+Grid2.ORIGIN_X = 0; // 192
+Grid2.ORIGIN_Y = 0;
 
-Grid.DIR_NONE = 0;
-Grid.DIR_LEFT = -1;
-Grid.DIR_RIGHT = 1;
-Grid.DIR_UP = -1;
-Grid.DIR_DOWN = 1;
+Grid2.DIR_NONE = 0;
+Grid2.DIR_LEFT = -1;
+Grid2.DIR_RIGHT = 1;
+Grid2.DIR_UP = -1;
+Grid2.DIR_DOWN = 1;
 
-function Grid(config) {
+function Grid2(config) {
     this.initConfig(config);
 }
 
-Grid.prototype.initConfig = function(config) {
+Grid2.prototype.initConfig = function(config) {
     if(!config) {
         this.exception("Grid: no config provided");
     }
@@ -27,11 +27,11 @@ Grid.prototype.initConfig = function(config) {
     this.containerElement               = config.containerElement || this.exception("Grid: no containerElement provided");
     this.viewWidth                      = config.viewWidth || this.exception("Grid: view width zero or not provided");
     this.viewHeight                     = config.viewHeight || this.exception("Grid: view height zero or not provided");
-    this.segmentSize                    = config.segmentSize || Grid.DEFAULT_SEGMENT_SIZE;
+    this.segmentSize                    = config.segmentSize || Grid2.DEFAULT_SEGMENT_SIZE;
     this.gridWidth                      = Math.ceil(this.viewWidth / this.segmentSize) + 1;
     this.gridHeight                     = Math.ceil(this.viewHeight / this.segmentSize) + 1;
-    this.gridPositionX                  = Grid.ORIGIN_X;
-    this.gridPositionY                  = Grid.ORIGIN_Y;
+    this.gridPositionX                  = Grid2.ORIGIN_X;
+    this.gridPositionY                  = Grid2.ORIGIN_Y;
     this.segments                       = [[], []];
     this.activeSegmentsIndex            = 0;
     this.nextSegmentsIndex              = 1;
@@ -42,11 +42,11 @@ Grid.prototype.initConfig = function(config) {
     this.queue                          = new FrameQueue();
 };
 
-Grid.prototype.exception = function(error) {
+Grid2.prototype.exception = function(error) {
     throw error;
 };
 
-Grid.prototype.setPosition = function(x, y) {
+Grid2.prototype.setPosition = function(x, y) {
     var segmentSize = this.segmentSize,
         deltaX = x - this.posX,
         deltaY = y - this.posY,
@@ -64,11 +64,11 @@ Grid.prototype.setPosition = function(x, y) {
 
         // gridPositionX >= view width - segment size * Math.floor(segment count)??
         if(deltaX > 0 && this.gridPositionX >= segmentSize) { // Slide left, kick to the right, shift to the left, grid pos is around 0 on shifts
-            /// DEBUG this.gridPositionX -= segmentSize;
+            this.gridPositionX -= segmentSize;
             shiftX = -1;
                                                 // segmentSize
         } else if (deltaX < 0 && this.gridPositionX < 0) { // Slide right, shift to the right, kick to the left, grid pos is around segmentSize on shifts
-            /// DEBUG this.gridPositionX += segmentSize;
+            this.gridPositionX += segmentSize;
             shiftX = 1;
         }
     }
@@ -92,7 +92,7 @@ Grid.prototype.setPosition = function(x, y) {
     }
 };
 
-Grid.prototype.createSegments = function() {
+Grid2.prototype.createSegments = function() {
     var gridWidth = this.gridWidth,
         gridHeight = this.gridHeight,
         segments1 = this.segments[this.activeSegmentsIndex],
@@ -108,21 +108,18 @@ Grid.prototype.createSegments = function() {
     }
 };
 
-Grid.prototype.createSegment = function(gridX, gridY) {
+Grid2.prototype.createSegment = function(gridX, gridY) {
     var segment = this.createCanvas(gridX, gridY),
         segments = this.segments[this.activeSegmentsIndex];
 
-    /// DEBUG this.containerElement.appendChild(segment);
     segments[gridY][gridX] = segment;
 };
 
-Grid.prototype.createCanvas = function(gridX, gridY) {
+Grid2.prototype.createCanvas = function(gridX, gridY) {
     var canvas = document.createElement("canvas");
-    canvas.width = canvas.height = this.segmentSize + 2;
-    canvas.style.position = "absolute";
+    canvas.width = canvas.height = this.segmentSize;
 
     this.drawFunc(canvas,
-        //Math.floor(((gridX * this.segmentSize) + (this.posX - this.segmentSize)) / this.segmentSize),
         gridX,
         gridY,
         Math.floor(((gridX * this.segmentSize) + this.posX) / this.segmentSize),
@@ -132,7 +129,7 @@ Grid.prototype.createCanvas = function(gridX, gridY) {
     return canvas;
 };
 
-Grid.prototype.shiftPositions = function(hDir, vDir) {
+Grid2.prototype.shiftPositions = function(hDir, vDir) {
     var newX, newY,
         redraw,
         segment;
@@ -202,20 +199,5 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
     } else {
         this.activeSegmentsIndex = 0;
         this.nextSegmentsIndex++;
-    }
-};
-
-Grid.prototype.reposition = function() {
-    var segment;
-
-    for(var gridY = 0; gridY < this.gridHeight; gridY++) {
-        for(var gridX = 0; gridX < this.gridWidth; gridX++) {
-            segment = this.segments[this.activeSegmentsIndex][gridY][gridX];
-
-            // This is so that style changes are made all at once. Probably isn't necessary in modern browsers.
-            //segment.style.cssText = "position: absolute; left: " + ((gridX * this.segmentSize) - this.gridPositionX) + "px; top: " + ((gridY * this.segmentSize) - this.gridPositionY)  + "px;";
-            segment.style.left = ((gridX * this.segmentSize) - (this.gridPositionX))  + "px";
-            segment.style.top = ((gridY * this.segmentSize) - (this.gridPositionY)) + "px";
-        }
     }
 };

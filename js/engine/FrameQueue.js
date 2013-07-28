@@ -5,7 +5,7 @@
 
 
 function FrameQueue() {
-    this.queue      = [];
+    this.queue  = [];
 }
 
 FrameQueue.prototype.enqueue = function(func) {

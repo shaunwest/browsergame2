@@ -66,6 +66,7 @@ Engine.prototype.init = function(props) {
     this.initSetList('spriteSets', this.spriteSetList);
     this.initSetList('triggerSets', this.triggerSetList);
 
+    this.loadQueue              = new FuncQueue(this);
     this.chrono                 = new Chrono(this.fps, this.updateFunc, this.drawFunc);
 
     window.addEventListener('resize', Util.call(this, this.resizeCanvas), false);
@@ -123,37 +124,6 @@ Engine.prototype.onKeyDown = function(e){
         this.keys[keyCode] = enabledKeys[keyCode];
     }
 };*/
-Engine.prototype.onKeyDown = function(e){
-    this.keys[e.keyCode] = true;
-};
-
-
-Engine.prototype.onKeyUp = function(e) {
-    this.keys[e.keyCode] = false;
-};
-
-Engine.prototype.onTouchStart = function(e) {
-    var touch = e.touches[0];
-
-    e.preventDefault();
-
-    switch(touch.target) {
-        case this.leftButton:
-            this.keys[KEY_LEFT] = true;
-            break;
-
-        case this.rightButton:
-            this.keys[KEY_RIGHT] = true;
-            break;
-    }
-};
-
-Engine.prototype.onTouchEnd = function(e) {
-    e.preventDefault();
-
-    this.keys[KEY_LEFT] = false;
-    this.keys[KEY_RIGHT] = false;
-};
 
 Engine.prototype.initSetList = function(configId, list) {
     var sets = this.config[configId],
@@ -179,54 +149,48 @@ Engine.prototype.loadLevel = function(levelId) {
         this.currentSpriteSetId = levelConfig['spriteSetId'];
         this.currentTriggerSetId = levelConfig['triggerSetId'];
 
-        this.getFontSheet("score_font.png");
+        this.loadQueue.go([
+            [this.getFontSheet, "score_font.png"],
+            [this.getTileSheet, this.tileSetList[this.currentTileSetId]['tileSheetPath']],
+            [this.initTriggers],
+            [this.initSprites],
+            [this.loadSpriteAssets, this.spriteSetList[this.currentSpriteSetId]['spriteDefinitions']],
+            [this.getSprites, levelConfig['sprites']],
+            [this.startGame]
+        ]);
     }
 };
 
 Engine.prototype.getFontSheet = function(fontSheetPath) {
-    var self = this;
-
     var fontSheet = new Image();
     fontSheet.src = "assets/" + fontSheetPath;
-    fontSheet.onload = function() {
-        self.gameFont = new Font(fontSheet, true, 48, 48, 30);
-
-        var tileSetConfig = self.tileSetList[self.currentTileSetId];
-        self.getTileSheet(tileSetConfig['tileSheetPath']);
-    };
+    fontSheet.onload = Util.call(this, function() {
+        this.gameFont = new Font(fontSheet, true, 48, 48, 30);
+        this.loadQueue.dequeue();
+    });
 };
 
 Engine.prototype.getTileSheet = function(tileSheetPath) {
-    var self = this;
-
     var tileSheet = new Image();
     tileSheet.src = "assets/" + tileSheetPath;
-    tileSheet.onload = function() {
-        self.onTileSheetLoaded(tileSheet);
-    };
-    /*tileSheet.onload = function() {
-        self.tileSet = new TileSet(self.tileSetList[self.currentTileSetId], tileSheet, self.config.tileSize);
-        self.tileSheetReady();
-    };*/
-    /*tileSheet.onload = Util.call(this, function() {
+    tileSheet.onload = Util.call(this, function() {
         this.tileSet = new TileSet(this.tileSetList[this.currentTileSetId], tileSheet, this.config.tileSize);
-        this.tileSheetReady();
-    });*/
+        this.loadQueue.dequeue();
+    });
 };
 
-Engine.prototype.onTileSheetLoaded = function(tileSheet) {
-    this.tileSet = new TileSet(this.tileSetList[this.currentTileSetId], tileSheet, this.config.tileSize);
-    this.tileSheetReady();
-};
-
-Engine.prototype.tileSheetReady = function() {
+Engine.prototype.initTriggers = function() {
     var levelConfig = this.config['levels'][this.currentLevelId];
 
     this.createTriggerMap(this.triggerSetList[this.currentTriggerSetId]['triggerDefinitions']);
     this.getTriggers(levelConfig['triggers']);
 
+    this.loadQueue.dequeue();
+};
+
+Engine.prototype.initSprites = function() {
     this.spriteSet = new SpriteSet(this.spriteSetList[this.currentSpriteSetId]);
-    this.loadSpriteAssets(this.spriteSetList[this.currentSpriteSetId]['spriteDefinitions'], Util.call(this, this.getSprites, levelConfig['sprites']));
+    this.loadQueue.dequeue();
 };
 
 Engine.prototype.createTriggerMap = function(triggerDefinitions) {
@@ -260,7 +224,7 @@ Engine.prototype.getTriggers = function(triggers) {
     }
 };
 
-Engine.prototype.loadSpriteAssets = function(spriteDefinitions, ready, index) {
+Engine.prototype.loadSpriteAssets = function(spriteDefinitions, index) {
     index = Util.def(index, 0);
 
     var spriteDef = spriteDefinitions[index],
@@ -278,9 +242,9 @@ Engine.prototype.loadSpriteAssets = function(spriteDefinitions, ready, index) {
                 spriteSet.addSpriteSheet(spriteId, spriteSheet);
 
                 if(++index >= spriteDefinitions.length) {
-                    ready();
+                    this.loadQueue.dequeue();
                 } else {
-                    this.loadSpriteAssets(spriteDefinitions, ready, index);
+                    this.loadSpriteAssets(spriteDefinitions, index);
                 }
             });
         }
@@ -332,7 +296,7 @@ Engine.prototype.getSprites = function(sprites) {
 
     this.level = level;
 
-    this.startGame();
+    this.loadQueue.dequeue();
 };
 
 Engine.prototype.getAnimations = function(spriteSheet, size, defaultDelay) {
@@ -361,6 +325,38 @@ Engine.prototype.startGame = function() {
     this.chrono.start();
 };
 
+Engine.prototype.onKeyDown = function(e){
+    this.keys[e.keyCode] = true;
+};
+
+
+Engine.prototype.onKeyUp = function(e) {
+    this.keys[e.keyCode] = false;
+};
+
+Engine.prototype.onTouchStart = function(e) {
+    var touch = e.touches[0];
+
+    e.preventDefault();
+
+    switch(touch.target) {
+        case this.leftButton:
+            this.keys[KEY_LEFT] = true;
+            break;
+
+        case this.rightButton:
+            this.keys[KEY_RIGHT] = true;
+            break;
+    }
+};
+
+Engine.prototype.onTouchEnd = function(e) {
+    e.preventDefault();
+
+    this.keys[KEY_LEFT] = false;
+    this.keys[KEY_RIGHT] = false;
+};
+
 Engine.prototype.pauseGame = function() {
     this.chrono.stop();
 };
@@ -374,24 +370,6 @@ Engine.prototype.checkKeys = function(secondsElapsed) {
         this.checkKeysCallback(this.keys);
     }
 };
-
-/*Engine.prototype.update = function(secondsElapsed) {
-    this.level.grid.queue.update(); //todo: re-write
-
-    this.checkKeys(secondsElapsed);
-
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.level.update(secondsElapsed);
-    this.level.draw(this.context);
-    //this.gameFont.print(this.context, "16738", 100, 0);
-
-    if(this.updateCallback) {
-        this.updateCallback(secondsElapsed);
-    }
-
-    this.displayStatus();
-};*/
 
 Engine.prototype.update = function(secondsElapsed) {
     this.checkKeys(secondsElapsed);
@@ -407,19 +385,19 @@ Engine.prototype.update = function(secondsElapsed) {
 Engine.prototype.draw = function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.level.draw(this.context);
-    //this.displayStatus();
+    this.displayStatus();
 };
 
 Engine.prototype.displayStatus = function() {
     if(this.statusArea) {
        this.statusArea.innerHTML =
-            "<label>FPS:</label> " + this.chrono.fps +
+            "<label>FPS:</label> " + this.chrono.fps;
             /*"<br><label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
             "<br><label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +*/
-            "<br><label>PPos:</label> " + this.player.x + ", " + this.player.y +
+            /*"<br><label>PPos:</label> " + this.player.x + ", " + this.player.y +
             "<br><label>PMoveX:</label> " + this.player.moveX +
             "<br><label>Elapsed Min:</label> " + this.chrono.elapsedMin +
-            "<br><label>Elapsed Max:</label> " + this.chrono.elapsedMax;
+            "<br><label>Elapsed Max:</label> " + this.chrono.elapsedMax;*/
 
     }
 };

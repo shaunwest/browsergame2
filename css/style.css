@@ -233,7 +233,7 @@ td { vertical-align: top; }
 /*
 On retina display, use media scaling to scale down to half size, and use this
 to scale back up (http://29a.ch/2011/5/27/fast-html5-canvas-on-iphone-mobile-safari-performance)
-canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); }*/
+canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); } */
 
 #main { position: absolute; width: 100%; }
 /*#main { position: absolute; -webkit-transform: scale3d(2, 2, 0) translate3d(192px, 192px, 0);}*/
@@ -281,7 +281,6 @@ canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); }*/
 }
 
 #status {
-    display: none;
     left: 0; top: 0;
     width: 160px; height: 80px;
 }
@@ -300,13 +299,11 @@ label {
    ========================================================================== */
 
 @media only screen and (min-width: 480px) {
-  /* Style adjustments for viewports 480px and over go here */
-
+    /* Style adjustments for viewports 480px and over go here */
 }
 
 @media only screen and (min-width: 768px) {
-  /* Style adjustments for viewports 768px and over go here */
-
+    /* Style adjustments for viewports 768px and over go here */
 }
 
 
