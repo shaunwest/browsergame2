@@ -41,8 +41,6 @@ function Level(tileSet, spriteSet, levelData, gameArea, viewWidth, viewHeight) {
 	this.entities           = [];
 	this.triggers           = [];
 
-    this.segmentRenders     = [];
-
     this.frameNumber        = 0;
     this.maxFrames          = 100;
     this.frameSpeedMult     = 3;
@@ -59,56 +57,10 @@ function Level(tileSet, spriteSet, levelData, gameArea, viewWidth, viewHeight) {
         viewY: this.viewY,
         segmentSize: this.tileSize * this.tilesPerSegment
     });
-
-    this.x1 = 0;
-    this.tx1 = 0;
-    this.x2 = 0;
-    this.tx2 = 0;
-    this.y1 = 0;
-    this.ty1 = 0;
-    this.y2 = 0;
-    this.ty2 = 0;
-
-    this.tileX = 0;
-    this.tileY = 0;
-    this.context2d = null;
-    this.finalX = 0;
-    this.finalY = 0;
-    this.dataId = "";
-    this.asset = null;
-    this.cellX = 0;
-    this.cellY = 0;
 }
 
 Level.prototype.init = function() {
-    this.initSegmentRenders();
     this.grid.createSegments();
-};
-
-Level.prototype.initSegmentRenders = function() {
-    var gridWidth = this.grid.gridWidth,
-        gridHeight = this.grid.gridHeight,
-        segmentSize = this.grid.segmentSize,
-        segmentRenders = this.segmentRenders,
-        canvas, context;
-
-    for(var gridX = 0; gridX < gridWidth; gridX++) {
-        segmentRenders[gridX] = [];
-
-        for(var gridY = 0; gridY < gridHeight; gridY++) {
-            canvas = document.createElement('canvas');
-            canvas.width = canvas.height = segmentSize;
-            /*context = canvas.getContext('2d');
-            context.beginPath();
-            context.rect(0, 0, this.grid.segmentSize, this.grid.segmentSize);
-            context.fillStyle = 'yellow';
-            context.fill();
-            context.lineWidth = 7;
-            context.strokeStyle = 'black';
-            context.stroke();*/
-            segmentRenders[gridX][gridY] = canvas;
-        }
-    }
 };
 
 Level.prototype.addEntity = function(entity) {
@@ -285,99 +237,6 @@ Level.prototype.checkXCollision = function(entity) {
     }
 };
 
-/*
-Level.prototype.checkXCollision = function(entity) {
-    var moveX = entity.moveX, i;
-        this.x1 = entity.boundsLeft() + moveX;
-        this.tx1 = Math.floor(this.x1 / this.tileSize);
-        this.x2 = entity.boundsRight() + moveX;
-        this.tx2 = Math.floor((this.x2 - 1) / this.tileSize);
-        this.y1 = entity.boundsTop();
-        this.ty1 = Math.floor(this.y1 / this.tileSize);
-        this.y2 = entity.boundsBottom();
-        this.ty2 = Math.floor((this.y2 - 1) / this.tileSize);
-
-    if(this.y1 >= 0 && this.y2 < this.pixelHeight) {
-        if(moveX > 0) {
-            if((this.x2 - 1) >= this.pixelWidth - 192) { // 192 is twice the width of the player TODO: make configurable
-                this.stopRight(entity, this.tx2);
-                entity.levelCollisionX(1);
-
-            } else {
-                for(i = this.ty1; i <= this.ty2; i++) {
-                    if(this.isSolid(this.tx2, i)) {
-                        this.stopRight(entity, this.tx2);
-                        entity.levelCollisionX(1, this.getTile(this.tx2, i));
-                        break;
-                    }
-                }
-            }
-
-        } else if(moveX < 0) {
-            if(this.tx1 < 1) {
-                this.stopLeft(entity, this.tx1);
-                entity.levelCollisionX(-1);
-
-            } else {
-                for(i = this.ty1; i <= this.ty2; i++) {
-                    if(this.isSolid(this.tx1, i)) {
-                        this.stopLeft(entity, this.tx1);
-                        entity.levelCollisionX(-1, this.getTile(this.tx1, i));
-                        break;
-                    }
-                }
-            }
-        }
-    }
-};*/
-		
-/*
-Level.prototype.checkYCollision = function(entity) {
-	var moveY = entity.moveY, i;
-    this.x1 = entity.boundsLeft();
-    this.tx1 = Math.floor(this.x1 / this.tileSize);
-    this.x2 = entity.boundsRight();
-    this.tx2 = Math.floor((this.x2 - 1) / this.tileSize);
-    this.y1 = entity.boundsTop() + moveY;
-    this.ty1 = Math.floor(this.y1 / this.tileSize);
-    this.y2 = entity.boundsBottom() + moveY;
-    this.ty2 = Math.floor((this.y2 - 1) / this.tileSize);
-
-	if(this.tx1 >= 0 && this.tx2 <= this.width) {
-		if(moveY > 0) { // seems to be crashing when player hits bottom border of level
-			if((this.y2 - 1) > this.pixelHeight) {
-				this.stopDown(entity, this.ty2);
-				entity.levelCollisionY(1);
-				
-			} else {
-                for(i = this.tx1; i <= this.tx2; i++) {
-                    if(this.isSolid(i, this.ty2) || this.isPlatform(i, this.ty2)) {
-                        this.stopDown(entity, this.ty2);
-                        entity.levelCollisionY(1, this.getTile(i, this.ty2));
-                        break;
-                    }
-                }
-            }
-
-		} else if(moveY < 0) {
-			if(this.ty1 < 1) {
-				this.stopUp(entity, this.ty1);
-				entity.levelCollisionY(-1);
-				
-			} else {
-                for(i = this.tx1; i <= this.tx2; i++) {
-                    if(this.isSolid(i, this.ty1)) {
-                        this.stopUp(entity, this.ty1);
-                        entity.levelCollisionY(-1, this.getTile(i, this.ty1));
-                        break;
-                    }
-                }
-            }
-		}
-	}
-};*/
-
-
 Level.prototype.checkYCollision = function(entity) {
     var moveY = entity.moveY,
         x1 = entity.boundsLeft(),
@@ -482,12 +341,12 @@ Level.prototype.drawSegment = function(segment, segmentX, segmentY, levelX, leve
     var that = this;
     this.queue.enqueue(function() {
         that.preRenderSegment(segment, segmentX, segmentY, levelX, levelY);
+        //that.preRenderSegmentDebug(segment, segmentX, segmentY, levelX, levelY);
     });
 };
 
-/*Level.prototype.preRenderSegmentBox = function(segmentX, segmentY) {
-    var image = this.segmentRenders[segmentX][segmentY],
-        context = image.getContext('2d');
+Level.prototype.preRenderSegmentDebug = function(segment) {
+    var context = segment.getContext('2d');
 
     context.beginPath();
     context.rect(0, 0, this.grid.segmentSize, this.grid.segmentSize);
@@ -496,32 +355,7 @@ Level.prototype.drawSegment = function(segment, segmentX, segmentY, levelX, leve
     context.lineWidth = 7;
     context.strokeStyle = 'black';
     context.stroke();
-};*/
-
-/*
-Level.prototype.preRenderSegment = function(segment, segmentX, segmentY, levelX, levelY) {
-    this.tileX = levelX * this.tilesPerSegment;
-    this.tileY = levelY * this.tilesPerSegment;
-    this.context2d = this.segmentRenders[segmentX][segmentY].getContext('2d');
-
-    for(this.cellY = 0; this.cellY < this.tilesPerSegment; this.cellY++) {
-        for(this.cellX = 0; this.cellX < this.tilesPerSegment; this.cellX++) {
-            this.finalX = this.tileX + this.cellX;
-            this.finalY = this.tileY + this.cellY;
-
-            if(this.levelData[this.finalY]) {
-                this.dataId = this.levelData[this.finalY][this.finalX];
-                if(this.dataId !== undefined) {
-                    this.asset = this.tileSet.tiles[this.dataId];
-                    if(this.asset) {
-                        this.context2d.drawImage(this.asset.image, this.cellX * this.tileSize, this.cellY * this.tileSize);
-                    }
-                }
-            }
-        }
-    }
 };
-*/
 
 Level.prototype.preRenderSegment = function(segment, segmentX, segmentY, levelX, levelY) {
     var tileX = levelX * this.tilesPerSegment,

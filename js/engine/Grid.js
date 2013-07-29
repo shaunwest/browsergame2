@@ -1,6 +1,10 @@
 /**
  * User: shaun
  * Date: 6/26/13 7:06 PM
+ *
+ * FIXME: Testing so far has shown MODE2 to be pretty useless. There seems to be a memory leak though,
+ * so that may have something to do with poor performance.
+ *
  */
 
 Grid.DEFAULT_SEGMENT_SIZE = 4;

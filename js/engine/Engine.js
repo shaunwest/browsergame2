@@ -14,8 +14,23 @@ Engine.prototype.init = function(props) {
     this.fps                    = props.fps;
     this.config                 = props.config;
     this.actions                = props.actions;
-    this.width                  = props.width;
-    this.height                 = props.height;
+    this.fixedWidth             = props.width;
+    this.fixedHeight            = props.height;
+    this.canvasContainer        = props.canvasContainer;
+    this.gridContainer          = props.gridContainer;
+    this.canvas                 = props.canvas;
+    this.statusArea             = props.statusArea;
+    Engine.traceArea            = props.traceArea;
+    this.checkActionsCallback   = props.checkUserActions;
+    this.updateCallback         = props.update;
+    this.createSpritesCallback  = props.createSprites;
+
+    this.context                = this.canvas.getContext('2d');
+
+    this.width                  = 0;
+    this.height                 = 0;
+
+    this.resizeCanvas();
 
     this.gameFont               = null;
 
@@ -35,24 +50,6 @@ Engine.prototype.init = function(props) {
 
     this.level                  = null;
     this.player                 = null;
-
-    this.gameArea               = props.gameArea,
-    this.canvasContainer        = props.canvasContainer;
-    this.gridContainer          = props.gridContainer;
-
-    this.canvas                 = props.canvas;
-    this.canvas.width           = this.width;
-    this.canvas.height          = this.height;
-
-    this.resizeCanvas();
-
-    this.context                = this.canvas.getContext('2d');
-    this.statusArea             = props.statusArea;
-    Engine.traceArea            = props.traceArea;
-
-    this.checkActionsCallback   = props.checkUserActions;
-    this.updateCallback         = props.update;
-    this.createSpritesCallback  = props.createSprites;
 
     this.updateFunc             = Util.call(this, this.update);
     this.drawFunc               = Util.call(this, this.draw);
@@ -74,20 +71,11 @@ Engine.prototype.resizeCanvas = function() {
         canvasContainer = this.canvasContainer,
         canvas = this.canvas;
 
-    /*if(newWidth > newHeight) {
-        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "1024px"; //"768px"; //newHeight + "px";
-    } else {
-        canvasContainer.style.width = canvasContainer.style.height = canvas.style.width = canvas.style.height = "1024px"; //"768px"; //newWidth + "px";
-    }*/
+    canvas.width = this.width = (this.fixedWidth) ? this.fixedWidth : newWidth;
+    canvas.height = this.height = (this.fixedHeight) ? this.fixedHeight : newHeight;
 
-    /*if(newWidth > newHeight) {
-        canvasContainer.style.width = canvasContainer.style.height = canvas.width + "px"; //"1024px"; //"768px"; //newHeight + "px";
-    } else {
-        canvasContainer.style.width = canvasContainer.style.height = canvas.width + "px"; //"1024px"; //"768px"; //newWidth + "px";
-    }*/
-
-    //canvasContainer.style.width = (canvas.width) + "px";
-    //canvasContainer.style.height = (canvas.height) + "px";
+    canvasContainer.style.width = this.width + "px";
+    canvasContainer.style.height = this.height + "px";
 };
 
 Engine.prototype.initSetList = function(configId, list) {

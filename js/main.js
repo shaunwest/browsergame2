@@ -20,8 +20,6 @@ const KEY_UP = 38;
 const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
 const KEY_X = 88;
-const KEY_F = 70;
-const KEY_G = 71;
 
 var engine;
 
@@ -35,13 +33,12 @@ $.ajax({
 function configReady(data) {
     engine = new Engine({
         'fps'               : 60,
-        'gameArea'          : document.getElementById('main'),
         'canvas'            : document.getElementById('display'),
         'canvasContainer'   : document.getElementById('displayContainer'),
         'gridContainer'     : document.getElementById('grid'),
         'config'            : data,
-        'width'             : 640, //1024,
-        'height'            : 960, //768,
+        'width'             : 1024,
+        'height'            : 768,
         'checkUserActions'  : checkUserActions,
         'createSprites'     : createSprites,
         'update'            : update,
