@@ -4,8 +4,12 @@
  */
 
 Grid.DEFAULT_SEGMENT_SIZE = 4;
+Grid.DEFAULT_MODE = 1;
 
-Grid.ORIGIN_X = 0; // 192
+Grid.MODE1 = 1;
+Grid.MODE2 = 2;
+
+Grid.ORIGIN_X = 0;
 Grid.ORIGIN_Y = 0;
 
 Grid.DIR_NONE = 0;
@@ -23,6 +27,8 @@ Grid.prototype.initConfig = function(config) {
         this.exception("Grid: no config provided");
     }
 
+    this.mode                           = config.mode || Grid.DEFAULT_MODE;
+    this.moveSegments                   = (this.mode == Grid.MODE2) ? this.moveSegments2 : this.moveSegments1;
     this.drawFunc                       = config.drawFunc;
     this.containerElement               = config.containerElement || this.exception("Grid: no containerElement provided");
     this.viewWidth                      = config.viewWidth || this.exception("Grid: view width zero or not provided");
@@ -62,13 +68,12 @@ Grid.prototype.setPosition = function(x, y) {
     if(deltaX != 0) {    // Only change state if there's a reason. In this case h-movement happened.
         this.posX = x;
 
-        // gridPositionX >= view width - segment size * Math.floor(segment count)??
         if(deltaX > 0 && this.gridPositionX >= segmentSize) { // Slide left, kick to the right, shift to the left, grid pos is around 0 on shifts
-            /// DEBUG this.gridPositionX -= segmentSize;
+            this.gridPositionX -= segmentSize;
             shiftX = -1;
-                                                // segmentSize
+
         } else if (deltaX < 0 && this.gridPositionX < 0) { // Slide right, shift to the right, kick to the left, grid pos is around segmentSize on shifts
-            /// DEBUG this.gridPositionX += segmentSize;
+            this.gridPositionX += segmentSize;
             shiftX = 1;
         }
     }
@@ -112,17 +117,20 @@ Grid.prototype.createSegment = function(gridX, gridY) {
     var segment = this.createCanvas(gridX, gridY),
         segments = this.segments[this.activeSegmentsIndex];
 
-    /// DEBUG this.containerElement.appendChild(segment);
+    // In mode 2, segments are attached directly to the DOM
+    if(this.mode == Grid.MODE2) {
+        this.containerElement.appendChild(segment);
+    }
+
     segments[gridY][gridX] = segment;
 };
 
 Grid.prototype.createCanvas = function(gridX, gridY) {
     var canvas = document.createElement("canvas");
-    canvas.width = canvas.height = this.segmentSize + 2;
+    canvas.width = canvas.height = this.segmentSize; // + 2;
     canvas.style.position = "absolute";
 
     this.drawFunc(canvas,
-        //Math.floor(((gridX * this.segmentSize) + (this.posX - this.segmentSize)) / this.segmentSize),
         gridX,
         gridY,
         Math.floor(((gridX * this.segmentSize) + this.posX) / this.segmentSize),
@@ -205,15 +213,23 @@ Grid.prototype.shiftPositions = function(hDir, vDir) {
     }
 };
 
-Grid.prototype.reposition = function() {
+Grid.prototype.moveSegments1 = function(context) {
+    for(var gridY = 0; gridY < this.gridHeight; gridY++) {
+        for(var gridX = 0; gridX < this.gridWidth; gridX++) {
+            context.drawImage(this.segments[this.activeSegmentsIndex][gridY][gridX],
+                (gridX * this.segmentSize) - (this.gridPositionX),
+                (gridY * this.segmentSize) - (this.gridPositionY)
+            );
+        }
+    }
+};
+
+Grid.prototype.moveSegments2 = function() {
     var segment;
 
     for(var gridY = 0; gridY < this.gridHeight; gridY++) {
         for(var gridX = 0; gridX < this.gridWidth; gridX++) {
             segment = this.segments[this.activeSegmentsIndex][gridY][gridX];
-
-            // This is so that style changes are made all at once. Probably isn't necessary in modern browsers.
-            //segment.style.cssText = "position: absolute; left: " + ((gridX * this.segmentSize) - this.gridPositionX) + "px; top: " + ((gridY * this.segmentSize) - this.gridPositionY)  + "px;";
             segment.style.left = ((gridX * this.segmentSize) - (this.gridPositionX))  + "px";
             segment.style.top = ((gridY * this.segmentSize) - (this.gridPositionY)) + "px";
         }

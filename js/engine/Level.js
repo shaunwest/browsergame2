@@ -49,7 +49,8 @@ function Level(tileSet, spriteSet, levelData, gameArea, viewWidth, viewHeight) {
 
     this.queue              = new FrameQueue();
 
-    this.grid               = new Grid2({
+    this.grid               = new Grid({
+        mode: Grid.MODE1,
         containerElement: gameArea,
         drawFunc: Util.call(this, this.drawSegment),
         viewWidth: this.viewWidth * this.tileSize,
@@ -462,7 +463,7 @@ Level.prototype.getTile = function(x, y) {
     return this.tileSet.getTileDefinition(this.levelData[y][x]);
 };
 
-Level.prototype.moveView = function(deltaX, deltaY, dirX, dirY) {
+Level.prototype.moveView = function(deltaX, deltaY) {
     this.viewX += deltaX;
     this.viewY += deltaY;
 
@@ -479,24 +480,9 @@ Level.prototype.moveView = function(deltaX, deltaY, dirX, dirY) {
 
 Level.prototype.drawSegment = function(segment, segmentX, segmentY, levelX, levelY) {
     var that = this;
-    //this.preRenderSegment(segment, segmentX, segmentY, levelX, levelY);
     this.queue.enqueue(function() {
         that.preRenderSegment(segment, segmentX, segmentY, levelX, levelY);
-        //that.preRenderSegmentBox(segmentX, segmentY);
     });
-
-    /* DEBUG
-    this.queue.enqueue(function() {
-        that.renderSegment(segment, segmentX, segmentY);
-    });*/
-
-    //this.queue.enqueue(Util.call(this, this.preRenderSegment, segment, segmentX, segmentY, levelX, levelY));
-    //this.queue.enqueue(Util.call(this, this.preRenderSegmentBox, segmentX, segmentY));
-    //this.queue.enqueue(Util.call(this, this.renderSegment, segment, segmentX, segmentY));
-};
-
-Level.prototype.renderSegment = function(segment, segmentX, segmentY) {
-    segment.getContext('2d').drawImage(this.segmentRenders[segmentX][segmentY], 0, 0);
 };
 
 /*Level.prototype.preRenderSegmentBox = function(segmentX, segmentY) {
@@ -540,7 +526,6 @@ Level.prototype.preRenderSegment = function(segment, segmentX, segmentY, levelX,
 Level.prototype.preRenderSegment = function(segment, segmentX, segmentY, levelX, levelY) {
     var tileX = levelX * this.tilesPerSegment,
         tileY = levelY * this.tilesPerSegment,
-        /// DEBUG context2d = this.segmentRenders[segmentX][segmentY].getContext('2d'),
         context2d = segment.getContext('2d'),
         finalX, finalY,
         dataId, asset;
@@ -576,25 +561,8 @@ Level.prototype.update = function(secondsElapsed) {
 };
 
 Level.prototype.draw = function(context) {
-    this.drawSegments(context);
+    this.grid.moveSegments(context);
     this.drawEntities(context);
-    //this.grid.reposition();
-};
-
-// Note: this is an experimental function
-Level.prototype.drawSegments = function(context) {
-    for(var gridY = 0; gridY < this.grid.gridHeight; gridY++) {
-        for(var gridX = 0; gridX < this.grid.gridWidth; gridX++) {
-            var image = this.grid.segments[this.grid.activeSegmentsIndex][gridY][gridX];
-
-            //segment.style.left = ((gridX * this.grid.segmentSize) - (this.grid.gridPositionX))  + "px";
-            //segment.style.top = ((gridY * this.grid.segmentSize) - (this.grid.gridPositionY)) + "px";
-            context.drawImage(image,
-                (gridX * this.grid.segmentSize) - (this.grid.gridPositionX),
-                (gridY * this.grid.segmentSize) - (this.grid.gridPositionY)
-            );
-        }
-    }
 };
 
 Level.prototype.updateEntities = function(secondsElapsed) {

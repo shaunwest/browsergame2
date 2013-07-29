@@ -243,8 +243,8 @@ canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); } */
 }*/
 
 /* 1728px, 960px - 1632px, 864px */
-#displayContainer { margin:0 auto; text-align: left; overflow: hidden; width: 1024px; height: 768px;}
-#grid {position: absolute; left: 0; top: 0; width: 1024px; height: 768px;}
+#displayContainer { margin:0 auto; text-align: left; overflow: hidden; width: 640px; height: 960px;}
+#grid {position: absolute; left: 0; top: 0; width: 640px; height: 960px;}
 #display { position:absolute; z-index: 9999; left: 0; top: 0;}
 
 #controls {
