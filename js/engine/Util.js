@@ -3,7 +3,7 @@
  * Date: 6/24/13 6:56 PM
  */
 
-function Util() {}
+/*function Util() {}
 
 Util.call = function(context, func) {
     var args = Array.prototype.slice.call(arguments, 2);
@@ -14,4 +14,4 @@ Util.call = function(context, func) {
 
 Util.def = function(arg, defaultValue) {
     return typeof arg === 'undefined' ? defaultValue : arg;
-};
+};*/

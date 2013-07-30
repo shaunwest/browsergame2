@@ -2,8 +2,6 @@
 
 TODO:
 -vertical scrolling
--do some code cleanup. Especially relating to Level/Segment code.
--add fullscreen support to make iPad testing easier
 -add touch controls for iPad
 
 FIXME:
@@ -31,7 +29,7 @@ $.ajax({
 });
 
 function configReady(data) {
-    engine = new Engine({
+    engine = new RETRO.Engine({
         'fps'               : 60,
         'canvas'            : document.getElementById('display'),
         'canvasContainer'   : document.getElementById('displayContainer'),
@@ -44,7 +42,7 @@ function configReady(data) {
         'update'            : update,
         'statusArea'        : document.getElementById('status'),
         'traceArea'         : document.getElementById('trace'),
-        'actions'          :
+        'actions'           :
         {
             'left'          : {'key': KEY_LEFT, 'el': document.getElementById('left')},
             'right'         : {'key': KEY_RIGHT, 'el': document.getElementById('right')},
@@ -120,7 +118,7 @@ function createSprites(sprite, spriteDef, spriteSheet) {
 
     switch(spriteDef.type) {
         case 'player':
-            entity = new Player(engine.getAnimations(spriteSheet, width, defaultDelay), spriteDef, engine);
+            entity = new RETRO.Player(engine.getAnimations(spriteSheet, width, defaultDelay), spriteDef, engine);
             break;
 
         case 'goblin1':

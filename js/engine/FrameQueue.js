@@ -4,26 +4,29 @@
  */
 
 
-function FrameQueue() {
-    this.queue  = [];
-}
+RETRO.FrameQueue = (function(){
 
-FrameQueue.prototype.enqueue = function(func) {
-    this.queue.push(func);
-};
-
-FrameQueue.prototype.dequeue = function() {
-    this.queue.shift()();
-};
-
-FrameQueue.prototype.update = function() {
-    if(!this.isEmpty()) {
-        this.dequeue();
+    function FrameQueue() {
+        this.queue  = [];
     }
-};
 
-FrameQueue.prototype.isEmpty = function() {
-    return (this.queue.length == 0);
-};
+    FrameQueue.prototype.enqueue = function(func) {
+        this.queue.push(func);
+    };
 
+    FrameQueue.prototype.dequeue = function() {
+        this.queue.shift()();
+    };
 
+    FrameQueue.prototype.update = function() {
+        if(!this.isEmpty()) {
+            this.dequeue();
+        }
+    };
+
+    FrameQueue.prototype.isEmpty = function() {
+        return (this.queue.length == 0);
+    };
+
+    return FrameQueue;
+})();

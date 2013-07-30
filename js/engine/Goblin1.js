@@ -2,100 +2,100 @@
  * @author shaun
  */
 
-function Goblin1(animations, def) {
-	if (arguments[0] === inheriting) return;
-	
-	PhysicsEntity.call(this, animations, def);
+RETRO.Goblin = (function() {
 
-	this.onGround               = false;
-	
-	this.boundsDefinition       = {left: 30, top: 15, right: 30, bottom: 0};
-			
-	this.doMoveY                = true;
-	this.doMoveX                = true;
-    this.doHorizontalVelocity   = false;  // don't do physics for h-vel
-	this.vMaxVelocity           = 750;
-	this.hMaxVelocity           = 312; // don't need
-    //this.hVelocity = 312; //5;
-	this.dirX                   = -1;
-	this.vAcceleration          = 36;
-    this.hAcceleration          = 20; // don't need
-    this.isHit                  = false;
-    this.isDead                 = false;
-    this.isDamaged              = false;
-}
+    RETRO.extend(RETRO.PhysicsEntity, Goblin1);
 
-Goblin1.prototype = new PhysicsEntity(inheriting);
-Goblin1.prototype.constructor = PhysicsEntity;
-Goblin1.base = PhysicsEntity.prototype;
+    function Goblin1(animations, def) {
+        RETRO.PhysicsEntity.call(this, animations, def);
 
-Goblin1.prototype.updateEnd = function(secondsElapsed) {
-    Goblin1.base.updateEnd.call(this, secondsElapsed);
+        this.onGround               = false;
 
-    var self = this;
+        this.boundsDefinition       = {left: 30, top: 15, right: 30, bottom: 0};
 
-    /*if(this.isHit && !this.isDead) {
-        this.isHit = false;
-        this.isDead = true;
-        this.dirX = -this.dirX;
-        this.vVelocity = (-375 * secondsElapsed);
-        this.levelCollisions = 0;
-    }*/
-
-    if(this.isHit) {
-        this.isHit      = false;
-        this.isDamaged  = true;
-        this.vVelocity = (-375 * secondsElapsed);
-
-        this.setTimer(0.5, function() {
-            self.onDamagedComplete();
-        });
+        this.doMoveY                = true;
+        this.doMoveX                = true;
+        this.doHorizontalVelocity   = false;  // don't do physics for h-vel
+        this.vMaxVelocity           = 750;
+        this.hMaxVelocity           = 312; // don't need
+        //this.hVelocity = 312; //5;
+        this.dirX                   = -1;
+        this.vAcceleration          = 36;
+        this.hAcceleration          = 20; // don't need
+        this.isHit                  = false;
+        this.isDead                 = false;
+        this.isDamaged              = false;
     }
 
+    Goblin1.prototype.updateEnd = function(secondsElapsed) {
+        Goblin1.base.updateEnd.call(this, secondsElapsed);
 
-    if(this.isDead) {
-        (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(5) : this.setCurrentAnimation(4);
+        var self = this;
 
-    } else if(this.isDamaged) {
-        (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(6) : this.setCurrentAnimation(7);
+        /*if(this.isHit && !this.isDead) {
+            this.isHit = false;
+            this.isDead = true;
+            this.dirX = -this.dirX;
+            this.vVelocity = (-375 * secondsElapsed);
+            this.levelCollisions = 0;
+        }*/
 
-    } else {
-        // WALK
-        if(this.moveX != 0) {
-            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(2) :  this.setCurrentAnimation(3);
+        if(this.isHit) {
+            this.isHit      = false;
+            this.isDamaged  = true;
+            this.vVelocity = (-375 * secondsElapsed);
 
-            // IDLE
-        } else {
-            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(0) : this.setCurrentAnimation(1);
+            this.setTimer(0.5, function() {
+                self.onDamagedComplete();
+            });
         }
-    }
 
-    // Manually set a constant velocity
-    if(this.doMoveX) {
-        if(this.isDamaged) {
-            if(this.lastHitIntersection.x > 0) {
-                this.hVelocity = 312 * secondsElapsed;
+
+        if(this.isDead) {
+            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(5) : this.setCurrentAnimation(4);
+
+        } else if(this.isDamaged) {
+            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(6) : this.setCurrentAnimation(7);
+
+        } else {
+            // WALK
+            if(this.moveX != 0) {
+                (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(2) :  this.setCurrentAnimation(3);
+
+                // IDLE
             } else {
-                this.hVelocity = -312 * secondsElapsed;
+                (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(0) : this.setCurrentAnimation(1);
             }
-
-        } else {
-            this.hVelocity = 312 * this.dirX * secondsElapsed;
         }
-    }
-};
 
-Goblin1.prototype.onDamagedComplete = function() {
-    this.isDamaged = false;
-};
+        // Manually set a constant velocity
+        if(this.doMoveX) {
+            if(this.isDamaged) {
+                if(this.lastHitIntersection.x > 0) {
+                    this.hVelocity = 312 * secondsElapsed;
+                } else {
+                    this.hVelocity = -312 * secondsElapsed;
+                }
 
-Goblin1.prototype.levelCollisionX = function(direction, tileDef) {
-    Goblin1.base.levelCollisionX.call(this, direction, tileDef);
+            } else {
+                this.hVelocity = 312 * this.dirX * secondsElapsed;
+            }
+        }
+    };
 
-    if(!this.isDamaged) {
-	    this.dirX = -this.dirX;
-    }
-};
+    Goblin1.prototype.onDamagedComplete = function() {
+        this.isDamaged = false;
+    };
+
+    Goblin1.prototype.levelCollisionX = function(direction, tileDef) {
+        Goblin1.base.levelCollisionX.call(this, direction, tileDef);
+
+        if(!this.isDamaged) {
+            this.dirX = -this.dirX;
+        }
+    };
+
+})();
 
 
 

@@ -6,321 +6,325 @@
 
 var inheriting = {};
 
-function Engine(props) {
-    this.init(props);
-}
+RETRO.Engine = (function() {
 
-Engine.prototype.init = function(props) {
-    this.fps                    = props.fps;
-    this.config                 = props.config;
-    this.actions                = props.actions;
-    this.fixedWidth             = props.width;
-    this.fixedHeight            = props.height;
-    this.canvasContainer        = props.canvasContainer;
-    this.gridContainer          = props.gridContainer;
-    this.canvas                 = props.canvas;
-    this.statusArea             = props.statusArea;
-    Engine.traceArea            = props.traceArea;
-    this.checkActionsCallback   = props.checkUserActions;
-    this.updateCallback         = props.update;
-    this.createSpritesCallback  = props.createSprites;
+    function Engine(props) {
+        this.init(props);
+    }
 
-    this.context                = this.canvas.getContext('2d');
+    Engine.prototype.init = function(props) {
+        this.fps                    = props.fps;
+        this.config                 = props.config;
+        this.actions                = props.actions;
+        this.fixedWidth             = props.width;
+        this.fixedHeight            = props.height;
+        this.canvasContainer        = props.canvasContainer;
+        this.gridContainer          = props.gridContainer;
+        this.canvas                 = props.canvas;
+        this.statusArea             = props.statusArea;
+        Engine.traceArea            = props.traceArea;
+        this.checkActionsCallback   = props.checkUserActions;
+        this.updateCallback         = props.update;
+        this.createSpritesCallback  = props.createSprites;
 
-    this.width                  = 0;
-    this.height                 = 0;
+        this.context                = this.canvas.getContext('2d');
 
-    this.resizeCanvas();
+        this.width                  = 0;
+        this.height                 = 0;
 
-    this.gameFont               = null;
+        this.resizeCanvas();
 
-    this.tileSetList            = {};
-    this.tileSet                = null;
+        this.gameFont               = null;
 
-    this.spriteSetList          = {};
-    this.spriteSet              = null;
+        this.tileSetList            = {};
+        this.tileSet                = null;
 
-    this.triggerSetList         = {};
-    this.triggerMap             = {};
+        this.spriteSetList          = {};
+        this.spriteSet              = null;
 
-    this.currentLevelId         = "";
-    this.currentTileSetId       = "";
-    this.currentSpriteSetId     = "";
-    this.currentTriggerSetId    = "";
+        this.triggerSetList         = {};
+        this.triggerMap             = {};
 
-    this.level                  = null;
-    this.player                 = null;
+        this.currentLevelId         = "";
+        this.currentTileSetId       = "";
+        this.currentSpriteSetId     = "";
+        this.currentTriggerSetId    = "";
 
-    this.updateFunc             = Util.call(this, this.update);
-    this.drawFunc               = Util.call(this, this.draw);
+        this.level                  = null;
+        this.player                 = null;
 
-    this.initSetList('tileSets', this.tileSetList);
-    this.initSetList('spriteSets', this.spriteSetList);
-    this.initSetList('triggerSets', this.triggerSetList);
+        this.updateFunc             = RETRO.call(this, this.update);
+        this.drawFunc               = RETRO.call(this, this.draw);
 
-    this.userAction             = new UserAction(this.actions);
-    this.loadQueue              = new FuncQueue(this);
-    this.chrono                 = new Chrono(this.fps, this.updateFunc, this.drawFunc);
+        this.initSetList('tileSets', this.tileSetList);
+        this.initSetList('spriteSets', this.spriteSetList);
+        this.initSetList('triggerSets', this.triggerSetList);
 
-    window.addEventListener('resize', Util.call(this, this.resizeCanvas), false);
-};
+        this.userAction             = new RETRO.UserAction(this.actions);
+        this.loadQueue              = new RETRO.FuncQueue(this);
+        this.chrono                 = new RETRO.Chrono(this.fps, this.updateFunc, this.drawFunc);
 
-Engine.prototype.resizeCanvas = function() {
-    var newWidth = window.innerWidth,
-        newHeight = window.innerHeight,
-        canvasContainer = this.canvasContainer,
-        canvas = this.canvas;
+        window.addEventListener('resize', RETRO.call(this, this.resizeCanvas), false);
+    };
 
-    canvas.width = this.width = (this.fixedWidth) ? this.fixedWidth : newWidth;
-    canvas.height = this.height = (this.fixedHeight) ? this.fixedHeight : newHeight;
+    Engine.prototype.resizeCanvas = function() {
+        var newWidth = window.innerWidth,
+            newHeight = window.innerHeight,
+            canvasContainer = this.canvasContainer,
+            canvas = this.canvas;
 
-    canvasContainer.style.width = this.width + "px";
-    canvasContainer.style.height = this.height + "px";
-};
+        canvas.width = this.width = (this.fixedWidth) ? this.fixedWidth : newWidth;
+        canvas.height = this.height = (this.fixedHeight) ? this.fixedHeight : newHeight;
 
-Engine.prototype.initSetList = function(configId, list) {
-    var sets = this.config[configId],
-        setCount = sets.length;
+        canvasContainer.style.width = this.width + "px";
+        canvasContainer.style.height = this.height + "px";
+    };
 
-    for(var i = 0; i < setCount; i++) {
-        var setConfig = sets[i];
-        if(setConfig.hasOwnProperty('setId')) {
-            list[setConfig['setId']] = setConfig;
+    Engine.prototype.initSetList = function(configId, list) {
+        var sets = this.config[configId],
+            setCount = sets.length;
+
+        for(var i = 0; i < setCount; i++) {
+            var setConfig = sets[i];
+            if(setConfig.hasOwnProperty('setId')) {
+                list[setConfig['setId']] = setConfig;
+            }
         }
-    }
-};
+    };
 
-Engine.prototype.loadLevel = function(levelId) {
-    var levels = this.config['levels'];
+    Engine.prototype.loadLevel = function(levelId) {
+        var levels = this.config['levels'];
 
-    if(levels.hasOwnProperty(levelId)) {
-        this.currentLevelId = levelId;
+        if(levels.hasOwnProperty(levelId)) {
+            this.currentLevelId = levelId;
 
-        var levelConfig = levels[this.currentLevelId];
+            var levelConfig = levels[this.currentLevelId];
 
-        this.currentTileSetId = levelConfig['tileSetId'];
-        this.currentSpriteSetId = levelConfig['spriteSetId'];
-        this.currentTriggerSetId = levelConfig['triggerSetId'];
+            this.currentTileSetId = levelConfig['tileSetId'];
+            this.currentSpriteSetId = levelConfig['spriteSetId'];
+            this.currentTriggerSetId = levelConfig['triggerSetId'];
 
-        this.loadQueue.go([
-            [this.getFontSheet, "score_font.png"],
-            [this.getTileSheet, this.tileSetList[this.currentTileSetId]['tileSheetPath']],
-            [this.initTriggers],
-            [this.initSprites],
-            [this.loadSpriteAssets, this.spriteSetList[this.currentSpriteSetId]['spriteDefinitions']],
-            [this.getSprites, levelConfig['sprites']],
-            [this.startGame]
-        ]);
-    }
-};
-
-Engine.prototype.getFontSheet = function(fontSheetPath) {
-    var fontSheet = new Image();
-    fontSheet.src = "assets/" + fontSheetPath;
-    fontSheet.onload = Util.call(this, function() {
-        this.gameFont = new Font(fontSheet, true, 48, 48, 30);
-        this.loadQueue.dequeue();
-    });
-};
-
-Engine.prototype.getTileSheet = function(tileSheetPath) {
-    var tileSheet = new Image();
-    tileSheet.src = "assets/" + tileSheetPath;
-    tileSheet.onload = Util.call(this, function() {
-        this.tileSet = new TileSet(this.tileSetList[this.currentTileSetId], tileSheet, this.config.tileSize);
-        this.loadQueue.dequeue();
-    });
-};
-
-Engine.prototype.initTriggers = function() {
-    var levelConfig = this.config['levels'][this.currentLevelId];
-
-    this.createTriggerMap(this.triggerSetList[this.currentTriggerSetId]['triggerDefinitions']);
-    this.getTriggers(levelConfig['triggers']);
-
-    this.loadQueue.dequeue();
-};
-
-Engine.prototype.initSprites = function() {
-    this.spriteSet = new SpriteSet(this.spriteSetList[this.currentSpriteSetId]);
-    this.loadQueue.dequeue();
-};
-
-Engine.prototype.createTriggerMap = function(triggerDefinitions) {
-    var triggerMap = {},
-        numTriggers = triggerDefinitions.length;
-
-    for(var i = 0; i < numTriggers; i++) {
-        var triggerDef = triggerDefinitions[i];
-        triggerMap[triggerDef.id] = triggerDef;
-    }
-
-    this.triggerMap = triggerMap;
-};
-
-Engine.prototype.getTriggers = function(triggers) {
-    var triggerMap = this.triggerMap,
-        numTriggers = triggers.length,
-        level = this.level,
-        trigger, triggerDef,
-        entity;
-
-    for(var i = 0; i < numTriggers; i++) {
-        trigger = triggers[i];
-        triggerDef = triggerMap[trigger.triggerId];
-
-        entity = new Entity(null, triggerDef);
-        entity.x = trigger.x;
-        entity.y = trigger.y;
-
-        level.addTrigger(entity);
-    }
-};
-
-Engine.prototype.loadSpriteAssets = function(spriteDefinitions, index) {
-    index = Util.def(index, 0);
-
-    var spriteDef = spriteDefinitions[index],
-        spriteSet = this.spriteSet,
-        spriteId,
-        spriteSheet;
-
-    if(spriteDef) {
-        spriteId = spriteDef['id'];
-
-        if(!spriteSet.getSpriteSheet(spriteId)) {
-            spriteSheet = new Image();
-            spriteSheet.src = "assets/" + spriteDef['filePath'];
-            spriteSheet.onload = Util.call(this, function() {
-                spriteSet.addSpriteSheet(spriteId, spriteSheet);
-
-                if(++index >= spriteDefinitions.length) {
-                    this.loadQueue.dequeue();
-                } else {
-                    this.loadSpriteAssets(spriteDefinitions, index);
-                }
-            });
+            this.loadQueue.go([
+                [this.getFontSheet, "score_font.png"],
+                [this.getTileSheet, this.tileSetList[this.currentTileSetId]['tileSheetPath']],
+                [this.initTriggers],
+                [this.initSprites],
+                [this.loadSpriteAssets, this.spriteSetList[this.currentSpriteSetId]['spriteDefinitions']],
+                [this.getSprites, levelConfig['sprites']],
+                [this.startGame]
+            ]);
         }
-    }
-};
+    };
 
-Engine.prototype.getSprites = function(sprites) {
-    var levelConfig = this.config['levels'][this.currentLevelId],
-        level = new GameLevel(this.tileSet, this.spriteSet, levelConfig['midground'], this.gridContainer, this.width, this.height),
-        spriteSet = this.spriteSet,
-        numSprites = sprites.length;
+    Engine.prototype.getFontSheet = function(fontSheetPath) {
+        var fontSheet = new Image();
+        fontSheet.src = "assets/" + fontSheetPath;
+        fontSheet.onload = RETRO.call(this, function() {
+            this.gameFont = new RETRO.Font(fontSheet, true, 48, 48, 30);
+            this.loadQueue.dequeue();
+        });
+    };
 
-    for(var i = 0; i < numSprites; i++) {
-        var sprite = sprites[i],
-            spriteId = sprite['spriteId'],
-            spriteDef = spriteSet.getSpriteDefinition(spriteId),
-            width = spriteDef['width'],
-            defaultDelay = spriteDef['defaultDelay'],
-            spriteSheet = spriteSet.getSpriteSheet(spriteId),
+    Engine.prototype.getTileSheet = function(tileSheetPath) {
+        var tileSheet = new Image();
+        tileSheet.src = "assets/" + tileSheetPath;
+        tileSheet.onload = RETRO.call(this, function() {
+            this.tileSet = new RETRO.TileSet(this.tileSetList[this.currentTileSetId], tileSheet, this.config.tileSize);
+            this.loadQueue.dequeue();
+        });
+    };
+
+    Engine.prototype.initTriggers = function() {
+        var levelConfig = this.config['levels'][this.currentLevelId];
+
+        this.createTriggerMap(this.triggerSetList[this.currentTriggerSetId]['triggerDefinitions']);
+        this.getTriggers(levelConfig['triggers']);
+
+        this.loadQueue.dequeue();
+    };
+
+    Engine.prototype.initSprites = function() {
+        this.spriteSet = new RETRO.SpriteSet(this.spriteSetList[this.currentSpriteSetId]);
+        this.loadQueue.dequeue();
+    };
+
+    Engine.prototype.createTriggerMap = function(triggerDefinitions) {
+        var triggerMap = {},
+            numTriggers = triggerDefinitions.length;
+
+        for(var i = 0; i < numTriggers; i++) {
+            var triggerDef = triggerDefinitions[i];
+            triggerMap[triggerDef.id] = triggerDef;
+        }
+
+        this.triggerMap = triggerMap;
+    };
+
+    Engine.prototype.getTriggers = function(triggers) {
+        var triggerMap = this.triggerMap,
+            numTriggers = triggers.length,
+            level = this.level,
+            trigger, triggerDef,
             entity;
 
-        if(this.createSpritesCallback) {
-            entity = this.createSpritesCallback(sprite, spriteDef, spriteSheet);
+        for(var i = 0; i < numTriggers; i++) {
+            trigger = triggers[i];
+            triggerDef = triggerMap[trigger.triggerId];
+
+            entity = new Entity(null, triggerDef);
+            entity.x = trigger.x;
+            entity.y = trigger.y;
+
+            level.addTrigger(entity);
+        }
+    };
+
+    Engine.prototype.loadSpriteAssets = function(spriteDefinitions, index) {
+        index = RETRO.def(index, 0);
+
+        var spriteDef = spriteDefinitions[index],
+            spriteSet = this.spriteSet,
+            spriteId,
+            spriteSheet;
+
+        if(spriteDef) {
+            spriteId = spriteDef['id'];
+
+            if(!spriteSet.getSpriteSheet(spriteId)) {
+                spriteSheet = new Image();
+                spriteSheet.src = "assets/" + spriteDef['filePath'];
+                spriteSheet.onload = RETRO.call(this, function() {
+                    spriteSet.addSpriteSheet(spriteId, spriteSheet);
+
+                    if(++index >= spriteDefinitions.length) {
+                        this.loadQueue.dequeue();
+                    } else {
+                        this.loadSpriteAssets(spriteDefinitions, index);
+                    }
+                });
+            }
+        }
+    };
+
+    Engine.prototype.getSprites = function(sprites) {
+        var levelConfig = this.config['levels'][this.currentLevelId],
+            level = new RETRO.GameLevel(this.tileSet, this.spriteSet, levelConfig['midground'], this.gridContainer, this.width, this.height),
+            spriteSet = this.spriteSet,
+            numSprites = sprites.length;
+
+        for(var i = 0; i < numSprites; i++) {
+            var sprite = sprites[i],
+                spriteId = sprite['spriteId'],
+                spriteDef = spriteSet.getSpriteDefinition(spriteId),
+                width = spriteDef['width'],
+                defaultDelay = spriteDef['defaultDelay'],
+                spriteSheet = spriteSet.getSpriteSheet(spriteId),
+                entity;
+
+            if(this.createSpritesCallback) {
+                entity = this.createSpritesCallback(sprite, spriteDef, spriteSheet);
+            }
+
+            if(!entity) {
+                entity = new RETRO.Entity(this.getAnimations(spriteSheet, width, defaultDelay), spriteDef);
+            }
+
+            if(entity.type == "player") {
+                this.player = entity;
+                this.player.x = sprite.x;
+                this.player.y = sprite.y;
+
+            } else {
+                entity.x = sprite.x;
+                entity.y = sprite.y;
+
+                level.addEntity(entity);
+            }
         }
 
-        if(!entity) {
-            entity = new Entity(this.getAnimations(spriteSheet, width, defaultDelay), spriteDef);
+        // Add "player" last so it's rendered above
+        // other sprites on the z-axis
+        if(this.player) {
+            level.addEntity(this.player);
+            level.setViewTarget(this.player);
         }
 
-        if(entity.type == "player") {
-            this.player = entity;
-            this.player.x = sprite.x;
-            this.player.y = sprite.y;
+        this.level = level;
 
-        } else {
-            entity.x = sprite.x;
-            entity.y = sprite.y;
+        this.loadQueue.dequeue();
+    };
 
-            level.addEntity(entity);
+    Engine.prototype.getAnimations = function(spriteSheet, size, defaultDelay) {
+        var rowCount = spriteSheet.height / size,
+            animations = [];
+
+        for(var i = 0; i < rowCount; i++) {
+            var animation = new RETRO.Animation(spriteSheet, i, size, defaultDelay);
+            animations.push(animation);
+            animations.push(animation.flip());
         }
-    }
 
-    // Add "player" last so it's rendered above
-    // other sprites on the z-axis
-    if(this.player) {
-        level.addEntity(this.player);
-        level.setViewTarget(this.player);
-    }
+        return animations;
+    };
 
-    this.level = level;
+    Engine.prototype.startGame = function() {
+        this.userAction.enableAll();
+        this.level.init();
+        this.chrono.start();
+    };
 
-    this.loadQueue.dequeue();
-};
+    Engine.prototype.pauseGame = function() {
+        this.chrono.stop();
+    };
 
-Engine.prototype.getAnimations = function(spriteSheet, size, defaultDelay) {
-    var rowCount = spriteSheet.height / size,
-        animations = [];
+    Engine.prototype.unpauseGame = function() {// FIXME: this doesn't quite work as expected. Re-think.
+        this.chrono.start();
+    };
 
-    for(var i = 0; i < rowCount; i++) {
-        var animation = new Animation(spriteSheet, i, size, defaultDelay);
-        animations.push(animation);
-        animations.push(animation.flip());
-    }
+    Engine.prototype.checkActions = function() {
+        if(this.checkActionsCallback) {
+            this.checkActionsCallback(this.userAction.actions);
+        }
+    };
 
-    return animations;
-};
+    Engine.prototype.update = function(secondsElapsed) {
+        this.checkActions();
+        this.level.update(secondsElapsed);
 
-Engine.prototype.startGame = function() {
-    this.userAction.enableAll();
-    this.level.init();
-    this.chrono.start();
-};
+        if(this.updateCallback) {
+            this.updateCallback(secondsElapsed);
+        }
+    };
 
-Engine.prototype.pauseGame = function() {
-    this.chrono.stop();
-};
+    Engine.prototype.draw = function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.level.draw(this.context);
+        //this.gameFont.print(this.context, "16738", 100, 0);
+        this.displayStatus();
+    };
 
-Engine.prototype.unpauseGame = function() {// FIXME: this doesn't quite work as expected. Re-think.
-    this.chrono.start();
-};
+    Engine.prototype.displayStatus = function() {
+        if(this.statusArea) {
+           this.statusArea.innerHTML =
+                "<label>FPS:</label> " + this.chrono.fps;
+                /*"<br><label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
+                "<br><label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +*/
+                /*"<br><label>PPos:</label> " + this.player.x + ", " + this.player.y +
+                "<br><label>PMoveX:</label> " + this.player.moveX +
+                "<br><label>Elapsed Min:</label> " + this.chrono.elapsedMin +
+                "<br><label>Elapsed Max:</label> " + this.chrono.elapsedMax;*/
 
-Engine.prototype.checkActions = function() {
-    if(this.checkActionsCallback) {
-        this.checkActionsCallback(this.userAction.actions);
-    }
-};
+        }
+    };
 
-Engine.prototype.update = function(secondsElapsed) {
-    this.checkActions();
-    this.level.update(secondsElapsed);
+    Engine.trace = function(value) {
+        if(Engine.traceArea) {
+            Engine.traceArea.innerHTML = value;
+        }
+    };
 
-    //this.gameFont.print(this.context, "16738", 100, 0);
-
-    if(this.updateCallback) {
-        this.updateCallback(secondsElapsed);
-    }
-};
-
-Engine.prototype.draw = function() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.level.draw(this.context);
-    this.displayStatus();
-};
-
-Engine.prototype.displayStatus = function() {
-    if(this.statusArea) {
-       this.statusArea.innerHTML =
-            "<label>FPS:</label> " + this.chrono.fps;
-            /*"<br><label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
-            "<br><label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +*/
-            /*"<br><label>PPos:</label> " + this.player.x + ", " + this.player.y +
-            "<br><label>PMoveX:</label> " + this.player.moveX +
-            "<br><label>Elapsed Min:</label> " + this.chrono.elapsedMin +
-            "<br><label>Elapsed Max:</label> " + this.chrono.elapsedMax;*/
-
-    }
-};
-
-Engine.trace = function(value) {
-    if(Engine.traceArea) {
-        Engine.traceArea.innerHTML = value;
-    }
-};
+    return Engine;
+})();
 
 
 

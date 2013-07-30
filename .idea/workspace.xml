@@ -2,32 +2,47 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/engine/retro.js" />
+      <change type="DELETED" beforePath="Z:\browsergame2\js\engine\Grid2.js" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Animation.js" afterPath="$PROJECT_DIR$/js/engine/Animation.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/AnimationPlayer.js" afterPath="$PROJECT_DIR$/js/engine/AnimationPlayer.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Chrono.js" afterPath="$PROJECT_DIR$/js/engine/Chrono.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Engine.js" afterPath="$PROJECT_DIR$/js/engine/Engine.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Entity.js" afterPath="$PROJECT_DIR$/js/engine/Entity.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Font.js" afterPath="$PROJECT_DIR$/js/engine/Font.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/FrameQueue.js" afterPath="$PROJECT_DIR$/js/engine/FrameQueue.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/FuncQueue.js" afterPath="$PROJECT_DIR$/js/engine/FuncQueue.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/GameLevel.js" afterPath="$PROJECT_DIR$/js/engine/GameLevel.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Goblin1.js" afterPath="$PROJECT_DIR$/js/engine/Goblin1.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Grid.js" afterPath="$PROJECT_DIR$/js/engine/Grid.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Level.js" afterPath="$PROJECT_DIR$/js/engine/Level.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/PhysicsEntity.js" afterPath="$PROJECT_DIR$/js/engine/PhysicsEntity.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Player.js" afterPath="$PROJECT_DIR$/js/engine/Player.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/SpriteSet.js" afterPath="$PROJECT_DIR$/js/engine/SpriteSet.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/TileSet.js" afterPath="$PROJECT_DIR$/js/engine/TileSet.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/UserAction.js" afterPath="$PROJECT_DIR$/js/engine/UserAction.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Util.js" afterPath="$PROJECT_DIR$/js/engine/Util.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/style.css" afterPath="$PROJECT_DIR$/css/style.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="BrowserGame2.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/main.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375058897734" ignored="false" />
-    <file path="/Level.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375122799449" ignored="false" />
-    <file path="/TileSet.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374852331431" ignored="false" />
-    <file path="/Player.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375059295692" ignored="false" />
-    <file path="/PhysicsEntity.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374187198586" ignored="false" />
+    <file path="/main.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375221019248" ignored="false" />
+    <file path="/Level.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224676986" ignored="false" />
+    <file path="/TileSet.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224832869" ignored="false" />
+    <file path="/Player.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224154332" ignored="false" />
+    <file path="/PhysicsEntity.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375222208792" ignored="false" />
     <file path="/Goomba.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1363829459563" ignored="false" />
-    <file path="/Entity.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374789620993" ignored="false" />
-    <file path="/AnimationPlayer.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364774317920" ignored="false" />
-    <file path="/GameLevel.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374508096307" ignored="false" />
-    <file path="/Goblin1.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364848526337" ignored="false" />
-    <file path="/SpriteSet.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1364523452742" ignored="false" />
-    <file path="/index.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375121521978" ignored="false" />
-    <file path="/a.dummy" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1373922786121" ignored="false" />
-    <file path="/Font.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1366676186345" ignored="false" />
-    <file path="/Engine.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375121885544" ignored="false" />
+    <file path="/Entity.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224124083" ignored="false" />
+    <file path="/AnimationPlayer.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224077206" ignored="false" />
+    <file path="/GameLevel.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375223727105" ignored="false" />
+    <file path="/Goblin1.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375221499800" ignored="false" />
+    <file path="/SpriteSet.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224770761" ignored="false" />
+    <file path="/index.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375219517021" ignored="false" />
+    <file path="/a.dummy" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375225096543" ignored="false" />
+    <file path="/Font.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224326700" ignored="false" />
+    <file path="/Engine.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224933245" ignored="false" />
     <file path="Z:/browsergame3/js/MapView.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1368224864462" ignored="false" />
     <file path="/MapView.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1368224863868" ignored="false" />
     <file path="Z:/browsergame3/index.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1368674657817" ignored="false" />
@@ -54,10 +69,10 @@
     <file path="Z:/browsergame3/.htaccess" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1368496659472" ignored="false" />
     <file path="/ActionQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1369175824216" ignored="false" />
     <file path="Z:/browsergame3/js/game/ActionQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1369175876824" ignored="false" />
-    <file path="/Dummy.txt" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375059243180" ignored="false" />
+    <file path="/Dummy.txt" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375218331759" ignored="false" />
     <file path="/style.css" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374874981731" ignored="false" />
     <file path="Z:/segmentscroller/js/Grid.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1373763875494" ignored="false" />
-    <file path="/Grid.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375057100976" ignored="false" />
+    <file path="/Grid.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224613267" ignored="false" />
     <file path="Z:/segmentscroller/js/Segment.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1372294541889" ignored="false" />
     <file path="Z:/segmentscroller/index.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1373401523894" ignored="false" />
     <file path="Z:/segmentscroller/js/main.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1373747704591" ignored="false" />
@@ -67,12 +82,16 @@
     <file path="/index2.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1372541674820" ignored="false" />
     <file path="Z:/segmentscroller/js/Util.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1373402013306" ignored="false" />
     <file path="I:/Dev/HTML/scratch/index.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374075094894" ignored="false" />
-    <file path="/Chrono.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374354370701" ignored="false" />
+    <file path="/Chrono.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224282252" ignored="false" />
     <file path="Z:/dash/css/main.css" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374612437291" ignored="false" />
-    <file path="/FrameQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374782407630" ignored="false" />
+    <file path="/FrameQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224392124" ignored="false" />
     <file path="/Grid2.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374872536588" ignored="false" />
     <file path="/LoadQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374966212711" ignored="false" />
     <file path="/Action.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375046241864" ignored="false" />
+    <file path="/retro.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375225008569" ignored="false" />
+    <file path="/Animation.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375223884871" ignored="false" />
+    <file path="/FuncQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224444643" ignored="false" />
+    <file path="/UserAction.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224892592" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,31 +111,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/main.js">
+      <file leaf-file-name="retro.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/engine/retro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="17" selection-start="595" selection-end="595" vertical-scroll-proportion="0.0">
+            <state line="23" column="38" selection-start="442" selection-end="442" vertical-scroll-proportion="0.70197487">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Engine.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/Engine.js">
+      <file leaf-file-name="Chrono.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/engine/Chrono.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="53" column="63" selection-start="1573" selection-end="1573" vertical-scroll-proportion="0.0">
+            <state line="16" column="33" selection-start="478" selection-end="478" vertical-scroll-proportion="0.0">
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Level.js" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/engine/Level.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="352" column="33" selection-start="10260" selection-end="10260" vertical-scroll-proportion="0.6875">
-              <folding>
-                <element signature="e#11365#11509#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -124,34 +132,18 @@
       <file leaf-file-name="Util.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/engine/Util.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="2" selection-start="369" selection-end="369" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="16" column="4" selection-start="373" selection-end="373" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Player.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/Player.js">
+      <file leaf-file-name="Engine.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/engine/Engine.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="67" column="34" selection-start="2339" selection-end="2339" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Grid.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/Grid.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="23" selection-start="720" selection-end="720" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test5.conf" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/test5.conf">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="1510" column="40" selection-start="44742" selection-end="44742" vertical-scroll-proportion="0.0">
+            <state line="112" column="58" selection-start="4069" selection-end="4069" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -180,22 +172,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/js/engine/TileSet.js" />
-        <option value="$PROJECT_DIR$/js/engine/LoadQueue.js" />
+        <option value="$PROJECT_DIR$/js/engine/Animation.js" />
+        <option value="$PROJECT_DIR$/js/engine/AnimationPlayer.js" />
+        <option value="$PROJECT_DIR$/js/engine/Entity.js" />
+        <option value="$PROJECT_DIR$/js/engine/Player.js" />
+        <option value="$PROJECT_DIR$/js/engine/Font.js" />
         <option value="$PROJECT_DIR$/js/engine/FrameQueue.js" />
         <option value="$PROJECT_DIR$/js/engine/FuncQueue.js" />
-        <option value="$PROJECT_DIR$/js/engine/Action.js" />
-        <option value="$PROJECT_DIR$/js/engine/UserAction.js" />
-        <option value="$PROJECT_DIR$/js/engine/Util.js" />
-        <option value="$PROJECT_DIR$/js/engine/Grid2.js" />
-        <option value="$PROJECT_DIR$/assets/test5.conf" />
-        <option value="$PROJECT_DIR$/js/engine/Player.js" />
         <option value="$PROJECT_DIR$/js/engine/Grid.js" />
-        <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/css/style.css" />
-        <option value="$PROJECT_DIR$/js/main.js" />
+        <option value="$PROJECT_DIR$/js/engine/SpriteSet.js" />
+        <option value="$PROJECT_DIR$/js/engine/TileSet.js" />
+        <option value="$PROJECT_DIR$/js/engine/retro.js" />
+        <option value="$PROJECT_DIR$/js/engine/Chrono.js" />
         <option value="$PROJECT_DIR$/js/engine/Engine.js" />
         <option value="$PROJECT_DIR$/js/engine/Level.js" />
+        <option value="$PROJECT_DIR$/js/engine/UserAction.js" />
+        <option value="$PROJECT_DIR$/js/engine/Util.js" />
       </list>
     </option>
   </component>
@@ -274,38 +266,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="engine" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BrowserGame2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="browsergame2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BrowserGame2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="browsergame2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="assets" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -318,11 +278,11 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="options.lastSelected" value="Settings.JavaScript" />
-    <property name="last_opened_file_path" value="Z:/dash" />
+    <property name="last_opened_file_path" value="Z:/xp/objects" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -434,17 +394,20 @@
       <created>1375059254504</created>
       <updated>1375059254504</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="* Display size only needs to be set as a parameter to Engine (not in the CSS as well). If no size is given, the window size is used.&#10;* Did some minor code cleanup.">
+      <created>1375123659259</created>
+      <updated>1375123659259</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756633" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32756633" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17984308" sideWeight="0.6724337" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -455,6 +418,7 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -502,7 +466,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merged Grid2 into Grid. There are two modes: MODE1 and MODE2. MODE1 renders everything to one large canvas. MODE2 renders to many small canvases and moves the canvases across the screen. After some testing, there doesn't appear to be any performance advantages to MODE2 on iPhone4 and iPad2. In fact, performance is slightly worse." />
+    <option name="LAST_COMMIT_MESSAGE" value="* Display size only needs to be set as a parameter to Engine (not in the CSS as well). If no size is given, the window size is used.&#10;* Did some minor code cleanup." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -531,6 +495,7 @@
     <MESSAGE value="Fixed incorrect reference to FuncQueue.js" />
     <MESSAGE value="Added UserAction.js. This allows certain inputs and keeps track of keypresses &amp; touches. It should also track mouse events if that becomes relevant." />
     <MESSAGE value="Merged Grid2 into Grid. There are two modes: MODE1 and MODE2. MODE1 renders everything to one large canvas. MODE2 renders to many small canvases and moves the canvases across the screen. After some testing, there doesn't appear to be any performance advantages to MODE2 on iPhone4 and iPad2. In fact, performance is slightly worse." />
+    <MESSAGE value="* Display size only needs to be set as a parameter to Engine (not in the CSS as well). If no size is given, the window size is used.&#10;* Did some minor code cleanup." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -538,117 +503,117 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/js/engine/Animation.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="1" selection-start="26" selection-end="56" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/AnimationPlayer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="24" selection-start="254" selection-end="254" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Entity.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="35" selection-start="1028" selection-end="1028" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/TileSet.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="39" selection-start="2518" selection-end="2518" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/FrameQueue.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="26" selection-start="172" selection-end="172" vertical-scroll-proportion="0.22235434">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/UserAction.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="5" selection-start="1730" selection-end="1730" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/FuncQueue.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="46" selection-start="347" selection-end="347" vertical-scroll-proportion="0.34363854">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/Chrono.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/test5.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1510" column="40" selection-start="44742" selection-end="44742" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/Util.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="2" selection-start="369" selection-end="369" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/Grid2.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="114" column="37" selection-start="4038" selection-end="4038" vertical-scroll-proportion="0.07015458">
+        <state line="42" column="36" selection-start="1249" selection-end="1249" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Player.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="34" selection-start="2339" selection-end="2339" vertical-scroll-proportion="0.0">
+        <state line="99" column="47" selection-start="3806" selection-end="3806" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/FrameQueue.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="4" selection-start="85" selection-end="85" vertical-scroll-proportion="0.21364452">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/Font.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="0" selection-start="207" selection-end="207" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/Util.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="4" selection-start="373" selection-end="373" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/Chrono.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="33" selection-start="478" selection-end="478" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/TileSet.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="37" selection-start="380" selection-end="380" vertical-scroll-proportion="-1.8689407">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/FuncQueue.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="33" selection-start="114" selection-end="114" vertical-scroll-proportion="0.21364452">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Grid.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="23" selection-start="720" selection-end="720" vertical-scroll-proportion="0.0">
+        <state line="20" column="37" selection-start="542" selection-end="542" vertical-scroll-proportion="0.5421903">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
+    <entry file="file://$PROJECT_DIR$/js/engine/UserAction.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="88" selection-start="314" selection-end="314" vertical-scroll-proportion="0.20858896">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="246" column="73" selection-start="8419" selection-end="8419" vertical-scroll-proportion="0.51328504">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="17" selection-start="595" selection-end="595" vertical-scroll-proportion="0.0">
+        <state line="17" column="0" selection-start="486" selection-end="486" vertical-scroll-proportion="0.518851">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Engine.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="63" selection-start="1573" selection-end="1573" vertical-scroll-proportion="0.0">
+        <state line="112" column="58" selection-start="4069" selection-end="4069" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/SpriteSet.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="49" column="21" selection-start="1332" selection-end="1332" vertical-scroll-proportion="1.4955117">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Level.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="352" column="33" selection-start="10260" selection-end="10260" vertical-scroll-proportion="0.6875">
-          <folding>
-            <element signature="e#11365#11509#0" expanded="false" />
-          </folding>
+        <state line="52" column="22" selection-start="1731" selection-end="1731" vertical-scroll-proportion="1.5870736">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/retro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="38" selection-start="442" selection-end="442" vertical-scroll-proportion="0.70197487">
+          <folding />
         </state>
       </provider>
     </entry>
