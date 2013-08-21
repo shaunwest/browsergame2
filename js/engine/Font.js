@@ -19,9 +19,6 @@ RETRO.Font = (function(){
 
 
     function Font(fontSheet, numeric, tileSize, lineHeight, tracking) {
-        if (arguments[0] === inheriting)
-            return;
-
         this.fontSheet          = fontSheet;
         this.tileSize           = tileSize || Font.DEFAULT_SIZE;
         this.fontMap            = {};

@@ -23,7 +23,7 @@ var engine;
 
 $.ajax({
     type: "get",
-    url: "assets/test5.conf",
+    url: "assets/test7.conf",
     dataType: "json",
     success: configReady
 });

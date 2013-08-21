@@ -4,17 +4,19 @@
 
 RETRO.Level = (function() {
 
-    function Level(tileSet, spriteSet, levelData, gameArea, viewWidth, viewHeight) {
+    function Level(tileSet, spriteSet, foregroundData, backgroundData, gameArea, viewWidth, viewHeight) {
         this.tileSet            = tileSet;
         this.tileSize           = tileSet.tileSize;
         this.tilesPerSegment    = 4;
 
         this.spriteSet          = spriteSet;
-        this.levelData          = levelData;
+        this.levelData          = null;
+        this.foregroundData     = foregroundData;
+        this.backgroundData     = backgroundData;
         this.gameArea           = gameArea;
 
-        this.height             = levelData.length;
-        this.width              = levelData[0].length;
+        this.height             = backgroundData.length;
+        this.width              = backgroundData[0].length;
 
         this.pixelHeight        = this.height * this.tileSize;
         this.pixelWidth         = this.width * this.tileSize;
@@ -61,6 +63,25 @@ RETRO.Level = (function() {
 
     Level.prototype.init = function() {
         this.grid.createSegments();
+        this.levelData = this.mergeLevelData();
+    };
+
+    Level.prototype.mergeLevelData = function() {
+        var backgroundData = this.backgroundData,
+            foregroundData = this.foregroundData,
+            mergedData = [],
+            width = this.width,
+            height = this.height;
+
+        for(var i = 0; i < height; i++) {
+            mergedData[i] = [];
+
+            for(var j = 0; j < width; j++) {
+                mergedData[i][j] = (foregroundData[i][j] !== "") ? foregroundData[i][j] : backgroundData[i][j];
+            }
+        }
+
+        return mergedData;
     };
 
     Level.prototype.addEntity = function(entity) {
@@ -95,7 +116,7 @@ RETRO.Level = (function() {
             newY = entity.y + moveY;
 
             if(moveX > 0) {
-                if(newX < this.pixelWidth - this.viewMarginRight && newX - this.viewX > this.viewMarginRight) {
+                if(this.viewX + this.viewWidthPixels < this.pixelWidth && newX - this.viewX > this.viewMarginRight) {
                     this.viewMoveX = moveX;
                     this.dirX = 1;
 
@@ -205,7 +226,7 @@ RETRO.Level = (function() {
 
         if(y1 >= 0 && y2 < this.pixelHeight) {
             if(moveX > 0) {
-                if((x2 - 1) >= this.pixelWidth - 192) { // 192 is twice the width of the player TODO: make configurable
+                if((x2 - 1) >= this.pixelWidth) { // 192 is twice the width of the player TODO: make configurable
                     this.stopRight(entity, tx2);
                     entity.levelCollisionX(1);
 

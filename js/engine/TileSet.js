@@ -7,7 +7,7 @@
 RETRO.TileSet = (function(){
     function TileSet(tileSetConfig, tileSheet, tileSize) {
         this.tileSetConfig      = tileSetConfig;
-        this.tileDefinitions    = tileSetConfig.tileDefinitions;
+        this.tileDefinitions    = tileSetConfig['tileDefinitions'];
         this.tileDefMap         = {};
         this.tileSheet          = tileSheet;
         this.tileSize           = tileSize;
@@ -17,31 +17,39 @@ RETRO.TileSet = (function(){
     }
 
     TileSet.prototype.parseSheet = function(tileDefinitions, tileSheet) {
-        for(var i in tileDefinitions) {
-            if(tileDefinitions.hasOwnProperty(i)) {
-                var tileDef = tileDefinitions[i];
-                var tileId = tileDef['id'];
+        var tileDefCount = tileDefinitions.length,
+            x = 0, y = 0,
+            tileDef, tileId;
 
-                this.tileDefMap[tileId] = tileDef;
+        for(var i = 0; i < tileDefCount; i++) {
+            tileDef = tileDefinitions[i];
+            tileId = tileDef['id'];
 
-                var x = tileDef.x;
-                var y = tileDef.y;
+            this.tileDefMap[tileId] = tileDef;
 
-                var tile = document.createElement("canvas");
-                tile.width = this.tileSize;
-                tile.height = this.tileSize;
+            //var x = tileDef.x;
+            //var y = tileDef.y;
 
-                var tileContext = tile.getContext('2d');
-                tileContext.drawImage(tileSheet, x, y,
-                    this.tileSize, this.tileSize,
-                    0, 0,
-                    this.tileSize, this.tileSize);
+            var tile = document.createElement("canvas");
+            tile.width = this.tileSize;
+            tile.height = this.tileSize;
 
-                this.tiles[tileId] = {'image': tile, 'frames': []};
+            var tileContext = tile.getContext('2d');
+            tileContext.drawImage(tileSheet, x, y,
+                this.tileSize, this.tileSize,
+                0, 0,
+                this.tileSize, this.tileSize);
 
-                if(tileDef.hasOwnProperty("frames")) {
-                    this.tiles[tileId]['frames'] = this.parseTileFrames(tileDef, tileSheet);
-                }
+            this.tiles[tileId] = {'image': tile, 'frames': []};
+
+            if(tileDef.hasOwnProperty("frames")) {
+                this.tiles[tileId]['frames'] = this.parseTileFrames(tileDef, tileSheet);
+            }
+
+            x += this.tileSize;
+            if(x >= tileSheet.width) {
+                x = 0;
+                y += this.tileSize;
             }
         }
     };

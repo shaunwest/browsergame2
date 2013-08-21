@@ -275,7 +275,6 @@ canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); } */
 }
 
 #trace {
-    display: none;
     top: 100px; left: 0;
     width: 160px; height: 180px;
 }

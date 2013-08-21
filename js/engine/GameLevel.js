@@ -6,10 +6,10 @@ RETRO.GameLevel = (function() {
 
     RETRO.extend(RETRO.Level, GameLevel);
 
-    function GameLevel(tileSet, spriteSet, levelData, gameArea, viewWidth, viewHeight) {
+    function GameLevel(tileSet, spriteSet, foregroundData, backgroundData, gameArea, viewWidth, viewHeight) {
         //this.levelData = levelData;
 
-        RETRO.Level.call(this, tileSet, spriteSet, levelData, gameArea, viewWidth, viewHeight);
+        RETRO.Level.call(this, tileSet, spriteSet, foregroundData, backgroundData, gameArea, viewWidth, viewHeight);
     }
 
     GameLevel.prototype.handleEntityCollision = function(entity1, entity2, intersectionX, intersectionY) {

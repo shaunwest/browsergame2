@@ -4,8 +4,6 @@
  * Time: 3:39 PM
  */
 
-var inheriting = {};
-
 RETRO.Engine = (function() {
 
     function Engine(props) {
@@ -106,7 +104,7 @@ RETRO.Engine = (function() {
 
             this.loadQueue.go([
                 [this.getFontSheet, "score_font.png"],
-                [this.getTileSheet, this.tileSetList[this.currentTileSetId]['tileSheetPath']],
+                [this.getTileSheet, this.tileSetList[this.currentTileSetId]['export']['tileSheetPath']],
                 [this.initTriggers],
                 [this.initSprites],
                 [this.loadSpriteAssets, this.spriteSetList[this.currentSpriteSetId]['spriteDefinitions']],
@@ -129,7 +127,7 @@ RETRO.Engine = (function() {
         var tileSheet = new Image();
         tileSheet.src = "assets/" + tileSheetPath;
         tileSheet.onload = RETRO.call(this, function() {
-            this.tileSet = new RETRO.TileSet(this.tileSetList[this.currentTileSetId], tileSheet, this.config.tileSize);
+            this.tileSet = new RETRO.TileSet(this.tileSetList[this.currentTileSetId]['export'], tileSheet, this.config.tileSize);
             this.loadQueue.dequeue();
         });
     };
@@ -208,7 +206,9 @@ RETRO.Engine = (function() {
 
     Engine.prototype.getSprites = function(sprites) {
         var levelConfig = this.config['levels'][this.currentLevelId],
-            level = new RETRO.GameLevel(this.tileSet, this.spriteSet, levelConfig['midground'], this.gridContainer, this.width, this.height),
+        // GameLevel initialization should be separated out into main.js. Probably other aspects of this function
+        // as well...
+            level = new RETRO.GameLevel(this.tileSet, this.spriteSet, levelConfig['export']['foreground'], levelConfig['export']['background'], this.gridContainer, this.width, this.height),
             spriteSet = this.spriteSet,
             numSprites = sprites.length;
 
@@ -306,11 +306,13 @@ RETRO.Engine = (function() {
     Engine.prototype.displayStatus = function() {
         if(this.statusArea) {
            this.statusArea.innerHTML =
-                "<label>FPS:</label> " + this.chrono.fps;
-                /*"<br><label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
-                "<br><label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +*/
-                /*"<br><label>PPos:</label> " + this.player.x + ", " + this.player.y +
-                "<br><label>PMoveX:</label> " + this.player.moveX +
+                "<label>FPS:</label> " + this.chrono.fps +
+                "<br><label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
+                /*"<br><label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +*/
+                "<br><label>PPos:</label> " + this.player.x + ", " + this.player.y +
+                "<br><label>Level Width:</label> " + this.level.pixelWidth +
+                "<br><label>MRight:</label> " + this.level.viewMarginRight;
+                /*"<br><label>PMoveX:</label> " + this.player.moveX +
                 "<br><label>Elapsed Min:</label> " + this.chrono.elapsedMin +
                 "<br><label>Elapsed Max:</label> " + this.chrono.elapsedMax;*/
 
