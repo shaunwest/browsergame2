@@ -28,20 +28,30 @@ RETRO.Chrono = (function(){
         this.running        = false;
         this.accumulator    = 0.0;
         this.maxFrameLength = this.frameLengthSec * 2;
+        this.timeout        = 0;
+        this.timeoutCount   = 0;
+        this.timeoutFunc    = null;
 
         this.initRequestAnimationFrame(this.frameLength);
     }
 
     Chrono.prototype.start = function() {
-        this.running = true;
-        this.oneSecTimerId = window.setInterval(RETRO.call(this, this.oneSecondTick), Chrono.ONE_SECOND);
-        this.frame();
+        if(!this.running && this.updateFunc && this.drawFunc) {
+            this.running = true;
+            this.oneSecTimerId = window.setInterval(RETRO.call(this, this.oneSecondTick), Chrono.ONE_SECOND);
+            this.frame();
+        }
     };
 
     Chrono.prototype.stop = function() {
         this.running = false;
         window.clearInterval(this.oneSecTimerId);
         window.cancelAnimationFrame(this.frameTimerId);
+    };
+
+    Chrono.prototype.setTimeout = function(seconds, func) {
+        this.timeout = seconds;
+        this.timeoutFunc = func;
     };
 
     Chrono.prototype.frame = function() {
@@ -84,6 +94,16 @@ RETRO.Chrono = (function(){
             this.elapsedMax = Math.max(secondsElapsed, this.elapsedMax);
         }*/
         secondsElapsed = this.getAverageElapsed(secondsElapsed);
+
+        if(this.timeout) {
+            this.timeoutCount += secondsElapsed;
+            if(this.timeoutCount >= this.timeout) {
+                this.timeoutFunc();
+                this.timeout = 0;
+                this.timeoutCount = 0;
+                this.timeoutFunc = null;
+            }
+        }
 
         this.updateFunc(secondsElapsed);
         this.drawFunc();

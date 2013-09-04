@@ -49,12 +49,29 @@ function configReady(data) {
             'up'            : {'key': KEY_UP},
             'down'          : {'key': KEY_DOWN},
             'attack'        : {'key': KEY_X}
+        },
+        'fonts'             : {
+            'basic'         : {'path': 'font.png'},
+            'score'         : {'path': 'score_font.png', 'numeric': true, 'tileSize': 48, 'lineHeight': 48, 'tracking': 0}
         }
     });
 
-    engine.loadLevel("level1");
+    engine.loadLevel("level1", levelReady);
 }
 
+function levelReady() {
+    var screen1 = new RETRO.Engine.Screen({'topMargin': 48, 'leftMargin': 48}),
+        text1 = new RETRO.Engine.Text(engine.getFont('basic'), "ULTRADIAN DEMO v1", 0, 0);
+
+    screen1.add(text1);
+
+    engine.showScreen(screen1, 2, demoScreenFinished);
+    engine.start();
+}
+
+function demoScreenFinished() {
+    engine.startGame();
+}
 
 function update(secondsElapsed) {
 }

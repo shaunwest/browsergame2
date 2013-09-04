@@ -31,3 +31,11 @@ RETRO.call = function(context, func) {
 RETRO.def = function(arg, defaultValue) {
     return typeof arg === 'undefined' ? defaultValue : arg;
 };
+
+RETRO.required = function(arg, error) {
+    error = RETRO.def(error, "A required value was undefined");
+    if(typeof arg === 'undefined') {
+        throw error;
+    }
+    return arg;
+};

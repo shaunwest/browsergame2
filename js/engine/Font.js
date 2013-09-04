@@ -10,8 +10,8 @@
 RETRO.Font = (function(){
 
     Font.DEFAULT_SIZE       = 24;
-    Font.DEFAULT_LINEHEIGHT = 30;
-    Font.DEFAULT_TRACKING   = 24;
+    Font.DEFAULT_LINEHEIGHT = 24;
+    Font.DEFAULT_TRACKING   = 0;
 
     Font.SYM_SMALL_ARROW    = "\x01";
     Font.SYM_LARGE_ARROW    = "\x02";
@@ -20,12 +20,12 @@ RETRO.Font = (function(){
 
     function Font(fontSheet, numeric, tileSize, lineHeight, tracking) {
         this.fontSheet          = fontSheet;
-        this.tileSize           = tileSize || Font.DEFAULT_SIZE;
+        this.tileSize           = RETRO.def(tileSize, Font.DEFAULT_SIZE);
         this.fontMap            = {};
         this.cachedTextCanvas   = null;
         this.lastString         = "";
-        this.lineHeight         = lineHeight || Font.DEFAULT_LINEHEIGHT;
-        this.tracking           = tracking || Font.DEFAULT_TRACKING;
+        this.lineHeight         = RETRO.def(lineHeight, Font.DEFAULT_LINEHEIGHT);
+        this.tracking           = RETRO.def(tracking, Font.DEFAULT_TRACKING);
 
         if(numeric) {
             this.chars = "0123456789";
@@ -96,6 +96,14 @@ RETRO.Font = (function(){
         return true;
     };
 
+    Font.prototype.calculateStringWidth = function(str) {
+        return str.length * (this.tileSize + this.tracking);
+    };
+
+    Font.prototype.calculateStringHeight = function(rowCount) {
+        return rowCount * this.lineHeight;
+    };
+
     Font.prototype.print = function(context, str, col, row, rowCount) {
         if(!context || !str)
             return;
@@ -116,7 +124,7 @@ RETRO.Font = (function(){
 
         } else {
             textCanvas = document.createElement("canvas");
-            textCanvas.width = strLen * tileSize;
+            textCanvas.width = strLen * (tileSize + tracking);
             textCanvas.height = rowCount * lineHeight;
 
             var textCanvasContext = textCanvas.getContext('2d'),
@@ -129,13 +137,13 @@ RETRO.Font = (function(){
                     x = 0;
 
                 } else if(chr == " ") {
-                    x += tracking;
+                    x += (tileSize + tracking);
 
                 } else {
                     var imgChr = fontMap[chr];
                     if(imgChr) {
                         textCanvasContext.drawImage(imgChr, x, y);
-                        x += tracking;
+                        x += (tileSize + tracking);
                     }
                 }
             }

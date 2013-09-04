@@ -14,6 +14,7 @@ RETRO.Engine = (function() {
         this.fps                    = props.fps;
         this.config                 = props.config;
         this.actions                = props.actions;
+        this.fonts                  = props.fonts;
         this.fixedWidth             = props.width;
         this.fixedHeight            = props.height;
         this.canvasContainer        = props.canvasContainer;
@@ -32,7 +33,7 @@ RETRO.Engine = (function() {
 
         this.resizeCanvas();
 
-        this.gameFont               = null;
+        this.loadedFonts            = {};
 
         this.tileSetList            = {};
         this.tileSet                = null;
@@ -50,9 +51,10 @@ RETRO.Engine = (function() {
 
         this.level                  = null;
         this.player                 = null;
+        this.screen                 = null;
 
-        this.updateFunc             = RETRO.call(this, this.update);
-        this.drawFunc               = RETRO.call(this, this.draw);
+        //this.updateFunc             = RETRO.call(this, this.updateGame);
+        //this.drawFunc               = RETRO.call(this, this.drawGame);
 
         this.initSetList('tileSets', this.tileSetList);
         this.initSetList('spriteSets', this.spriteSetList);
@@ -60,7 +62,7 @@ RETRO.Engine = (function() {
 
         this.userAction             = new RETRO.UserAction(this.actions);
         this.loadQueue              = new RETRO.FuncQueue(this);
-        this.chrono                 = new RETRO.Chrono(this.fps, this.updateFunc, this.drawFunc);
+        this.chrono                 = new RETRO.Chrono(this.fps);
 
         window.addEventListener('resize', RETRO.call(this, this.resizeCanvas), false);
     };
@@ -90,35 +92,53 @@ RETRO.Engine = (function() {
         }
     };
 
-    Engine.prototype.loadLevel = function(levelId) {
-        var levels = this.config['levels'];
+    /*Engine.prototype.load = function(tileSheetPath, ready) {
+        this.currentTileSetId = levelConfig[];
+
+        this.loadQueue.go([
+            [this.getFontSheet, "basic", "font.png"],
+            [this.getFontSheet, "score", "score_font.png"],
+            [this.getTileSheet, tileSheetPath],
+            [ready]
+        ]);
+    };*/
+
+    Engine.prototype.loadLevel = function(levelId, ready) {
+        var levels = this.config['levels'],
+            levelConfig,
+            fontId;
 
         if(levels.hasOwnProperty(levelId)) {
             this.currentLevelId = levelId;
 
-            var levelConfig = levels[this.currentLevelId];
+            levelConfig = levels[this.currentLevelId];
 
             this.currentTileSetId = levelConfig['tileSetId'];
             this.currentSpriteSetId = levelConfig['spriteSetId'];
             this.currentTriggerSetId = levelConfig['triggerSetId'];
 
+            for(fontId in this.fonts) {
+                if(this.fonts.hasOwnProperty(fontId)) {
+                    this.loadQueue.queue([this.getFontSheet, fontId, this.fonts[fontId]]);
+                }
+            }
+
             this.loadQueue.go([
-                [this.getFontSheet, "score_font.png"],
                 [this.getTileSheet, this.tileSetList[this.currentTileSetId]['export']['tileSheetPath']],
                 [this.initTriggers],
                 [this.initSprites],
                 [this.loadSpriteAssets, this.spriteSetList[this.currentSpriteSetId]['spriteDefinitions']],
                 [this.getSprites, levelConfig['sprites']],
-                [this.startGame]
+                [ready]
             ]);
         }
     };
 
-    Engine.prototype.getFontSheet = function(fontSheetPath) {
+    Engine.prototype.getFontSheet = function(fontId, config) {
         var fontSheet = new Image();
-        fontSheet.src = "assets/" + fontSheetPath;
+        fontSheet.src = "assets/" + config.path;
         fontSheet.onload = RETRO.call(this, function() {
-            this.gameFont = new RETRO.Font(fontSheet, true, 48, 48, 30);
+            this.loadedFonts[fontId] = new RETRO.Font(fontSheet, config.numeric, config.tileSize, config.lineHeight, config.tracking);
             this.loadQueue.dequeue();
         });
     };
@@ -267,17 +287,17 @@ RETRO.Engine = (function() {
         return animations;
     };
 
-    Engine.prototype.startGame = function() {
-        this.userAction.enableAll();
-        this.level.init();
+    Engine.prototype.start = function() {
+        this.chrono.updateFunc  = RETRO.call(this, this.updateScreen);
+        this.chrono.drawFunc    = RETRO.call(this, this.drawScreen);
         this.chrono.start();
     };
 
-    Engine.prototype.pauseGame = function() {
-        this.chrono.stop();
-    };
-
-    Engine.prototype.unpauseGame = function() {// FIXME: this doesn't quite work as expected. Re-think.
+    Engine.prototype.startGame = function() {
+        this.userAction.enableAll();
+        this.level.init();
+        this.chrono.updateFunc = RETRO.call(this, this.updateGame);
+        this.chrono.drawFunc = RETRO.call(this, this.drawGame);
         this.chrono.start();
     };
 
@@ -287,7 +307,39 @@ RETRO.Engine = (function() {
         }
     };
 
-    Engine.prototype.update = function(secondsElapsed) {
+    Engine.prototype.showScreen = function(screen, seconds, func) {
+        this.screen = screen;
+        if(seconds && typeof func === "function") {
+            this.chrono.setTimeout(seconds, func);
+        }
+    };
+
+    Engine.prototype.updateScreen = function(secondsElapsed) {
+        this.checkActions();
+
+        if(this.updateCallback) {
+            this.updateCallback(secondsElapsed);
+        }
+    };
+
+    Engine.prototype.drawScreen = function() {
+        var context = this.context,
+            width = this.width,
+            height = this.height,
+            screen = this.screen;
+
+        if(screen) {
+            context.clearRect(0, 0, width, height);
+            context.fillStyle = screen.color;
+            context.fillRect(0, 0, width, height);
+            screen.draw(context, width, height);
+
+        } else {
+            console.log("RETRO::Engine: No screen has been provided.")
+        }
+    };
+
+    Engine.prototype.updateGame = function(secondsElapsed) {
         this.checkActions();
         this.level.update(secondsElapsed);
 
@@ -296,7 +348,7 @@ RETRO.Engine = (function() {
         }
     };
 
-    Engine.prototype.draw = function() {
+    Engine.prototype.drawGame = function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.level.draw(this.context);
         //this.gameFont.print(this.context, "16738", 100, 0);
@@ -323,6 +375,16 @@ RETRO.Engine = (function() {
         if(Engine.traceArea) {
             Engine.traceArea.innerHTML = value;
         }
+    };
+
+    Engine.prototype.getFont = function(fontId) {
+        if(this.loadedFonts.hasOwnProperty(fontId)) {
+            return this.loadedFonts[fontId];
+        }
+
+        console.log("RETRO::Engine: Font '" + fontId + "' not found.");
+
+        return null;
     };
 
     return Engine;
