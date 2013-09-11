@@ -62,6 +62,9 @@ RETRO.Level = (function() {
     }
 
     Level.prototype.init = function() {
+
+
+
         this.grid.createSegments();
         this.levelData = this.mergeLevelData();
     };

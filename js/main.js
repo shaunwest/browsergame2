@@ -42,6 +42,12 @@ function configReady(data) {
         'update'            : update,
         'statusArea'        : document.getElementById('status'),
         'traceArea'         : document.getElementById('trace'),
+        'collisions'        :
+        {
+            'entity'        : handleEntityCollision,
+            'attack'        : handleEntityAttackCollision,
+            'trigger'       : handleTriggerCollision
+        },
         'actions'           :
         {
             'left'          : {'key': KEY_LEFT, 'el': document.getElementById('left')},
@@ -56,22 +62,24 @@ function configReady(data) {
         }
     });
 
-    engine.loadLevel("level1", levelReady);
+    engine.loadLevel("level1", function() {
+        levelReady();
+        engine.startGame();
+    });
 }
 
 function levelReady() {
     var demoScreen = new RETRO.Engine.Screen({'topMargin': 48, 'leftMargin': 48}),
-        text = new RETRO.Engine.Text(engine.getFont('basic'), "ULTRADIAN DEMO v1", 0, 0);
+        text = new RETRO.Engine.Text(engine.getFont('basic'), "ULTRADIAN DEMO 1", 0, 0);
 
     demoScreen.add(text);
 
     engine.showScreen(demoScreen, 2, showCaption);
-    engine.startGame();
 }
 
 function showCaption() {
     var captionScreen = new RETRO.Engine.Screen({'topMargin': 48, 'leftMargin': 48}),
-        text = new RETRO.Engine.Text(engine.getFont('basic'), "CITY BY THE LAKE", 0, 0);
+        text = new RETRO.Engine.Text(engine.getFont('basic'), "THE CITY BY THE LAKE", 0, 0);
 
     captionScreen.add(text);
 
@@ -79,7 +87,6 @@ function showCaption() {
 }
 
 function showLevel() {
-    //engine.startGame();
     engine.showLevel();
     engine.hideScreen(2);
 }
@@ -155,4 +162,31 @@ function createSprites(sprite, spriteDef, spriteSheet) {
     }
 
     return entity;
+}
+
+function handleEntityCollision(entity1, entity2, intersectionX, intersectionY) {
+    if(entity1.type == "player" && !entity1.isDamaged && !entity2.isDead) {
+        //this.removeEntity(entity1);
+        entity1.isHit = true;
+    }
+}
+
+function handleEntityAttackCollision(attackerEntity, attackedEntity, intersection) {
+    if(attackerEntity.type == "player" && attackerEntity.isHitting) {
+        attackerEntity.didHit = true;
+        attackedEntity.isHit = true;
+        console.log("hit");
+        //this.removeEntity(entity2);
+    }
+}
+
+function handleTriggerCollision(entity, trigger, intersectionX, intersectionY) {
+    if(entity.type == "player" && trigger.type == "door1") {
+        console.log("trigger!");
+        engine.hideLevel();
+        engine.loadLevel("level1", function() {
+            showCaption();
+            engine.startGame();
+        });
+    }
 }

@@ -54,7 +54,7 @@ RETRO.Entity = (function() {
         this.isAttacking        = false;
         this.isVisible          = true;
 
-        var animation           = (animations) ? animations[0] : new Animation();
+        var animation           = (animations) ? animations[0] : new RETRO.Animation();
 
         this.currentAnimation   = new RETRO.AnimationPlayer(animation);
     }

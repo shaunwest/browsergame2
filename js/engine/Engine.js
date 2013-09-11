@@ -25,6 +25,7 @@ RETRO.Engine = (function() {
         this.checkActionsCallback   = props.checkUserActions;
         this.updateCallback         = props.update;
         this.createSpritesCallback  = props.createSprites;
+        this.collisionHandlers      = props.collisions;
 
         this.context                = this.canvas.getContext('2d');
 
@@ -111,6 +112,7 @@ RETRO.Engine = (function() {
             fontId;
 
         if(levels.hasOwnProperty(levelId)) {
+            this.chrono.stop();
             this.currentLevelId = levelId;
 
             levelConfig = levels[this.currentLevelId];
@@ -181,22 +183,38 @@ RETRO.Engine = (function() {
     };
 
     Engine.prototype.getTriggers = function(triggers) {
-        var triggerMap = this.triggerMap,
+        var levelConfig = this.config['levels'][this.currentLevelId],
+            triggerMap = this.triggerMap,
             numTriggers = triggers.length,
-            level = this.level,
+            level = new RETRO.Level(
+                this.tileSet,
+                this.spriteSet,
+                levelConfig['export']['foreground'],
+                levelConfig['export']['background'],
+                this.gridContainer,
+                this.width,
+                this.height
+            ),
             trigger, triggerDef,
+            collisionHandlers = this.collisionHandlers,
             entity;
+
+        level.handleEntityCollision = collisionHandlers.entity;
+        level.handleEntityAttackCollision = collisionHandlers.attack;
+        level.handleTriggerCollision = collisionHandlers.trigger;
 
         for(var i = 0; i < numTriggers; i++) {
             trigger = triggers[i];
-            triggerDef = triggerMap[trigger.triggerId];
+            triggerDef = triggerMap[trigger['triggerId']];
 
-            entity = new Entity(null, triggerDef);
+            entity = new RETRO.Entity(null, triggerDef);
             entity.x = trigger.x;
             entity.y = trigger.y;
 
             level.addTrigger(entity);
         }
+
+        this.level = level;
     };
 
     Engine.prototype.loadSpriteAssets = function(spriteDefinitions, index) {
@@ -227,10 +245,11 @@ RETRO.Engine = (function() {
     };
 
     Engine.prototype.getSprites = function(sprites) {
-        var levelConfig = this.config['levels'][this.currentLevelId],
+        //var levelConfig = this.config['levels'][this.currentLevelId],
         // GameLevel initialization should be separated out into main.js. Probably other aspects of this function
         // as well...
-            level = new RETRO.GameLevel(this.tileSet, this.spriteSet, levelConfig['export']['foreground'], levelConfig['export']['background'], this.gridContainer, this.width, this.height),
+            //level = new RETRO.GameLevel(this.tileSet, this.spriteSet, levelConfig['export']['foreground'], levelConfig['export']['background'], this.gridContainer, this.width, this.height),
+        var level = this.level,
             spriteSet = this.spriteSet,
             numSprites = sprites.length;
 
@@ -271,7 +290,7 @@ RETRO.Engine = (function() {
             level.setViewTarget(this.player);
         }
 
-        this.level = level;
+        //this.level = level;
 
         this.loadQueue.dequeue();
     };
@@ -331,6 +350,10 @@ RETRO.Engine = (function() {
 
     Engine.prototype.showLevel = function() {
         this.levelVisible = true;
+    };
+
+    Engine.prototype.hideLevel = function() {
+        this.levelVisible = false;
     };
 
     Engine.prototype.updateScreen = function(secondsElapsed) {
