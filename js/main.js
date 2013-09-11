@@ -64,7 +64,7 @@ function configReady(data) {
 
     engine.loadLevel("level1", function() {
         levelReady();
-        engine.startGame();
+        engine.start();
     });
 }
 
@@ -186,7 +186,7 @@ function handleTriggerCollision(entity, trigger, intersectionX, intersectionY) {
         engine.hideLevel();
         engine.loadLevel("level1", function() {
             showCaption();
-            engine.startGame();
+            engine.start();
         });
     }
 }

@@ -95,17 +95,6 @@ RETRO.Engine = (function() {
         }
     };
 
-    /*Engine.prototype.load = function(tileSheetPath, ready) {
-        this.currentTileSetId = levelConfig[];
-
-        this.loadQueue.go([
-            [this.getFontSheet, "basic", "font.png"],
-            [this.getFontSheet, "score", "score_font.png"],
-            [this.getTileSheet, tileSheetPath],
-            [ready]
-        ]);
-    };*/
-
     Engine.prototype.loadLevel = function(levelId, ready) {
         var levels = this.config['levels'],
             levelConfig,
@@ -245,10 +234,6 @@ RETRO.Engine = (function() {
     };
 
     Engine.prototype.getSprites = function(sprites) {
-        //var levelConfig = this.config['levels'][this.currentLevelId],
-        // GameLevel initialization should be separated out into main.js. Probably other aspects of this function
-        // as well...
-            //level = new RETRO.GameLevel(this.tileSet, this.spriteSet, levelConfig['export']['foreground'], levelConfig['export']['background'], this.gridContainer, this.width, this.height),
         var level = this.level,
             spriteSet = this.spriteSet,
             numSprites = sprites.length;
@@ -290,8 +275,6 @@ RETRO.Engine = (function() {
             level.setViewTarget(this.player);
         }
 
-        //this.level = level;
-
         this.loadQueue.dequeue();
     };
 
@@ -309,16 +292,10 @@ RETRO.Engine = (function() {
     };
 
     Engine.prototype.start = function() {
-        this.chrono.updateFunc  = RETRO.call(this, this.updateScreen);
-        this.chrono.drawFunc    = RETRO.call(this, this.drawScreen);
-        this.chrono.start();
-    };
-
-    Engine.prototype.startGame = function() {
         this.userAction.enableAll();
         this.level.init();
-        this.chrono.updateFunc = RETRO.call(this, this.updateGame);
-        this.chrono.drawFunc = RETRO.call(this, this.drawGame);
+        this.chrono.updateFunc = RETRO.call(this, this.update);
+        this.chrono.drawFunc = RETRO.call(this, this.draw);
         this.chrono.start();
     };
 
@@ -356,32 +333,7 @@ RETRO.Engine = (function() {
         this.levelVisible = false;
     };
 
-    Engine.prototype.updateScreen = function(secondsElapsed) {
-        this.checkActions();
-
-        if(this.updateCallback) {
-            this.updateCallback(secondsElapsed);
-        }
-    };
-
-    Engine.prototype.drawScreen = function() {
-        var context = this.context,
-            width = this.width,
-            height = this.height,
-            screen = this.screen;
-
-        if(screen) {
-            context.clearRect(0, 0, width, height);
-            context.fillStyle = screen.color;
-            context.fillRect(0, 0, width, height);
-            screen.draw(context, width, height);
-
-        } else {
-            console.log("RETRO::Engine: No screen has been provided.")
-        }
-    };
-
-    Engine.prototype.updateGame = function(secondsElapsed) {
+    Engine.prototype.update = function(secondsElapsed) {
         this.checkActions();
 
         if(this.levelVisible) {
@@ -393,7 +345,7 @@ RETRO.Engine = (function() {
         }
     };
 
-    Engine.prototype.drawGame = function() {
+    Engine.prototype.draw = function() {
         var context = this.context,
             width = this.width,
             height = this.height,
