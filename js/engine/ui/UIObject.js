@@ -8,7 +8,13 @@ RETRO.Engine.UIObject = (function() {
     function UIObject(x, y) {
         this.x = RETRO.def(x, 0);
         this.y = RETRO.def(y, 0);
+
+        this.finalX = this.x;
+        this.finalY = this.y;
     }
+
+    UIObject.prototype.draw = function(context) {
+    };
 
     UIObject.prototype.getWidth = function() {
         return 0;

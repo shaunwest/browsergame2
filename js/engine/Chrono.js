@@ -98,10 +98,9 @@ RETRO.Chrono = (function(){
         if(this.timeout) {
             this.timeoutCount += secondsElapsed;
             if(this.timeoutCount >= this.timeout) {
-                this.timeoutFunc();
                 this.timeout = 0;
                 this.timeoutCount = 0;
-                this.timeoutFunc = null;
+                this.timeoutFunc();
             }
         }
 

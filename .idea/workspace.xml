@@ -2,13 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/engine/ui/Screen.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/engine/ui/Text.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/engine/ui/UIObject.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Chrono.js" afterPath="$PROJECT_DIR$/js/engine/Chrono.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Engine.js" afterPath="$PROJECT_DIR$/js/engine/Engine.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/Font.js" afterPath="$PROJECT_DIR$/js/engine/Font.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/ui/Screen.js" afterPath="$PROJECT_DIR$/js/engine/ui/Screen.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/ui/Text.js" afterPath="$PROJECT_DIR$/js/engine/ui/Text.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/ui/UIObject.js" afterPath="$PROJECT_DIR$/js/engine/ui/UIObject.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/main.js" afterPath="$PROJECT_DIR$/js/main.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/engine/retro.js" afterPath="$PROJECT_DIR$/js/engine/retro.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/style.css" afterPath="$PROJECT_DIR$/css/style.css" />
@@ -16,7 +14,7 @@
     </list>
     <ignored path="BrowserGame2.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/main.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378329059160" ignored="false" />
+    <file path="/main.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378929489582" ignored="false" />
     <file path="/Level.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1377125102655" ignored="false" />
     <file path="/TileSet.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1377034818998" ignored="false" />
     <file path="/Player.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224154332" ignored="false" />
@@ -30,7 +28,7 @@
     <file path="/index.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378321558891" ignored="false" />
     <file path="/a.dummy" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375225096543" ignored="false" />
     <file path="/Font.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378325860455" ignored="false" />
-    <file path="/Engine.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378328723770" ignored="false" />
+    <file path="/Engine.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378921376981" ignored="false" />
     <file path="Z:/browsergame3/js/MapView.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1368224864462" ignored="false" />
     <file path="/MapView.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1368224863868" ignored="false" />
     <file path="Z:/browsergame3/index.html" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1368674657817" ignored="false" />
@@ -57,8 +55,8 @@
     <file path="Z:/browsergame3/.htaccess" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1368496659472" ignored="false" />
     <file path="/ActionQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1369175824216" ignored="false" />
     <file path="Z:/browsergame3/js/game/ActionQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1369175876824" ignored="false" />
-    <file path="/Dummy.txt" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378250528757" ignored="false" />
-    <file path="/style.css" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378322980634" ignored="false" />
+    <file path="/Dummy.txt" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378920235992" ignored="false" />
+    <file path="/style.css" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378329843123" ignored="false" />
     <file path="Z:/segmentscroller/js/Grid.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1373763875494" ignored="false" />
     <file path="/Grid.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224613267" ignored="false" />
     <file path="Z:/segmentscroller/js/Segment.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1372294541889" ignored="false" />
@@ -76,7 +74,7 @@
     <file path="/Grid2.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374872536588" ignored="false" />
     <file path="/LoadQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1374966212711" ignored="false" />
     <file path="/Action.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375046241864" ignored="false" />
-    <file path="/retro.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378253208676" ignored="false" />
+    <file path="/retro.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378920474110" ignored="false" />
     <file path="/Animation.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375223884871" ignored="false" />
     <file path="/FuncQueue.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224444643" ignored="false" />
     <file path="/UserAction.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1375224892592" ignored="false" />
@@ -90,9 +88,9 @@
     <file path="/dashboard.php" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1376689544255" ignored="false" />
     <file path="Z:/dash/js/main.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1376689598615" ignored="false" />
     <file path="/test6.conf" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1376962842602" ignored="false" />
-    <file path="/Screen.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378327539803" ignored="false" />
-    <file path="/Text.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378327020078" ignored="false" />
-    <file path="/UIObject.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378326441578" ignored="false" />
+    <file path="/Screen.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378930032161" ignored="false" />
+    <file path="/Text.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378930154855" ignored="false" />
+    <file path="/UIObject.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378930183002" ignored="false" />
     <file path="/RenderMode.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378261409077" ignored="false" />
     <file path="/RenderGame.js" changelist="cbfc2d4e-6849-46a7-a0bf-1ae441fa7b1c" time="1378261633045" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -114,41 +112,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/main.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="61" column="23" selection-start="1932" selection-end="1932" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Engine.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/engine/Engine.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="300" column="28" selection-start="10591" selection-end="10591" vertical-scroll-proportion="-0.3357488">
-              <folding>
-                <element signature="e#115#148#0" expanded="false" />
-                <element signature="e#2956#3253#0" expanded="false" />
-                <element signature="e#13102#13198#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Chrono.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/Chrono.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="28" selection-start="1263" selection-end="1263" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Font.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/Font.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="32" selection-start="274" selection-end="274" vertical-scroll-proportion="0.0">
+            <state line="324" column="48" selection-start="11399" selection-end="11399" vertical-scroll-proportion="4.7838163">
               <folding />
             </state>
           </provider>
@@ -163,10 +130,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Screen.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/ui/Screen.js">
+      <file leaf-file-name="Chrono.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/engine/Chrono.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="32" selection-start="1082" selection-end="1082" vertical-scroll-proportion="0.0">
+            <state line="102" column="35" selection-start="3242" selection-end="3242" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/main.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="73" column="86" selection-start="2409" selection-end="2409" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -175,16 +151,16 @@
       <file leaf-file-name="UIObject.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/engine/ui/UIObject.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="6" selection-start="337" selection-end="337" vertical-scroll-proportion="0.0">
+            <state line="16" column="6" selection-start="309" selection-end="309" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Text.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/engine/ui/Text.js">
+      <file leaf-file-name="Screen.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/engine/ui/Screen.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="76" selection-start="643" selection-end="643" vertical-scroll-proportion="0.0">
+            <state line="33" column="50" selection-start="1043" selection-end="1043" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -193,7 +169,7 @@
       <file leaf-file-name="retro.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/engine/retro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="41" selection-start="643" selection-end="643" vertical-scroll-proportion="0.0">
+            <state line="43" column="25" selection-start="953" selection-end="953" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -226,17 +202,17 @@
         <option value="$PROJECT_DIR$/js/engine/GameLevel.js" />
         <option value="$PROJECT_DIR$/js/engine/Player.js" />
         <option value="$PROJECT_DIR$/js/engine/Level.js" />
-        <option value="$PROJECT_DIR$/js/engine/retro.js" />
         <option value="$PROJECT_DIR$/js/engine/RenderMode.js" />
         <option value="$PROJECT_DIR$/js/engine/RenderGame.js" />
         <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/css/style.css" />
-        <option value="$PROJECT_DIR$/js/engine/ui/UIObject.js" />
-        <option value="$PROJECT_DIR$/js/engine/ui/Text.js" />
-        <option value="$PROJECT_DIR$/js/engine/ui/Screen.js" />
         <option value="$PROJECT_DIR$/js/engine/Font.js" />
-        <option value="$PROJECT_DIR$/js/engine/Chrono.js" />
+        <option value="$PROJECT_DIR$/css/style.css" />
+        <option value="$PROJECT_DIR$/js/engine/retro.js" />
         <option value="$PROJECT_DIR$/js/engine/Engine.js" />
+        <option value="$PROJECT_DIR$/js/engine/Chrono.js" />
+        <option value="$PROJECT_DIR$/js/engine/ui/Screen.js" />
+        <option value="$PROJECT_DIR$/js/engine/ui/Text.js" />
+        <option value="$PROJECT_DIR$/js/engine/ui/UIObject.js" />
         <option value="$PROJECT_DIR$/js/main.js" />
       </list>
     </option>
@@ -273,6 +249,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -301,57 +278,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BrowserGame2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="browsergame2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="engine" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BrowserGame2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="browsergame2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="css" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="Settings.JavaScript" />
     <property name="recentsLimit" value="5" />
+    <property name="options.lastSelected" value="Settings.JavaScript" />
     <property name="last_opened_file_path" value="Z:/intersect/Dev HTML" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -530,7 +474,11 @@
       <created>1377125398064</created>
       <updated>1377125398064</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="-Added Screens! (for titles, cut scenes, menus, etc)&#10;-Fixed a bug in Font that caused a 'tracking' value to be provided.&#10;-Added a setTimeout method to Chrono">
+      <created>1378329532947</created>
+      <updated>1378329532947</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -539,9 +487,8 @@
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756633" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18105009" sideWeight="0.42675894" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18105009" sideWeight="0.6724337" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1804466" sideWeight="0.6724337" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -550,6 +497,7 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756633" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -598,7 +546,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Fixed bug that caused the level to scroll beyond it's width&#10;-Added the beginnings of unit testing&#10;-Updated to use new game config format with two-layered levels" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Added Screens! (for titles, cut scenes, menus, etc)&#10;-Fixed a bug in Font that caused a 'tracking' value to be provided.&#10;-Added a setTimeout method to Chrono" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -631,6 +579,7 @@
     <MESSAGE value="*Added a new RETRO namespace to all classes.&#10;*Removed Util and moved its functions to RETRO.&#10;*Removed Grid2" />
     <MESSAGE value="Removed Util.js" />
     <MESSAGE value="-Fixed bug that caused the level to scroll beyond it's width&#10;-Added the beginnings of unit testing&#10;-Updated to use new game config format with two-layered levels" />
+    <MESSAGE value="-Added Screens! (for titles, cut scenes, menus, etc)&#10;-Fixed a bug in Font that caused a 'tracking' value to be provided.&#10;-Added a setTimeout method to Chrono" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -638,30 +587,90 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/js/engine/retro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="41" selection-start="643" selection-end="643" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/FuncQueue.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/score_font.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/font.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/Font.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="32" selection-start="274" selection-end="274" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="54" selection-start="2021" selection-end="2021" vertical-scroll-proportion="-20.884615">
+        <state line="46" column="58" selection-start="1966" selection-end="1966" vertical-scroll-proportion="-16.307692">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="282" column="18" selection-start="9113" selection-end="9113" vertical-scroll-proportion="0.0">
+        <state line="279" column="26" selection-start="9122" selection-end="9122" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/retro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="25" selection-start="953" selection-end="953" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/FuncQueue.js">
+    <entry file="file://$PROJECT_DIR$/js/engine/Chrono.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="102" column="35" selection-start="3242" selection-end="3242" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/PhysicsEntity.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/assets/score_font.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
+    <entry file="file://$PROJECT_DIR$/js/engine/ui/UIObject.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="6" selection-start="309" selection-end="309" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/ui/Screen.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="50" selection-start="1043" selection-end="1043" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/engine/ui/Text.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="0" selection-start="611" selection-end="611" vertical-scroll-proportion="0.48513675">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="86" selection-start="2409" selection-end="2409" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Level.js">
@@ -671,68 +680,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/ui/UIObject.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="6" selection-start="337" selection-end="337" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/retro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="41" selection-start="643" selection-end="643" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/ui/Screen.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="32" selection-start="1082" selection-end="1082" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/font.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/ui/Text.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="76" selection-start="643" selection-end="643" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/Font.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="32" selection-start="274" selection-end="274" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/engine/Chrono.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="28" selection-start="1263" selection-end="1263" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="23" selection-start="1932" selection-end="1932" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/engine/Engine.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="300" column="28" selection-start="10591" selection-end="10591" vertical-scroll-proportion="-0.3357488">
-          <folding>
-            <element signature="e#115#148#0" expanded="false" />
-            <element signature="e#2956#3253#0" expanded="false" />
-            <element signature="e#13102#13198#0" expanded="false" />
-          </folding>
+        <state line="324" column="48" selection-start="11399" selection-end="11399" vertical-scroll-proportion="4.7838163">
+          <folding />
         </state>
       </provider>
     </entry>

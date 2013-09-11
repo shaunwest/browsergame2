@@ -45,7 +45,7 @@ audio:not([controls]) { display: none; }
 
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
-body { margin: 0; font-size: 13px; line-height: 1.231; background-color: #2f2f2e;}
+body { margin: 0; font-size: 13px; line-height: 1.231; background-color: #2f2f2e; }
 
 body, button, input, select, textarea { font-family: sans-serif; color: #222; }
 
@@ -243,7 +243,7 @@ canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); } */
 }*/
 
 /* 1728px, 960px - 1632px, 864px */
-#displayContainer { margin:0 auto; text-align: left; overflow: hidden;}
+#displayContainer { margin:0 auto; text-align: left; overflow: hidden; background-color: #000000;}
 #grid {position: absolute; left: 0; top: 0; width: 640px; height: 960px;}
 #display { position:absolute; z-index: 9999; left: 0; top: 0;}
 
@@ -275,6 +275,7 @@ canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); } */
 }
 
 #trace {
+    display: none;
     top: 100px; left: 0;
     width: 160px; height: 180px;
 }

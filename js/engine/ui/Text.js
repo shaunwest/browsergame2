@@ -21,7 +21,9 @@ RETRO.Engine.Text = (function() {
     };
 
     Text.prototype.draw = function(context) {
-        this.font.print(context, this.label, this.x, this.y, this.rowCount);
+        Text.base.draw.call(this, context);
+
+        this.font.print(context, this.label, this.finalX, this.finalY, this.rowCount);
     };
 
     return Text;

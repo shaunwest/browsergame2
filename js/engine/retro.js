@@ -39,3 +39,7 @@ RETRO.required = function(arg, error) {
     }
     return arg;
 };
+
+RETRO.log = function(message) {
+    console.log(message);
+};

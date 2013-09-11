@@ -4,20 +4,22 @@
  */
 
 
-RETRO.Engine.Screen = (function() {
+RETRO.Engine.Screen = (function(R) {
 
     function Screen(config) {
-        config          = RETRO.def(config, {});
+        config          = R.def(config, {});
         this.uiElements = [];
-        this.color      = RETRO.def(config.color, "#000000");
-        this.center     = RETRO.def(config.center, false);
-        this.topMargin  = RETRO.def(config.topMargin, 0);
-        this.leftMargin = RETRO.def(config.leftMargin, 0);
+        this.color      = R.def(config.color, null);    // null color means 'transparent'
+        this.center     = R.def(config.center, false);
+        this.topMargin  = R.def(config.topMargin, 0);
+        this.leftMargin = R.def(config.leftMargin, 0);
     }
 
     Screen.prototype.add = function(uiElement) {
-        if(uiElement instanceof RETRO.Engine.UIObject) {
+        if(uiElement instanceof R.Engine.UIObject) {
             this.uiElements.push(uiElement);
+        } else {
+            R.log("RETRO::Engine::Screen: Screen element must be of type 'UIObject'.");
         }
     };
 
@@ -27,21 +29,26 @@ RETRO.Engine.Screen = (function() {
             x = 0, y = 0,
             uiElement;
 
+        if(this.color) {
+            context.fillStyle = this.color;
+            context.fillRect(0, 0, width, height);
+        }
+
         for(var i = 0; i < elementCount; i++) {
             uiElement = uiElements[i];
 
-            x = (this.center) ? ((width - this.leftMargin) / 2) - (uiElement.getWidth() / 2) : 0;
-            y = 0;
+            x = (this.center) ? ((width - this.leftMargin) / 2) - (uiElement.getWidth() / 2) : uiElement.x;
+            y = uiElement.y;
 
             x += this.leftMargin;
             y += this.topMargin;
 
-            uiElement.x = x;
-            uiElement.y = y;
+            uiElement.finalX = x;
+            uiElement.finalY = y;
             uiElement.draw(context);
         }
     };
 
     return Screen;
 
-})();
+})(RETRO);

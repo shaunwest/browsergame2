@@ -52,6 +52,8 @@ RETRO.Engine = (function() {
         this.level                  = null;
         this.player                 = null;
         this.screen                 = null;
+        this.screenVisible          = false;
+        this.levelVisible           = false;
 
         //this.updateFunc             = RETRO.call(this, this.updateGame);
         //this.drawFunc               = RETRO.call(this, this.drawGame);
@@ -309,9 +311,26 @@ RETRO.Engine = (function() {
 
     Engine.prototype.showScreen = function(screen, seconds, func) {
         this.screen = screen;
+        this.screenVisible = true;
         if(seconds && typeof func === "function") {
             this.chrono.setTimeout(seconds, func);
         }
+    };
+
+    Engine.prototype.hideScreen = function(seconds, func) {
+        if(seconds) {
+            this.chrono.setTimeout(seconds, RETRO.call(this, function() {
+                this.screen = null;
+                this.screenVisible = false;
+                if(typeof func === "function") {
+                    func();
+                }
+            }));
+        }
+    };
+
+    Engine.prototype.showLevel = function() {
+        this.levelVisible = true;
     };
 
     Engine.prototype.updateScreen = function(secondsElapsed) {
@@ -341,7 +360,10 @@ RETRO.Engine = (function() {
 
     Engine.prototype.updateGame = function(secondsElapsed) {
         this.checkActions();
-        this.level.update(secondsElapsed);
+
+        if(this.levelVisible) {
+            this.level.update(secondsElapsed);
+        }
 
         if(this.updateCallback) {
             this.updateCallback(secondsElapsed);
@@ -349,9 +371,22 @@ RETRO.Engine = (function() {
     };
 
     Engine.prototype.drawGame = function() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.level.draw(this.context);
-        //this.gameFont.print(this.context, "16738", 100, 0);
+        var context = this.context,
+            width = this.width,
+            height = this.height,
+            screen = this.screen,
+            level = this.level;
+
+        context.clearRect(0, 0, width, height);
+
+        if(this.levelVisible) {
+            level.draw(context);
+        }
+
+        if(this.screenVisible && screen) {
+            screen.draw(context, width, height);
+        }
+
         this.displayStatus();
     };
 

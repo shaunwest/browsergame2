@@ -60,17 +60,28 @@ function configReady(data) {
 }
 
 function levelReady() {
-    var screen1 = new RETRO.Engine.Screen({'topMargin': 48, 'leftMargin': 48}),
-        text1 = new RETRO.Engine.Text(engine.getFont('basic'), "ULTRADIAN DEMO v1", 0, 0);
+    var demoScreen = new RETRO.Engine.Screen({'topMargin': 48, 'leftMargin': 48}),
+        text = new RETRO.Engine.Text(engine.getFont('basic'), "ULTRADIAN DEMO v1", 0, 0);
 
-    screen1.add(text1);
+    demoScreen.add(text);
 
-    engine.showScreen(screen1, 2, demoScreenFinished);
-    engine.start();
+    engine.showScreen(demoScreen, 2, showCaption);
+    engine.startGame();
 }
 
-function demoScreenFinished() {
-    engine.startGame();
+function showCaption() {
+    var captionScreen = new RETRO.Engine.Screen({'topMargin': 48, 'leftMargin': 48}),
+        text = new RETRO.Engine.Text(engine.getFont('basic'), "CITY BY THE LAKE", 0, 0);
+
+    captionScreen.add(text);
+
+    engine.showScreen(captionScreen, 2, showLevel);
+}
+
+function showLevel() {
+    //engine.startGame();
+    engine.showLevel();
+    engine.hideScreen(2);
 }
 
 function update(secondsElapsed) {
