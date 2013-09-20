@@ -15,8 +15,10 @@ RETRO.Engine = (function() {
         this.config                 = props.config;
         this.actions                = props.actions;
         this.fonts                  = props.fonts;
-        this.fixedWidth             = props.width;
-        this.fixedHeight            = props.height;
+        this.fixedWidth             = props.fixedWidth;
+        this.fixedHeight            = props.fixedHeight;
+        this.maxWidth               = props.maxWidth;
+        this.maxHeight              = props.maxHeight;
         this.canvasContainer        = props.canvasContainer;
         this.gridContainer          = props.gridContainer;
         this.canvas                 = props.canvas;
@@ -32,7 +34,7 @@ RETRO.Engine = (function() {
         this.width                  = 0;
         this.height                 = 0;
 
-        this.resizeCanvas();
+        this.resizeCanvas(false);
 
         this.loadedFonts            = {};
 
@@ -56,9 +58,6 @@ RETRO.Engine = (function() {
         this.screenVisible          = false;
         this.levelVisible           = false;
 
-        //this.updateFunc             = RETRO.call(this, this.updateGame);
-        //this.drawFunc               = RETRO.call(this, this.drawGame);
-
         this.initSetList('tileSets', this.tileSetList);
         this.initSetList('spriteSets', this.spriteSetList);
         this.initSetList('triggerSets', this.triggerSetList);
@@ -67,20 +66,29 @@ RETRO.Engine = (function() {
         this.loadQueue              = new RETRO.FuncQueue(this);
         this.chrono                 = new RETRO.Chrono(this.fps);
 
-        window.addEventListener('resize', RETRO.call(this, this.resizeCanvas), false);
+        // TODO re-write to be a little cleaner
+        window.addEventListener('resize', RETRO.call(this, function() {
+            this.chrono.setTimeout(1, RETRO.call(this, function() {
+                this.resizeCanvas(true);
+            }));
+        }), false);
     };
 
-    Engine.prototype.resizeCanvas = function() {
-        var newWidth = window.innerWidth,
-            newHeight = window.innerHeight,
+    Engine.prototype.resizeCanvas = function(resizeView) {
+        var newWidth = Math.min(window.innerWidth, this.maxWidth),
+            newHeight = Math.min(window.innerHeight, this.maxHeight),
             canvasContainer = this.canvasContainer,
             canvas = this.canvas;
 
-        canvas.width = this.width = (this.fixedWidth) ? this.fixedWidth : newWidth;
-        canvas.height = this.height = (this.fixedHeight) ? this.fixedHeight : newHeight;
+        canvas.width = this.width = (this.fixedWidth) ? this.fixedWidth : newWidth - 48;
+        canvas.height = this.height = (this.fixedHeight) ? this.fixedHeight : newHeight - 48;
 
         canvasContainer.style.width = this.width + "px";
         canvasContainer.style.height = this.height + "px";
+
+        if(resizeView) {
+            this.level.setViewDimensions(this.width, this.height);
+        }
     };
 
     Engine.prototype.initSetList = function(configId, list) {

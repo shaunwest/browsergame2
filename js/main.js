@@ -18,6 +18,8 @@ const KEY_UP = 38;
 const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
 const KEY_X = 88;
+const KEY_F = 70;
+const KEY_G = 71;
 
 var engine;
 
@@ -35,8 +37,10 @@ function configReady(data) {
         'canvasContainer'   : document.getElementById('displayContainer'),
         'gridContainer'     : document.getElementById('grid'),
         'config'            : data,
-        'width'             : 1024,
-        'height'            : 768,
+        //'fixedWidth'        : 1024,
+        //'fixedHeight'       : 768,
+        'maxWidth'          : 1280,
+        'maxHeight'         : 960,
         'checkUserActions'  : checkUserActions,
         'createSprites'     : createSprites,
         'update'            : update,
@@ -54,7 +58,9 @@ function configReady(data) {
             'right'         : {'key': KEY_RIGHT, 'el': document.getElementById('right')},
             'up'            : {'key': KEY_UP},
             'down'          : {'key': KEY_DOWN},
-            'attack'        : {'key': KEY_X}
+            'attack'        : {'key': KEY_X},
+            'walkMode'      : {'key': KEY_F},
+            'fightMode'     : {'key': KEY_G}
         },
         'fonts'             : {
             'basic'         : {'path': 'font.png'},
@@ -63,7 +69,7 @@ function configReady(data) {
     });
 
     engine.loadLevel("level1", function() {
-        levelReady();
+        showLevel();
         engine.start();
     });
 }
@@ -143,6 +149,13 @@ function checkUserActions(actions) {
         } else {
             player.allowAttack = true;
         }
+
+        if(actions['walkMode']) {
+            player.walkMode();
+
+        } else if(actions['fightMode']) {
+            player.fightMode();
+        }
     }
 }
 
@@ -153,7 +166,7 @@ function createSprites(sprite, spriteDef, spriteSheet) {
 
     switch(spriteDef.type) {
         case 'player':
-            entity = new RETRO.Player(engine.getAnimations(spriteSheet, width, defaultDelay), spriteDef, engine);
+            entity = new ULTRADIAN.Player(engine.getAnimations(spriteSheet, width, defaultDelay), spriteDef, engine);
             break;
 
         case 'goblin1':

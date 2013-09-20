@@ -49,9 +49,11 @@ RETRO.Chrono = (function(){
         window.cancelAnimationFrame(this.frameTimerId);
     };
 
-    Chrono.prototype.setTimeout = function(seconds, func) {
-        this.timeout = seconds;
-        this.timeoutFunc = func;
+    Chrono.prototype.setTimeout = function(seconds, func, cancel) {
+        if(this.timeout == 0 || cancel == true) {
+            this.timeout = seconds;
+            this.timeoutFunc = func;
+        }
     };
 
     Chrono.prototype.frame = function() {

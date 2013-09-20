@@ -35,9 +35,9 @@ RETRO.Grid = (function(){
         this.mode                           = config.mode || Grid.DEFAULT_MODE;
         this.moveSegments                   = (this.mode == Grid.MODE2) ? this.moveSegments2 : this.moveSegments1;
         this.drawFunc                       = config.drawFunc;
-        this.containerElement               = config.containerElement || this.exception("Grid: no containerElement provided");
-        this.viewWidth                      = config.viewWidth || this.exception("Grid: view width zero or not provided");
-        this.viewHeight                     = config.viewHeight || this.exception("Grid: view height zero or not provided");
+        this.containerElement               = RETRO.required(config.containerElement, "RETRO::Grid: no containerElement provided");
+        this.viewWidth                      = RETRO.required(config.viewWidth, "RETRO::Grid: view width zero or not provided");
+        this.viewHeight                     = RETRO.required(config.viewHeight, "RETRO::Grid: view height zero or not provided");
         this.segmentSize                    = config.segmentSize || Grid.DEFAULT_SEGMENT_SIZE;
         this.gridWidth                      = Math.ceil(this.viewWidth / this.segmentSize) + 1;
         this.gridHeight                     = Math.ceil(this.viewHeight / this.segmentSize) + 1;
@@ -53,6 +53,13 @@ RETRO.Grid = (function(){
 
     Grid.prototype.exception = function(error) {
         throw error;
+    };
+
+    Grid.prototype.updateView = function(viewWidth, viewHeight) {
+        this.viewWidth  = RETRO.required(viewWidth, "RETRO::Grid: view width zero or not provided");
+        this.viewHeight = RETRO.required(viewHeight, "RETRO::Grid: view height zero or not provided");
+        this.gridWidth  = Math.ceil(this.viewWidth / this.segmentSize) + 1;
+        this.gridHeight = Math.ceil(this.viewHeight / this.segmentSize) + 1;
     };
 
     Grid.prototype.setPosition = function(x, y) {

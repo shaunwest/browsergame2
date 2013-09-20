@@ -4,6 +4,8 @@
 
 RETRO.Level = (function() {
 
+    Level.DEFAULT_VIEW_TARGET_SIZE = 144;
+
     function Level(tileSet, spriteSet, foregroundData, backgroundData, gameArea, viewWidth, viewHeight) {
         this.tileSet            = tileSet;
         this.tileSize           = tileSet.tileSize;
@@ -22,6 +24,7 @@ RETRO.Level = (function() {
         this.pixelWidth         = this.width * this.tileSize;
 
         this.viewTarget         = null;
+        this.viewTargetSize     = Level.DEFAULT_VIEW_TARGET_SIZE;
 
         this.viewX              = 0;
         this.viewY              = 0;
@@ -37,8 +40,8 @@ RETRO.Level = (function() {
         this.viewWidth          = Math.floor(this.viewWidthPixels / this.tileSize) + 1;
         this.viewHeight         = Math.floor(this.viewHeightPixels / this.tileSize) + 1;
 
-        this.viewMarginLeft     = 288; //192; //64;
-        this.viewMarginRight    = 384; //480; //160;
+        this.viewMarginLeft     = Math.floor(this.viewWidthPixels / 2) - this.viewTargetSize;
+        this.viewMarginRight    = Math.floor(this.viewWidthPixels / 2);
 
         this.entities           = [];
         this.triggers           = [];
@@ -62,11 +65,22 @@ RETRO.Level = (function() {
     }
 
     Level.prototype.init = function() {
-
-
-
         this.grid.createSegments();
         this.levelData = this.mergeLevelData();
+    };
+
+    Level.prototype.setViewDimensions = function(width, height) {
+        this.viewWidthPixels    = width;
+        this.viewHeightPixels   = height;
+
+        this.viewWidth          = Math.floor(this.viewWidthPixels / this.tileSize) + 1;
+        this.viewHeight         = Math.floor(this.viewHeightPixels / this.tileSize) + 1;
+
+        this.viewMarginLeft     = (this.viewWidthPixels / 2) - this.viewTargetSize;
+        this.viewMarginRight    = (this.viewWidthPixels / 2);
+
+        this.grid.updateView(this.viewWidth * this.tileSize, this.viewHeight * this.tileSize);
+        this.grid.createSegments();// maybe game should pause momentarily during a window resize...
     };
 
     Level.prototype.mergeLevelData = function() {
@@ -168,7 +182,11 @@ RETRO.Level = (function() {
     };
 
     Level.prototype.setViewTarget = function(entity) {
-        this.viewTarget = entity;
+        this.viewTarget         = entity;
+
+        this.viewTargetSize     = entity.size;
+        this.viewMarginLeft     = Math.floor(this.viewWidthPixels / 2) - this.viewTargetSize;
+        this.viewMarginRight    = Math.floor(this.viewWidthPixels / 2);
     };
 
     Level.prototype.checkEntityCollisions = function(entity1) {
@@ -414,7 +432,7 @@ RETRO.Level = (function() {
             this.frameNumber = 0;
         }*/
         this.queue.update();
-        this.moveView(this.viewMoveX, this.viewMoveY, this.dirX, this.dirY);
+        this.moveView(this.viewMoveX, this.viewMoveY);
         this.updateEntities(secondsElapsed);
     };
 

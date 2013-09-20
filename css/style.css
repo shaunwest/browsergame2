@@ -281,7 +281,7 @@ canvas { -webkit-transform: scale3d(2, 2, 0) translate3d(200px, 110px, 0); } */
 }
 
 #status {
-    display: none;
+    display: block;
     left: 0; top: 0;
     width: 160px; height: 80px;
 }
