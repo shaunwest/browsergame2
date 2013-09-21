@@ -451,10 +451,11 @@ RETRO.Level = (function() {
     };
 
     Level.prototype.drawEntities = function(context) {
+        var currentFrames;
         for(var i = 0; i < this.entities.length; i++) {
             var entity = this.entities[i];
             if(entity && entity.isVisible) {
-                var currentFrames = entity.getCurrentFrames();
+                currentFrames = entity.getCurrentFrames();
                 for(var j = 0; j < currentFrames.length; j++) {
                     var frame = currentFrames[j];
                     context.drawImage(frame.image, frame.x - this.viewX, frame.y - this.viewY);

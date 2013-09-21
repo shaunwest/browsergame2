@@ -69,7 +69,7 @@ function configReady(data) {
     });
 
     engine.loadLevel("level1", function() {
-        levelReady(); //showLevel();
+        showLevel();
         engine.start();
     });
 }

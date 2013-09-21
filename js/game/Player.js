@@ -80,6 +80,9 @@ ULTRADIAN.Player = (function() {
 
         this.powAnimation       = this.getAnimation(Player.ANIM_POW);
 
+        this.stamina            = 100;
+        this.staminaBar         = new RETRO.FillBar(48, 3);
+
         var self = this;
         this.currentAnimation.onAnimationChange = function(animation) {
             self.onAnimationChange(animation);
@@ -144,7 +147,7 @@ ULTRADIAN.Player = (function() {
     Player.prototype.getCurrentFrames = function() {
         var currentFrames = Player.base.getCurrentFrames.call(this);
 
-        if(this.isAttacking) {
+        /*if(this.isAttacking) {
             if(this.didHit) {
                 if(this.dirX == RETRO.Entity.DIR_LEFT) {
                     currentFrames.push({
@@ -164,7 +167,13 @@ ULTRADIAN.Player = (function() {
 
                 this.didHit = false;
             }
-        }
+        }*/
+
+        currentFrames.push({
+           'x': this.x + 48,
+           'y': this.y + 24,
+           'image': this.staminaBar.getImage(this.stamina)
+        });
 
         return currentFrames;
     };
@@ -361,7 +370,7 @@ ULTRADIAN.Player = (function() {
         this.didHit = false;
 
         // determine next attack animation
-        if(Math.floor(Math.random() * 3) == 0) {
+        if(Math.floor(Math.random() * 3) == 2) {
             this.attackAnim = 2;
         } else {
             this.attackAnim = 1;
