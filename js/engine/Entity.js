@@ -54,7 +54,7 @@ RETRO.Entity = (function() {
         this.isAttacking        = false;
         this.isVisible          = true;
 
-        var animation           = (animations) ? animations[0] : new RETRO.Animation();
+        var animation           = (animations && animations[0]) ? animations[0] : new RETRO.Animation();
 
         this.currentAnimation   = new RETRO.AnimationPlayer(animation);
     }
@@ -146,8 +146,12 @@ RETRO.Entity = (function() {
         this.haltYDir = direction;
     };
 
-    Entity.prototype.setCurrentAnimation = function(index, onComplete, onFrameComplete) {
+    Entity.prototype.playAnimation = function(index, onComplete, onFrameComplete) {
         this.currentAnimation.play(this.animations[index], onComplete, onFrameComplete);
+    };
+
+    Entity.prototype.playAnimationOnce = function(index, onComplete, onFrameComplete) {
+        this.currentAnimation.playOnce(this.animations[index], onComplete, onFrameComplete);
     };
 
     Entity.prototype.getAnimation = function(index) {

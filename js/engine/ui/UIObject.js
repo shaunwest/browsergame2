@@ -3,7 +3,7 @@
  * Date: 9/3/13 7:54 PM
  */
 
-RETRO.Engine.UIObject = (function() {
+RETRO.UI.UIObject = (function() {
 
     function UIObject(x, y) {
         this.x = RETRO.def(x, 0);

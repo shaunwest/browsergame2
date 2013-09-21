@@ -4,14 +4,14 @@
  */
 
 
-RETRO.Engine.Text = (function() {
+RETRO.UI.Text = (function() {
 
-    RETRO.extend(RETRO.Engine.UIObject, Text);
+    RETRO.extend(RETRO.UI.UIObject, Text);
 
     function Text(font, label, x, y, rowCount) {
-        RETRO.Engine.UIObject.call(this, x, y);
+        RETRO.UI.UIObject.call(this, x, y);
 
-        this.font       = RETRO.required(font, "Text: Font is undefined.");
+        this.font       = RETRO.required(font, "RETRO::UI::Text: Font is undefined.");
         this.rowCount   = RETRO.def(rowCount, 1);
         this.label      = RETRO.def(label, "");
     }

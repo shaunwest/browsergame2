@@ -37,10 +37,10 @@ function configReady(data) {
         'canvasContainer'   : document.getElementById('displayContainer'),
         'gridContainer'     : document.getElementById('grid'),
         'config'            : data,
-        //'fixedWidth'        : 1024,
-        //'fixedHeight'       : 768,
-        'maxWidth'          : 1280,
-        'maxHeight'         : 960,
+        'fixedWidth'        : 1024,
+        'fixedHeight'       : 768,
+        //'maxWidth'          : 1280,
+        //'maxHeight'         : 960,
         'checkUserActions'  : checkUserActions,
         'createSprites'     : createSprites,
         'update'            : update,
@@ -69,14 +69,14 @@ function configReady(data) {
     });
 
     engine.loadLevel("level1", function() {
-        showLevel();
+        levelReady(); //showLevel();
         engine.start();
     });
 }
 
 function levelReady() {
-    var demoScreen = new RETRO.Engine.Screen({'topMargin': 48, 'leftMargin': 48}),
-        text = new RETRO.Engine.Text(engine.getFont('basic'), "ULTRADIAN DEMO 1", 0, 0);
+    var demoScreen = new RETRO.UI.Screen({'topMargin': 48, 'leftMargin': 48}),
+        text = new RETRO.UI.Text(engine.getFont('basic'), "ULTRADIAN DEMO 1", 0, 0);
 
     demoScreen.add(text);
 
@@ -84,8 +84,8 @@ function levelReady() {
 }
 
 function showCaption() {
-    var captionScreen = new RETRO.Engine.Screen({'topMargin': 48, 'leftMargin': 48}),
-        text = new RETRO.Engine.Text(engine.getFont('basic'), "THE CITY BY THE LAKE", 0, 0);
+    var captionScreen = new RETRO.UI.Screen({'topMargin': 48, 'leftMargin': 48}),
+        text = new RETRO.UI.Text(engine.getFont('basic'), "THE CITY BY THE LAKE", 0, 0);
 
     captionScreen.add(text);
 
@@ -104,57 +104,59 @@ function checkUserActions(actions) {
     if(engine.player) {
         var player = engine.player;
 
-        // MOVE
-        if(actions['left']) {
-            player.moveLeft();
-        } else if(actions['right']) {
-            player.moveRight();
-        } else {
-            player.stop();
-        }
-
-        // JUMP
-        if(actions['up']) {
-            player.startJump();
-        } else {
-            player.endJump();
-        }
-
-        // DUCK
-        if(player.onGround) {
-            if(actions['down']) {
-                player.isDucking = true;
+        if(player.mode == ULTRADIAN.Player.MODE_FIGHT) {
+            // MOVE
+            if(actions['left']) {
+                player.moveLeft();
+            } else if(actions['right']) {
+                player.moveRight();
             } else {
-                player.isDucking = false;
+                player.stop();
             }
 
-            player.allowDownThrust = true;
-        }
-
-        // DOWN ATTACK
-        if(actions['down'] && !player.isAttacking && !player.onGround) {
-            if(player.allowDownThrust) {
-                player.isDownThrusting = true;
-                player.allowDownThrust = false;
-                player.downThrustAttackMode();
+            // ATTACK
+            if(actions['attack']) {
+                if(player.allowAttack) {
+                    player.isAttacking = true;
+                    player.allowAttack = false;
+                }
+            } else {
+                player.allowAttack = true;
             }
-        }
 
-        // ATTACK
-        if(actions['attack'] && !player.isDownThrusting) {
-            if(player.allowAttack) {
-                player.isAttacking = true;
-                player.allowAttack = false;
+            if(actions['walkMode']) {
+                player.walkMode();
             }
+
         } else {
-            player.allowAttack = true;
-        }
+            // MOVE
+            if(actions['left']) {
+                player.moveLeft();
+            } else if(actions['right']) {
+                player.moveRight();
+            } else {
+                player.stop();
+            }
 
-        if(actions['walkMode']) {
-            player.walkMode();
+            // JUMP
+            if(actions['up']) {
+                player.startJump();
+            } else {
+                player.endJump();
+            }
 
-        } else if(actions['fightMode']) {
-            player.fightMode();
+            // DUCK
+            if(player.onGround) {
+                if(actions['down']) {
+                    player.isDucking = true;
+                } else {
+                    player.isDucking = false;
+                }
+            }
+
+            if(actions['fightMode']) {
+                player.fightMode();
+            }
         }
     }
 }

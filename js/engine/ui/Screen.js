@@ -4,22 +4,22 @@
  */
 
 
-RETRO.Engine.Screen = (function(R) {
+RETRO.UI.Screen = (function() {
 
     function Screen(config) {
-        config          = R.def(config, {});
+        config          = RETRO.def(config, {});
         this.uiElements = [];
-        this.color      = R.def(config.color, null);    // null color means 'transparent'
-        this.center     = R.def(config.center, false);
-        this.topMargin  = R.def(config.topMargin, 0);
-        this.leftMargin = R.def(config.leftMargin, 0);
+        this.color      = RETRO.def(config.color, null);    // null color means 'transparent'
+        this.center     = RETRO.def(config.center, false);
+        this.topMargin  = RETRO.def(config.topMargin, 0);
+        this.leftMargin = RETRO.def(config.leftMargin, 0);
     }
 
     Screen.prototype.add = function(uiElement) {
-        if(uiElement instanceof R.Engine.UIObject) {
+        if(uiElement instanceof RETRO.UI.UIObject) {
             this.uiElements.push(uiElement);
         } else {
-            R.log("RETRO::Engine::Screen: Screen element must be of type 'UIObject'.");
+            RETRO.log("RETRO::UI::Screen: Screen element must be of type 'UIObject'.");
         }
     };
 

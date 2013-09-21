@@ -355,22 +355,22 @@ RETRO.Player = (function() {
         } else if(this.isDamaged) {
             switch(this.damagedState) {
                 case Player.DMG_LEFT_BACK:
-                    this.setCurrentAnimation(Player.ANIM_DMG_BACK_LEFT);
+                    this.playAnimation(Player.ANIM_DMG_BACK_LEFT);
                     this.hVelocity = -Player.H_VELOCITY_HIT * secondsElapsed;
                     break;
 
                 case Player.DMG_LEFT_FRONT:
-                    this.setCurrentAnimation(Player.ANIM_DMG_FRONT_LEFT);
+                    this.playAnimation(Player.ANIM_DMG_FRONT_LEFT);
                     this.hVelocity = Player.H_VELOCITY_HIT * secondsElapsed;
                     break;
 
                 case Player.DMG_RIGHT_FRONT:
-                    this.setCurrentAnimation(Player.ANIM_DMG_FRONT_RIGHT);
+                    this.playAnimation(Player.ANIM_DMG_FRONT_RIGHT);
                     this.hVelocity = -Player.H_VELOCITY_HIT * secondsElapsed;
                     break;
 
                 case Player.DMG_RIGHT_BACK:
-                    this.setCurrentAnimation(Player.ANIM_DMG_BACK_RIGHT);
+                    this.playAnimation(Player.ANIM_DMG_BACK_RIGHT);
                     this.hVelocity = Player.H_VELOCITY_HIT * secondsElapsed;
                     break;
             }
@@ -384,7 +384,7 @@ RETRO.Player = (function() {
 
             if(this.dirX == RETRO.Entity.DIR_LEFT) {
                 this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_DOWN_LEFT]);
-                this.setCurrentAnimation(
+                this.playAnimation(
                     Player.ANIM_JUMP_THRUST_LEFT,
                     function() {
                         self.onAttackComplete();
@@ -392,7 +392,7 @@ RETRO.Player = (function() {
                 );
             } else {
                 this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_DOWN_RIGHT]);
-                this.setCurrentAnimation(
+                this.playAnimation(
                     Player.ANIM_JUMP_THRUST_RIGHT,
                     function() {
                         self.onAttackComplete();
@@ -416,7 +416,7 @@ RETRO.Player = (function() {
 
             if(this.dirX == RETRO.Entity.DIR_LEFT) {
                 this.currentSwordAnim.play(this.swordAnimations[animations['leftSwordAnim']]);
-                this.setCurrentAnimation(
+                this.playAnimation(
                     animations['leftAnim'],
                     function() {
                         self.onAttackComplete();
@@ -428,7 +428,7 @@ RETRO.Player = (function() {
 
             } else {
                 this.currentSwordAnim.play(this.swordAnimations[animations['rightSwordAnim']]);
-                this.setCurrentAnimation(
+                this.playAnimation(
                     animations['rightAnim'],
                     function() {
                         self.onAttackComplete();
@@ -444,31 +444,31 @@ RETRO.Player = (function() {
             if(this.isFlipping) {
                 if(this.dirX == RETRO.Entity.DIR_LEFT) {
                     this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_PJUMP_LEFT]);
-                    this.setCurrentAnimation(Player.ANIM_FLIP_LEFT);
+                    this.playAnimation(Player.ANIM_FLIP_LEFT);
 
                 } else {
                     this.currentSwordAnim.play(this.swordAnimations[Player.SWORD_PJUMP_RIGHT]);
-                    this.setCurrentAnimation(Player.ANIM_FLIP_RIGHT);
+                    this.playAnimation(Player.ANIM_FLIP_RIGHT);
                 }
 
             } else {
-                (this.dirX == RETRO.Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_JUMP_LEFT) : this.setCurrentAnimation(Player.ANIM_JUMP_RIGHT);
+                (this.dirX == RETRO.Entity.DIR_LEFT) ? this.playAnimation(Player.ANIM_JUMP_LEFT) : this.playAnimation(Player.ANIM_JUMP_RIGHT);
             }
 
         // WALK
         } else if(this.moveX < 0) {
-            this.setCurrentAnimation(Player.ANIM_RUN_LEFT);
+            this.playAnimation(Player.ANIM_RUN_LEFT);
 
         } else if(this.moveX > 0) {
-            this.setCurrentAnimation(Player.ANIM_RUN_RIGHT);
+            this.playAnimation(Player.ANIM_RUN_RIGHT);
 
         // DUCK
         } else if(this.isDucking) {
-            (this.dirX == RETRO.Entity.DIR_LEFT) ?  this.setCurrentAnimation(Player.ANIM_DUCK_LEFT) : this.setCurrentAnimation(Player.ANIM_DUCK_RIGHT);
+            (this.dirX == RETRO.Entity.DIR_LEFT) ?  this.playAnimation(Player.ANIM_DUCK_LEFT) : this.playAnimation(Player.ANIM_DUCK_RIGHT);
 
         // IDLE
         } else {
-            (this.dirX == RETRO.Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_IDLE_LEFT) : this.setCurrentAnimation(Player.ANIM_IDLE_RIGHT);
+            (this.dirX == RETRO.Entity.DIR_LEFT) ? this.playAnimation(Player.ANIM_IDLE_LEFT) : this.playAnimation(Player.ANIM_IDLE_RIGHT);
         }
     };
 

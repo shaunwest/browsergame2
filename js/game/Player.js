@@ -18,12 +18,14 @@ ULTRADIAN.Player = (function() {
     Player.ANIM_JUMP_RIGHT          = 3;
     Player.ANIM_RUN_LEFT            = 4;
     Player.ANIM_RUN_RIGHT           = 5;
-    Player.ANIM_READY_LEFT          = 6;
-    Player.ANIM_READY_RIGHT         = 7;
-    Player.ANIM_PUNCH1_LEFT         = 8;
-    Player.ANIM_PUNCH1_RIGHT        = 9;
-    Player.ANIM_PUNCH2_LEFT         = 10;
-    Player.ANIM_PUNCH2_RIGHT        = 11;
+    Player.ANIM_DUCK_LEFT           = 6;
+    Player.ANIM_DUCK_RIGHT          = 7;
+    Player.ANIM_READY_LEFT          = 8;
+    Player.ANIM_READY_RIGHT         = 9;
+    Player.ANIM_PUNCH1_LEFT         = 10;
+    Player.ANIM_PUNCH1_RIGHT        = 11;
+    Player.ANIM_PUNCH2_LEFT         = 12;
+    Player.ANIM_PUNCH2_RIGHT        = 13;
     Player.ANIM_DMG_FRONT_LEFT      = 14;
     Player.ANIM_DMG_FRONT_RIGHT     = 15;
     Player.ANIM_DMG_BACK_LEFT       = 16;
@@ -58,7 +60,6 @@ ULTRADIAN.Player = (function() {
         this.allowInput         = true;
         this.allowJump          = false;
         this.allowAttack        = true;
-        this.allowDownThrust    = false;
         this.isDucking          = false;
         this.isFalling          = false;
         this.isFlipping         = false;
@@ -66,11 +67,12 @@ ULTRADIAN.Player = (function() {
         this.isDamaged          = false;
         this.damagedState       = Player.DMG_NONE;
         this.isHitting          = false;
-        this.isDownThrusting    = false;
         this.didHit             = false;
         this.isJumping          = false;
         this.jumpCount          = 0;
         this.jumpCountMax       = 10;
+
+        this.attackAnim         = 1;
 
         this.hitX               = 0;
 
@@ -110,11 +112,6 @@ ULTRADIAN.Player = (function() {
         if(this.allowJump) {
             this.jumpCount++;
             this.isJumping = true;
-
-        } else if(this.isDownThrusting && this.didHit) {
-            this.isJumping = true;
-            this.jumpCount = 0;
-            this.allowJump = true;
         }
     };
 
@@ -126,9 +123,6 @@ ULTRADIAN.Player = (function() {
 
         if(this.onGround) {
             this.allowJump = true;
-
-            // cancel down thrust
-            this.isDownThrusting = false;
             this.isHitting = false;
         }
     };
@@ -219,7 +213,6 @@ ULTRADIAN.Player = (function() {
             if(this.onGround) {
                 //this.allowJump = true;
                 this.jumpCount = 0;
-                this.isDownThrusting = false;
             }
 
             if(this.isFalling) {
@@ -278,22 +271,22 @@ ULTRADIAN.Player = (function() {
             } else if(this.isDamaged) {
                 switch(this.damagedState) {
                     case Player.DMG_LEFT_BACK:
-                        this.setCurrentAnimation(Player.ANIM_DMG_BACK_LEFT);
+                        this.playAnimation(Player.ANIM_DMG_BACK_LEFT);
                         this.hVelocity = -Player.H_VELOCITY_HIT * secondsElapsed;
                         break;
 
                     case Player.DMG_LEFT_FRONT:
-                        this.setCurrentAnimation(Player.ANIM_DMG_FRONT_LEFT);
+                        this.playAnimation(Player.ANIM_DMG_FRONT_LEFT);
                         this.hVelocity = Player.H_VELOCITY_HIT * secondsElapsed;
                         break;
 
                     case Player.DMG_RIGHT_FRONT:
-                        this.setCurrentAnimation(Player.ANIM_DMG_FRONT_RIGHT);
+                        this.playAnimation(Player.ANIM_DMG_FRONT_RIGHT);
                         this.hVelocity = -Player.H_VELOCITY_HIT * secondsElapsed;
                         break;
 
                     case Player.DMG_RIGHT_BACK:
-                        this.setCurrentAnimation(Player.ANIM_DMG_BACK_RIGHT);
+                        this.playAnimation(Player.ANIM_DMG_BACK_RIGHT);
                         this.hVelocity = Player.H_VELOCITY_HIT * secondsElapsed;
                         break;
                 }
@@ -306,42 +299,48 @@ ULTRADIAN.Player = (function() {
             } else if(!this.onGround) {
                 if(this.isFlipping) {
                     if(this.dirX == RETRO.Entity.DIR_LEFT) {
-                        this.setCurrentAnimation(Player.ANIM_FLIP_LEFT);
+                        this.playAnimation(Player.ANIM_FLIP_LEFT);
 
                     } else {
-                        this.setCurrentAnimation(Player.ANIM_FLIP_RIGHT);
+                        this.playAnimation(Player.ANIM_FLIP_RIGHT);
                     }
 
                 } else {
-                    (this.dirX == RETRO.Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_JUMP_LEFT) : this.setCurrentAnimation(Player.ANIM_JUMP_RIGHT);
+                    (this.dirX == RETRO.Entity.DIR_LEFT) ? this.playAnimation(Player.ANIM_JUMP_LEFT) : this.playAnimation(Player.ANIM_JUMP_RIGHT);
                 }
 
             // WALK
             } else if(this.moveX < 0) {
-                this.setCurrentAnimation(Player.ANIM_RUN_LEFT);
+                this.playAnimation(Player.ANIM_RUN_LEFT);
 
             } else if(this.moveX > 0) {
-                this.setCurrentAnimation(Player.ANIM_RUN_RIGHT);
+                this.playAnimation(Player.ANIM_RUN_RIGHT);
 
             // DUCK
             } else if(this.isDucking) {
-                /*(this.dirX == RETRO.Entity.DIR_LEFT) ?  this.setCurrentAnimation(Player.ANIM_DUCK_LEFT) : this.setCurrentAnimation(Player.ANIM_DUCK_RIGHT);*/
+                (this.dirX == RETRO.Entity.DIR_LEFT) ?  this.playAnimation(Player.ANIM_DUCK_LEFT) : this.playAnimation(Player.ANIM_DUCK_RIGHT);
 
             // IDLE
             } else {
-                (this.dirX == RETRO.Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_IDLE_LEFT) : this.setCurrentAnimation(Player.ANIM_IDLE_RIGHT);
+                (this.dirX == RETRO.Entity.DIR_LEFT) ? this.playAnimation(Player.ANIM_IDLE_LEFT) : this.playAnimation(Player.ANIM_IDLE_RIGHT);
             }
 
         } else { // FIGHT MODE
 
             // ATTACK
             if(this.isAttacking) {
-                var anim = (this.dirX == RETRO.Entity.DIR_LEFT) ? Player.ANIM_PUNCH2_LEFT : Player.ANIM_PUNCH2_RIGHT;
-                this.setCurrentAnimation(anim, function() { self.onAttackComplete() });
+                var anim;
+                if(this.attackAnim == 2) {
+                    anim = (this.dirX == RETRO.Entity.DIR_LEFT) ? Player.ANIM_PUNCH2_LEFT : Player.ANIM_PUNCH2_RIGHT;
+                } else {
+                    anim = (this.dirX == RETRO.Entity.DIR_LEFT) ? Player.ANIM_PUNCH1_LEFT : Player.ANIM_PUNCH1_RIGHT;
+                }
+
+                this.playAnimation(anim, function() { self.onAttackComplete() });
 
             // IDLE
             } else {
-                (this.dirX == RETRO.Entity.DIR_LEFT) ? this.setCurrentAnimation(Player.ANIM_READY_LEFT) : this.setCurrentAnimation(Player.ANIM_READY_RIGHT);
+                (this.dirX == RETRO.Entity.DIR_LEFT) ? this.playAnimation(Player.ANIM_READY_LEFT) : this.playAnimation(Player.ANIM_READY_RIGHT);
             }
         }
     };
@@ -359,8 +358,14 @@ ULTRADIAN.Player = (function() {
 
     Player.prototype.onAttackComplete = function() {
         this.isAttacking = false;
-        this.isDownThrusting = false;
         this.didHit = false;
+
+        // determine next attack animation
+        if(Math.floor(Math.random() * 3) == 0) {
+            this.attackAnim = 2;
+        } else {
+            this.attackAnim = 1;
+        }
     };
 
     Player.prototype.onFlicker = function() {

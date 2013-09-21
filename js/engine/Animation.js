@@ -3,11 +3,13 @@
  */
 
 RETRO.Animation = (function(){
+    Animation.DEFAULT_SPRITE_SIZE = 48;
+
     function Animation(spriteSheet, row, spriteSize, delay) {
-        this.delay = (delay) ? delay : 1;
-        this.spriteSheet = spriteSheet;
-        this.row = row;
-        this.spriteSize = spriteSize;
+        this.delay          = RETRO.def(delay, 1);
+        this.spriteSheet    = spriteSheet;
+        this.row            = RETRO.def(row, 0);
+        this.spriteSize     = RETRO.def(spriteSize, Animation.DEFAULT_SPRITE_SIZE);
 
         if(spriteSheet) {
             this.parseSheet(spriteSheet, row);

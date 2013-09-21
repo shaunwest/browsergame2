@@ -2,7 +2,7 @@
  * @author shaun
  */
 
-RETRO.Goblin = (function() {
+ULTRADIAN.Goblin = (function() {
 
     RETRO.extend(RETRO.PhysicsEntity, Goblin1);
 
@@ -52,19 +52,19 @@ RETRO.Goblin = (function() {
 
 
         if(this.isDead) {
-            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(5) : this.setCurrentAnimation(4);
+            (this.dirX == Entity.DIR_LEFT) ? this.playAnimation(5) : this.playAnimation(4);
 
         } else if(this.isDamaged) {
-            (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(6) : this.setCurrentAnimation(7);
+            (this.dirX == Entity.DIR_LEFT) ? this.playAnimation(6) : this.playAnimation(7);
 
         } else {
             // WALK
             if(this.moveX != 0) {
-                (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(2) :  this.setCurrentAnimation(3);
+                (this.dirX == Entity.DIR_LEFT) ? this.playAnimation(2) :  this.playAnimation(3);
 
                 // IDLE
             } else {
-                (this.dirX == Entity.DIR_LEFT) ? this.setCurrentAnimation(0) : this.setCurrentAnimation(1);
+                (this.dirX == Entity.DIR_LEFT) ? this.playAnimation(0) : this.playAnimation(1);
             }
         }
 

@@ -4,7 +4,7 @@
  */
 
 
-var RETRO = {};
+var RETRO = {UI: {}};
 
 if (typeof Object.create !== 'function') {
     Object.create = function (o) {
