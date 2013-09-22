@@ -65,6 +65,7 @@ RETRO.Engine = (function() {
         this.userAction             = new RETRO.UserAction(this.actions);
         this.loadQueue              = new RETRO.FuncQueue(this);
         this.chrono                 = new RETRO.Chrono(this.fps);
+        this.auto                   = new RETRO.Auto();
 
         // TODO re-write to be a little cleaner
         window.addEventListener('resize', RETRO.call(this, function() {
@@ -343,6 +344,7 @@ RETRO.Engine = (function() {
 
     Engine.prototype.update = function(secondsElapsed) {
         this.checkActions();
+        this.auto.update();
 
         if(this.levelVisible) {
             this.level.update(secondsElapsed);

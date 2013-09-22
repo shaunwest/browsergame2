@@ -255,7 +255,7 @@ RETRO.Level = (function() {
                     for(i = ty1; i <= ty2; i++) {
                         if(this.isSolid(tx2, i)) {
                             this.stopRight(entity, tx2);
-                            entity.levelCollisionX(1, this.getTile(tx2, i));
+                            entity.levelCollisionX(1, this.getTile(tx2, i), tx2, i);
                             break;
                         }
                     }
@@ -270,7 +270,7 @@ RETRO.Level = (function() {
                     for(i = ty1; i <= ty2; i++) {
                         if(this.isSolid(tx1, i)) {
                             this.stopLeft(entity, tx1);
-                            entity.levelCollisionX(-1, this.getTile(tx1, i));
+                            entity.levelCollisionX(-1, this.getTile(tx1, i), tx1, i);
                             break;
                         }
                     }
@@ -301,7 +301,7 @@ RETRO.Level = (function() {
                     for(i = tx1; i <= tx2; i++) {
                         if(this.isSolid(i, ty2) || this.isPlatform(i, ty2)) {
                             this.stopDown(entity, ty2);
-                            entity.levelCollisionY(1, this.getTile(i, ty2));
+                            entity.levelCollisionY(1, this.getTile(i, ty2), i, ty2);
                             break;
                         }
                     }
@@ -316,7 +316,7 @@ RETRO.Level = (function() {
                     for(i = tx1; i <= tx2; i++) {
                         if(this.isSolid(i, ty1)) {
                             this.stopUp(entity, ty1);
-                            entity.levelCollisionY(-1, this.getTile(i, ty1));
+                            entity.levelCollisionY(-1, this.getTile(i, ty1), i, ty1);
                             break;
                         }
                     }

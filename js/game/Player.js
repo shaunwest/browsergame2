@@ -169,11 +169,13 @@ ULTRADIAN.Player = (function() {
             }
         }*/
 
-        currentFrames.push({
-           'x': this.x + 48,
-           'y': this.y + 24,
-           'image': this.staminaBar.getImage(this.stamina)
-        });
+        if(this.mode == Player.MODE_FIGHT) {
+            currentFrames.push({
+               'x': this.x + 48,
+               'y': this.y + 24,
+               'image': this.staminaBar.getImage(this.stamina)
+            });
+        }
 
         return currentFrames;
     };
@@ -394,6 +396,42 @@ ULTRADIAN.Player = (function() {
 
     Player.prototype.levelCollisionY = function(direction, tileDef) {
         Player.base.levelCollisionY.call(this, direction, tileDef);
+    };
+
+    Player.prototype.levelCollisionX = function(direction, tileDef, tileX, tileY) {
+        var level = this.engine.level,
+            tile1, tile2, tile3;
+
+        Player.base.levelCollisionX.call(this, direction, tileDef, tileX, tileY);
+
+        if(direction == RETRO.Entity.DIR_RIGHT) {
+            tile1 = level.getTile(tileX, tileY - 1);
+            tile2 = level.getTile(tileX + 1, tileY - 2);
+            tile3 = level.getTile(tileX + 1, tileY - 1);
+            if(tile1['solid'] == 0 && tile2['solid'] == 0 && tile3['solid'] == 1) {
+                var targetX = ((tileX) * level.tileSize);
+                var targetY = ((tileY - 4) * level.tileSize);
+
+                this.doMoveY = false;
+                this.stop();
+
+                engine.userAction.disable('left');
+                engine.userAction.disable('right');
+
+                engine.auto.setTarget(this, 3, RETRO.call(this, this.hopComplete));
+                engine.auto.addPoint(targetX, targetY);
+            }
+
+        } else if(direction == RETRO.Entity.DIR_LEFT) {
+
+        }
+    };
+
+    Player.prototype.hopComplete = function() {
+        this.doMoveY = true;
+
+        engine.userAction.enable('left');
+        engine.userAction.enable('right');
     };
 
     return Player;

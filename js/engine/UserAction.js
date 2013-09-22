@@ -6,6 +6,7 @@
 RETRO.UserAction = (function(){
     function UserAction(actions) {
         this.actions            = {};
+        this._actionDefs        = actions;
         this._keysAllowed       = {};
         this._targetElements    = {};
 
@@ -20,6 +21,21 @@ RETRO.UserAction = (function(){
         window.addEventListener("touchend", RETRO.call(this, this.onTouchEnd), true);
     };
 
+    UserAction.prototype.enable = function(actionName) {
+        var action = this._actionDefs[actionName],
+            keyAllowed = this._keysAllowed[action['key']];
+
+        keyAllowed['enabled'] = true;
+    };
+
+    UserAction.prototype.disable = function(actionName) {
+        var action = this._actionDefs[actionName],
+            keyAllowed = this._keysAllowed[action['key']];
+
+        keyAllowed['enabled'] = false;
+        this.actions[keyAllowed['name']] = false;
+    };
+
     UserAction.prototype.setActions = function(actions) {
         var action;
 
@@ -27,7 +43,7 @@ RETRO.UserAction = (function(){
             if(actions.hasOwnProperty(actionName)) {
                 action = actions[actionName];
                 if(action['key']) {
-                    this._keysAllowed[action['key']] = actionName;
+                    this._keysAllowed[action['key']] = {name: actionName, enabled: true};
                 }
 
                 if(action['el']) {
@@ -38,17 +54,17 @@ RETRO.UserAction = (function(){
     };
 
     UserAction.prototype.onKeyDown = function(e){
-        var actionName = this._keysAllowed[e.keyCode];
-        if(actionName) {
-            this.actions[actionName] = true;
+        var keyAllowed = this._keysAllowed[e.keyCode];
+        if(keyAllowed && keyAllowed['enabled'] == true) {
+            this.actions[keyAllowed['name']] = true;
         }
     };
 
 
     UserAction.prototype.onKeyUp = function(e) {
-        var actionName = this._keysAllowed[e.keyCode];
-        if(actionName) {
-            this.actions[actionName] = false;
+        var keyAllowed = this._keysAllowed[e.keyCode];
+        if(keyAllowed) {
+            this.actions[keyAllowed['name']] = false;
         }
     };
 
