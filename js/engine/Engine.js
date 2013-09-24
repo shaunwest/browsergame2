@@ -344,7 +344,7 @@ RETRO.Engine = (function() {
 
     Engine.prototype.update = function(secondsElapsed) {
         this.checkActions();
-        this.auto.update();
+        this.auto.update(secondsElapsed);
 
         if(this.levelVisible) {
             this.level.update(secondsElapsed);
@@ -382,10 +382,11 @@ RETRO.Engine = (function() {
                 "<br><label>Pos:</label> " + this.level.viewX + ", " + this.level.viewY +
                 /*"<br><label>Grid Pos:</label> " + this.level.grid.gridPositionX + ", " + this.level.grid.gridPositionX +*/
                 "<br><label>PPos:</label> " + this.player.x + ", " + this.player.y +
-                "<br><label>Level Width:</label> " + this.level.pixelWidth +
-                "<br><label>MRight:</label> " + this.level.viewMarginRight;
-                /*"<br><label>PMoveX:</label> " + this.player.moveX +
-                "<br><label>Elapsed Min:</label> " + this.chrono.elapsedMin +
+                "<br><label>Level Width:</label> " + this.level.pixelWidth;
+                /*"<br><label>MRight:</label> " + this.level.viewMarginRight +
+                "<br><label>PMoveX:</label> " + this.player.moveX +
+                "<br><label>PVelX:</label> " + this.player.hVelocity;*/
+                /*"<br><label>Elapsed Min:</label> " + this.chrono.elapsedMin +
                 "<br><label>Elapsed Max:</label> " + this.chrono.elapsedMax;*/
 
         }

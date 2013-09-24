@@ -9,8 +9,12 @@ RETRO.PhysicsEntity = (function() {
     function PhysicsEntity(animations, def) {
         RETRO.Entity.call(this, animations, def);
 
+        // FIXME: these defaults are completely wrong. Need to account for secondsElapsed...
         this.vMaxVelocity           = 3;
         this.hMaxVelocity           = 3;
+
+        this.vComputedMaxVelocity   = 0;
+        this.hComputedMaxVelocity   = 0;
 
         this.vAcceleration          = 0.5;
         this.hAcceleration          = 0.5;
@@ -21,19 +25,19 @@ RETRO.PhysicsEntity = (function() {
 
     PhysicsEntity.prototype.calculateVerticalVelocity = function(secondsElapsed) {
         var vAccel = (this.vAcceleration * secondsElapsed),
-            vMaxVel = (this.vMaxVelocity * secondsElapsed);
+            vComputedMaxVel = (this.vMaxVelocity * secondsElapsed);
 
         if(this.doMoveY) {
             if(this.dirY > 0) {
                 this.vVelocity += vAccel;
-                if(this.vVelocity > vMaxVel) {
-                    this.vVelocity = vMaxVel;
+                if(this.vVelocity > vComputedMaxVel) {
+                    this.vVelocity = vComputedMaxVel;
                 }
 
             } else if(this.dirY < 0) {
                 this.vVelocity -= vAccel;
-                if(this.vVelocity < -vMaxVel) {
-                    this.vVelocity = -vMaxVel;
+                if(this.vVelocity < -vComputedMaxVel) {
+                    this.vVelocity = -vComputedMaxVel;
                 }
             }
 
@@ -45,23 +49,25 @@ RETRO.PhysicsEntity = (function() {
                 }
             }
         }
+
+        this.vComputedMaxVelocity = vComputedMaxVel;
     };
 
     PhysicsEntity.prototype.calculateHorizontalVelocity = function(secondsElapsed) {
         var hAccel = this.hAcceleration * secondsElapsed,
-            hMaxVel = this.hMaxVelocity * secondsElapsed;
+            hComputedMaxVel = this.hMaxVelocity * secondsElapsed;
 
         if(this.doMoveX) {
             if(this.dirX > 0) {
                 this.hVelocity += hAccel;
-                if(this.hVelocity > hMaxVel) {
-                    this.hVelocity = hMaxVel;
+                if(this.hVelocity > hComputedMaxVel) {
+                    this.hVelocity = hComputedMaxVel;
                 }
 
             } else if(this.dirX < 0) {
                 this.hVelocity -= hAccel;
-                if(this.hVelocity < -hMaxVel) {
-                    this.hVelocity = -hMaxVel;
+                if(this.hVelocity < -hComputedMaxVel) {
+                    this.hVelocity = -hComputedMaxVel;
                 }
             }
 
@@ -73,6 +79,8 @@ RETRO.PhysicsEntity = (function() {
                 }
             }
         }
+
+        this.hComputedMaxVelocity = hComputedMaxVel;
     };
 
     PhysicsEntity.prototype.cancelHorizontalMovement = function() {

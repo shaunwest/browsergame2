@@ -13,7 +13,7 @@ RETRO.AnimationPlayer = (function(){
         this.startFrame         = 0;
         this.stopOnComplete     = false;
         this.playing            = false;
-        this.frameSpeedMult     = 62.5;
+        this.frameSpeedMult     = 62.5; // FIXME?
         this.reset();
     }
 

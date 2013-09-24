@@ -5,8 +5,9 @@
 
 ULTRADIAN.Player = (function() {
 
-    Player.VMAX_VELOCITY_NORMAL     = 562; //750; //12; //15;
-    Player.HMAX_VELOCITY_NORMAL     = 312; //5; //9;
+    Player.VMAX_VELOCITY_NORMAL     = 750; //624; //562; //750; //12; //15;
+    Player.HMAX_VELOCITY_NORMAL     = 312; //312; //5; //9;
+    Player.HOP_VELOCITY             = 437; //7;
     Player.VACCEL_NORMAL            = 36; // Acceleration per second
     Player.HACCEL_NORMAL            = 20; //25; //45; //90; // Acceleration per second
     Player.H_VELOCITY_HIT           = 156;
@@ -26,6 +27,10 @@ ULTRADIAN.Player = (function() {
     Player.ANIM_PUNCH1_RIGHT        = 11;
     Player.ANIM_PUNCH2_LEFT         = 12;
     Player.ANIM_PUNCH2_RIGHT        = 13;
+    Player.ANIM_CLUTCH_LEFT         = 14;
+    Player.ANIM_CLUTCH_RIGHT        = 15;
+    Player.ANIM_HOP_LEFT            = 16;
+    Player.ANIM_HOP_RIGHT           = 17;
     Player.ANIM_DMG_FRONT_LEFT      = 14;
     Player.ANIM_DMG_FRONT_RIGHT     = 15;
     Player.ANIM_DMG_BACK_LEFT       = 16;
@@ -50,7 +55,7 @@ ULTRADIAN.Player = (function() {
 
         this.engine             = engine;
         this.onGround           = false;
-        this.boundsDefinition   = {left: 50, top: 58, right: 50, bottom: 0};
+        this.boundsDefinition   = {left: 48, top: 58, right: 48, bottom: 0};
 
         this.doMoveY            = true;
         this.doVerticalVelocity = true;
@@ -67,8 +72,11 @@ ULTRADIAN.Player = (function() {
         this.isDamaged          = false;
         this.damagedState       = Player.DMG_NONE;
         this.isHitting          = false;
+        this.isClutching        = false;
+        this.isHopping          = false;
         this.didHit             = false;
         this.isJumping          = false;
+        this.isLaunching        = false;
         this.jumpCount          = 0;
         this.jumpCountMax       = 10;
 
@@ -111,22 +119,25 @@ ULTRADIAN.Player = (function() {
         this.hAcceleration = Player.HACCEL_NORMAL;
     };
 
-    Player.prototype.startJump = function() {
+    Player.prototype.jump = function() {
+        var targetTile;
         if(this.allowJump) {
-            this.jumpCount++;
-            this.isJumping = true;
+            var level = this.engine.level,
+                x = (this.dirX == RETRO.Entity.DIR_RIGHT) ? Math.ceil(this.x / level.tileSize) + 1 : Math.ceil(this.x / level.tileSize),
+                y = Math.ceil(this.y / level.tileSize);
+
+            targetTile = level.getTile(x, y);
+            if(targetTile['platform'] == 1) {
+                this.isLaunching = true;
+                this.allowJump = false;
+            }
         }
     };
 
-    Player.prototype.endJump = function() {
-        if(this.isJumping) {
+    Player.prototype.hop = function() {
+        if(this.allowJump) {
+            this.isLaunching = true;
             this.allowJump = false;
-            this.jumpCount = this.jumpCountMax;
-        }
-
-        if(this.onGround) {
-            this.allowJump = true;
-            this.isHitting = false;
         }
     };
 
@@ -195,6 +206,7 @@ ULTRADIAN.Player = (function() {
                 "<br><label>haltYDir:</label> " + this.haltYDir +
                 "<br><label>isHitting:</label> " + this.isHitting +
                 "<br><label>isJumping:</label> " + this.isJumping +
+                "<br><label>isLaunching:</label> " + this.isLaunching +
                 "<br><label>moveX:</label> " + this.moveX
         );
     };
@@ -222,20 +234,33 @@ ULTRADIAN.Player = (function() {
 
             // Can jump?
             if(this.onGround) {
-                //this.allowJump = true;
-                this.jumpCount = 0;
+                this.isJumping = this.isHopping = false;
+                this.allowJump = true;
             }
 
             if(this.isFalling) {
                 this.allowJump = false;
             }
 
-            if(this.isJumping) {
+            /*if(this.isJumping) {
                 if(this.jumpCount < this.jumpCountMax) {
                     this.vVelocity = -this.vMaxVelocity * secondsElapsed;
                 } else {
                     this.allowJump = false;
                     this.isJumping = false;
+                }
+            }*/
+
+            if(this.isLaunching) {
+                this.vVelocity = -this.vMaxVelocity * secondsElapsed;
+                //this.hVelocity = this.hMaxVelocity * secondsElapsed;
+                this.isLaunching = false;
+
+                if(this.isClutching) {
+                    this.isHopping = true;
+                    this.isClutching = false;
+                } else {
+                    this.isJumping = true;
                 }
             }
 
@@ -305,6 +330,15 @@ ULTRADIAN.Player = (function() {
                 this.currentAnimation.startFrame = 1;
                 this.didHit = false;
 
+            } else if(this.isClutching) {
+                (this.dirX == RETRO.Entity.DIR_LEFT) ?
+                    this.playAnimation(Player.ANIM_CLUTCH_LEFT, RETRO.call(this, this.onClutchComplete)) :
+                    this.playAnimation(Player.ANIM_CLUTCH_RIGHT, RETRO.call(this, this.onClutchComplete));
+
+            } else if(this.isHopping) {
+                (this.dirX == RETRO.Entity.DIR_LEFT) ?
+                    this.playAnimation(Player.ANIM_HOP_LEFT) :
+                    this.playAnimation(Player.ANIM_HOP_RIGHT);
 
             // JUMP
             } else if(!this.onGround) {
@@ -367,6 +401,10 @@ ULTRADIAN.Player = (function() {
         }
     };*/
 
+    Player.prototype.onClutchComplete = function() {
+        this.hop();
+    };
+
     Player.prototype.onAttackComplete = function() {
         this.isAttacking = false;
         this.didHit = false;
@@ -399,39 +437,29 @@ ULTRADIAN.Player = (function() {
     };
 
     Player.prototype.levelCollisionX = function(direction, tileDef, tileX, tileY) {
-        var level = this.engine.level,
+        var engine = this.engine,
+            level = engine.level,
             tile1, tile2, tile3;
 
-        Player.base.levelCollisionX.call(this, direction, tileDef, tileX, tileY);
+        if(tileDef) {
+            if(Math.abs(this.moveX) == Math.round(this.hComputedMaxVelocity)) {
+                if(direction == RETRO.Entity.DIR_RIGHT) {
+                    tile1 = level.getTile(tileX, tileY - 1);
+                    tile2 = level.getTile(tileX + 1, tileY - 2);
+                    tile3 = level.getTile(tileX + 1, tileY - 1);
 
-        if(direction == RETRO.Entity.DIR_RIGHT) {
-            tile1 = level.getTile(tileX, tileY - 1);
-            tile2 = level.getTile(tileX + 1, tileY - 2);
-            tile3 = level.getTile(tileX + 1, tileY - 1);
-            if(tile1['solid'] == 0 && tile2['solid'] == 0 && tile3['solid'] == 1) {
-                var targetX = ((tileX) * level.tileSize);
-                var targetY = ((tileY - 4) * level.tileSize);
+                } else if(direction == RETRO.Entity.DIR_LEFT) {
+                    tile1 = level.getTile(tileX, tileY - 1);
+                    tile2 = level.getTile(tileX - 1, tileY - 2);
+                    tile3 = level.getTile(tileX - 1, tileY - 1);
+                }
 
-                this.doMoveY = false;
-                this.stop();
-
-                engine.userAction.disable('left');
-                engine.userAction.disable('right');
-
-                engine.auto.setTarget(this, 3, RETRO.call(this, this.hopComplete));
-                engine.auto.addPoint(targetX, targetY);
+                if(tile1['solid'] == 0 && tile2['solid'] == 0 && tile3['solid'] == 1) {
+                    this.isClutching = true;
+                }
             }
-
-        } else if(direction == RETRO.Entity.DIR_LEFT) {
-
         }
-    };
-
-    Player.prototype.hopComplete = function() {
-        this.doMoveY = true;
-
-        engine.userAction.enable('left');
-        engine.userAction.enable('right');
+        Player.base.levelCollisionX.call(this, direction, tileDef, tileX, tileY);
     };
 
     return Player;

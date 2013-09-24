@@ -140,9 +140,10 @@ function checkUserActions(actions) {
 
             // JUMP
             if(actions['up']) {
-                player.startJump();
+                //player.startJump();
+                player.jump();
             } else {
-                player.endJump();
+                //player.endJump();
             }
 
             // DUCK

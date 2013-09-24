@@ -28,27 +28,29 @@ RETRO.Auto = (function() {
     Auto.prototype.addPoint = function(x, y) {
         if(this._targetEntity) {
             this._points.push({x: x, y: y});
-            this._active = true;
-
         } else {
             RETRO.log("RETRO::Auto: target entity not set.");
         }
     };
 
-    Auto.prototype.update = function() {
+    Auto.prototype.go = function() {
+        this._active = true;
+    };
+
+    Auto.prototype.update = function(secondsElapsed) {
         if(this._active) {
-            this._update();
+            this._update(secondsElapsed);
         }
     };
 
-    Auto.prototype._update = function() {
+    Auto.prototype._update = function(secondsElapsed) {
         var target = this._targetEntity,
             currentPoint = this._currentPoint,
             distanceX = this._distanceX,
             distanceY = this._distanceY,
-            speed = this._speed;
+            speed = Math.round(this._speed * secondsElapsed);
 
-        if(!currentPoint || (distanceX <= 0 && distanceY <= 0)) {
+        if(!currentPoint || (distanceX - speed <= 0 && distanceY - speed <= 0)) {
             currentPoint = this._points.shift();
             if(currentPoint) {
                 this._currentPoint = currentPoint;
@@ -63,20 +65,24 @@ RETRO.Auto = (function() {
             }
 
         } else {
-            if(target.x < currentPoint.x) {
-                target.x += speed;
-                distanceX -= speed;
-            } else if(target.x > currentPoint.x) {
-                target.x -= speed;
-                distanceX -= speed;
+            if(distanceX - speed > 0) {
+                if(target.x < currentPoint.x) {
+                    target.x += speed;
+                    distanceX -= speed;
+                } else if(target.x > currentPoint.x) {
+                    target.x -= speed;
+                    distanceX -= speed;
+                }
             }
 
-            if(target.y < currentPoint.y) {
-                target.y += speed;
-                distanceY -= speed;
-            } else if(target.y > currentPoint.y) {
-                target.y -= speed;
-                distanceY -= speed;
+            if(distanceY - speed > 0) {
+                if(target.y < currentPoint.y) {
+                    target.y += speed;
+                    distanceY -= speed;
+                } else if(target.y > currentPoint.y) {
+                    target.y -= speed;
+                    distanceY -= speed;
+                }
             }
 
             this._distanceX = distanceX;
